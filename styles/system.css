@@ -870,13 +870,11 @@
 }
 
 .hkrpg.sheet.actor .window-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: #0d1728 !important;
   color: #f2f5fb !important;
-}
-
-.hkrpg.sheet.actor .window-content,
-.hkrpg.sheet.actor .window-content * {
-  color: inherit;
 }
 
 .hkrpg-sheet {
@@ -1221,4 +1219,17 @@
   .hkrpg-custom-reserves {
     grid-template-columns: 1fr;
   }
+}
+
+
+.hkrpg-sheet,
+.hkrpg-sheet h1,
+.hkrpg-sheet h2,
+.hkrpg-sheet h3,
+.hkrpg-sheet p,
+.hkrpg-sheet span,
+.hkrpg-sheet label,
+.hkrpg-sheet strong,
+.hkrpg-sheet small {
+  color: #f2f5fb;
 }
