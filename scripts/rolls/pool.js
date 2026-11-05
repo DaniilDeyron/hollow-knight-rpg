@@ -9,12 +9,17 @@ export function getAttributePool(attributeValue, temporaryValue = 0) {
   const temporary = Number(temporaryValue);
   const safeValue = Number.isFinite(value) ? Math.max(0, value) : 0;
   const safeTemporary = Number.isFinite(temporary) ? Math.max(0, temporary) : 0;
-  const totalValue = safeValue + safeTemporary;
-  const diceCount = Math.floor(totalValue);
-  const fraction = totalValue - diceCount;
+
+  // A half-rank in the base attribute grants its normal reroll.
+  // The temporary field is an independent whole-dice bonus.
+  const baseDiceCount = Math.floor(safeValue);
+  const bonusDiceCount = Math.floor(safeTemporary);
+  const fraction = safeValue - baseDiceCount;
 
   return {
-    diceCount,
+    baseDiceCount,
+    bonusDiceCount,
+    diceCount: baseDiceCount + bonusDiceCount,
     rerollsAvailable: fraction >= 0.5 ? 1 : 0
   };
 }
@@ -76,7 +81,7 @@ function renderDice(values) {
   }).join("");
 }
 
-export async function rollAttributeCheck(actor, attributeKey) {
+export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
   const characteristicSources = {
     might: { localizationKey: "HKRPG.Attribute.Might", group: "attributes", temporary: true },
     insight: { localizationKey: "HKRPG.Attribute.Insight", group: "attributes", temporary: true },
@@ -88,16 +93,27 @@ export async function rollAttributeCheck(actor, attributeKey) {
   const characteristic = characteristicSources[attributeKey];
   if (!characteristic) throw new Error("Неизвестная характеристика.");
 
-  const value = Number(actor.system[characteristic.group]?.[attributeKey] ?? 0);
-  const temporaryValue = characteristic.temporary
-    ? Number(actor.system.attributeTemps?.[attributeKey] ?? 0)
+  const storedValue = actor.system[characteristic.group]?.[attributeKey] ?? 0;
+  const value = Number(overrides.attributeValue ?? storedValue);
+  const storedTemporary = characteristic.temporary
+    ? actor.system.attributeTemps?.[attributeKey] ?? 0
     : 0;
-  const { diceCount, rerollsAvailable } = getAttributePool(value, temporaryValue);
+  const temporaryValue = characteristic.temporary
+    ? Number(overrides.temporaryValue ?? storedTemporary)
+    : 0;
+  const {
+    baseDiceCount,
+    bonusDiceCount,
+    diceCount,
+    rerollsAvailable
+  } = getAttributePool(value, temporaryValue);
   const { roll, results } = await rollD6Pool(diceCount);
   const summary = summarizeD6Results(results);
   const label = game.i18n.localize(characteristic.localizationKey);
   const successesLabel = pluralizeRussian(summary.successes, ["успех", "успеха", "успехов"]);
-  const formula = `${diceCount}d6`;
+  const formula = bonusDiceCount > 0
+    ? `${baseDiceCount}d6 + ${bonusDiceCount}d6 = ${diceCount}d6`
+    : `${diceCount}d6`;
   const rerollText = rerollsAvailable
     ? `<div class="hkrpg-roll__note">Доступен повторный бросок: <strong>${rerollsAvailable}</strong></div>`
     : "";

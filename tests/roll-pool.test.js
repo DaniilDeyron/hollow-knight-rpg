@@ -19,6 +19,8 @@ test("Результаты от 1 до 4 не дают успеха и имею�
 
 test("Пул характеристики 3.5 — три кости и один доступный переброс", () => {
   assert.deepEqual(getAttributePool(3.5), {
+    baseDiceCount: 3,
+    bonusDiceCount: 0,
     diceCount: 3,
     rerollsAvailable: 1
   });
@@ -26,6 +28,8 @@ test("Пул характеристики 3.5 — три кости и один 
 
 test("Целое значение характеристики даёт только целое число костей", () => {
   assert.deepEqual(getAttributePool(4), {
+    baseDiceCount: 4,
+    bonusDiceCount: 0,
     diceCount: 4,
     rerollsAvailable: 0
   });
@@ -58,22 +62,37 @@ test("Неверный результат кости отклоняется", ()
   assert.throws(() => classifyD6Result(7), RangeError);
 });
 
-test("Временный бонус прибавляется к общему пулу костей", () => {
+test("Временный бонус добавляет отдельные кости к основному пулу", () => {
   assert.deepEqual(getAttributePool(3, 2), {
+    baseDiceCount: 3,
+    bonusDiceCount: 2,
     diceCount: 5,
     rerollsAvailable: 0
   });
 });
 
-test("Временный дробный бонус учитывается вместе с половинным значением характеристики", () => {
-  assert.deepEqual(getAttributePool(3, 0.5), {
-    diceCount: 3,
+test("Временные кости не отменяют переброс от дробной основной характеристики", () => {
+  assert.deepEqual(getAttributePool(3.5, 2), {
+    baseDiceCount: 3,
+    bonusDiceCount: 2,
+    diceCount: 5,
     rerollsAvailable: 1
   });
 });
 
-test("Временный бонус не может уменьшить пул костей", () => {
+test("Дробная часть временного бонуса не превращается в переброс", () => {
+  assert.deepEqual(getAttributePool(3, 0.5), {
+    baseDiceCount: 3,
+    bonusDiceCount: 0,
+    diceCount: 3,
+    rerollsAvailable: 0
+  });
+});
+
+test("Отрицательный временный бонус не уменьшает пул", () => {
   assert.deepEqual(getAttributePool(3, -2), {
+    baseDiceCount: 3,
+    bonusDiceCount: 0,
     diceCount: 3,
     rerollsAvailable: 0
   });

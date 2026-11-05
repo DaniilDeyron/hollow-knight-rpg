@@ -159,7 +159,33 @@ export class HKCharacterSheet extends ActorSheet {
     button.disabled = true;
 
     try {
-      await rollAttributeCheck(this.actor, attributeKey);
+      // Read live values from the form. Foundry may still be processing the
+      // input change when a player clicks the roll button immediately.
+      const form = button.closest("form");
+      const primaryAttributes = ["might", "insight", "shell", "grace"];
+      const group = primaryAttributes.includes(attributeKey) ? "attributes" : "social";
+      const baseInput = form?.querySelector(`[name="system.${group}.${attributeKey}"]`);
+      const temporaryInput = primaryAttributes.includes(attributeKey)
+        ? form?.querySelector(`[name="system.attributeTemps.${attributeKey}"]`)
+        : null;
+
+      const storedBase = this.actor.system[group]?.[attributeKey] ?? 0;
+      const storedTemporary = this.actor.system.attributeTemps?.[attributeKey] ?? 0;
+      const parsedBase = baseInput ? Number(baseInput.value) : Number(storedBase);
+      const parsedTemporary = temporaryInput ? Number(temporaryInput.value) : Number(storedTemporary);
+      const baseValue = Number.isFinite(parsedBase) ? Math.max(0, parsedBase) : 0;
+      const temporaryValue = Number.isFinite(parsedTemporary) ? Math.max(0, parsedTemporary) : 0;
+
+      // Save the exact values used by the roll.
+      const updates = {};
+      if (baseInput) updates[`system.${group}.${attributeKey}`] = baseValue;
+      if (temporaryInput) updates[`system.attributeTemps.${attributeKey}`] = temporaryValue;
+      if (Object.keys(updates).length) await this.actor.update(updates);
+
+      await rollAttributeCheck(this.actor, attributeKey, {
+        attributeValue: baseValue,
+        temporaryValue
+      });
     } catch (error) {
       console.error("Hollow Knight RPG | Attribute roll failed", error);
       ui.notifications.error("Не удалось выполнить бросок характеристики. Подробности — в консоли (F12).");
