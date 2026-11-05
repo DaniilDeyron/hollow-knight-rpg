@@ -22,9 +22,7 @@ export function classifyD6Result(value) {
     throw new RangeError("Результат d6 должен быть целым числом от 1 до 6.");
   }
 
-  if (result >= 5) return "success";
-  if (result <= 2) return "low";
-  return "neutral";
+  return result >= 5 ? "success" : "neutral";
 }
 
 export function summarizeD6Results(values = []) {
@@ -32,13 +30,11 @@ export function summarizeD6Results(values = []) {
     value,
     type: classifyD6Result(value)
   }));
-  const successes = dice.filter((die) => die.type === "success").length;
 
   return {
     dice,
     total: dice.length,
-    successes,
-    failures: dice.length - successes
+    successes: dice.filter((die) => die.type === "success").length
   };
 }
 
@@ -66,17 +62,14 @@ function pluralizeRussian(number, forms) {
 
 function renderDice(values) {
   if (!values.length) {
-    return '<span class="hkrpg-roll-empty">Нет костей для броска</span>';
+    return '<span class="hkrpg-roll__empty">Нет костей для броска</span>';
   }
 
   return values.map((value, index) => {
-    const type = classifyD6Result(value);
-    const title = type === "success"
-      ? "Успех"
-      : type === "neutral"
-        ? "Неуспех"
-        : "Низкий результат";
-    return `<span class="hkrpg-die hkrpg-die--${type}" title="${title}" aria-label="Кость ${index + 1}: ${value}, ${title}">${value}</span>`;
+    const isSuccess = classifyD6Result(value) === "success";
+    const type = isSuccess ? " hkrpg-die--success" : "";
+    const title = isSuccess ? "Успех" : `Результат ${value}`;
+    return `<span class="hkrpg-die${type}" title="${title}" aria-label="Кость ${index + 1}: ${value}">${value}</span>`;
   }).join("");
 }
 
@@ -95,58 +88,41 @@ export async function rollAttributeCheck(actor, attributeKey) {
   const { roll, results } = await rollD6Pool(diceCount);
   const summary = summarizeD6Results(results);
   const label = game.i18n.localize(localizationKey);
-  const actorName = foundry.utils.escapeHTML(actor.name);
-  const safeLabel = foundry.utils.escapeHTML(label);
   const successesLabel = pluralizeRussian(summary.successes, ["успех", "успеха", "успехов"]);
-  const failuresLabel = pluralizeRussian(summary.failures, ["неуспех", "неуспеха", "неуспехов"]);
-  const formula = diceCount ? `${diceCount}d6` : "0d6";
+  const formula = `${diceCount}d6`;
   const rerollText = rerollsAvailable
-    ? `<div class="hkrpg-roll-rerolls">Доступно повторных бросков: <strong>${rerollsAvailable}</strong> (за дробную характеристику)</div>`
+    ? `<div class="hkrpg-roll__note">Доступен повторный бросок: <strong>${rerollsAvailable}</strong></div>`
     : "";
 
   const content = `
-    <section class="hkrpg-roll-card">
-      <header class="hkrpg-roll-header">
-        <div>
-          <div class="hkrpg-roll-actor">${actorName}</div>
-          <h3 class="hkrpg-roll-title">${safeLabel}</h3>
-        </div>
-        <div class="hkrpg-roll-formula">${formula}</div>
+    <section class="hkrpg-roll">
+      <header class="hkrpg-roll__header">
+        <h3 class="hkrpg-roll__title">${label}</h3>
+        <span class="hkrpg-roll__formula">${formula}</span>
       </header>
-      <div class="hkrpg-roll-dice" aria-label="Результаты костей">${renderDice(results)}</div>
-      <div class="hkrpg-roll-counts">
-        <div class="hkrpg-roll-count hkrpg-roll-count--success">
-          <strong>${summary.successes}</strong>
-          <span>${successesLabel}</span>
-        </div>
-        <div class="hkrpg-roll-count hkrpg-roll-count--failure">
-          <strong>${summary.failures}</strong>
-          <span>${failuresLabel}</span>
-        </div>
+      <div class="hkrpg-roll__dice" aria-label="Результаты костей">
+        ${renderDice(results)}
       </div>
-      <div class="hkrpg-roll-total">Итог броска: <strong>${summary.successes} ${successesLabel}</strong></div>
-      ${rerollText}
-      <footer class="hkrpg-roll-legend">
-        <span><i class="hkrpg-legend-dot hkrpg-legend-dot--success"></i> 5–6: успех</span>
-        <span><i class="hkrpg-legend-dot hkrpg-legend-dot--neutral"></i> 3–4: неуспех</span>
-        <span><i class="hkrpg-legend-dot hkrpg-legend-dot--low"></i> 1–2: низкий результат</span>
+      <footer class="hkrpg-roll__result">
+        <span>Успехи</span>
+        <strong>${summary.successes}</strong>
+        <span class="hkrpg-roll__plural">${successesLabel}</span>
       </footer>
+      ${rerollText}
     </section>
   `;
 
   const speaker = ChatMessage.getSpeaker({ actor });
-  const flavor = `${actor.name} — ${label}`;
 
   if (roll) {
     return roll.toMessage(
-      { speaker, flavor, content },
+      { speaker, content },
       { rollMode: game.settings.get("core", "rollMode") }
     );
   }
 
   return ChatMessage.create({
     speaker,
-    flavor,
     content,
     type: CONST.CHAT_MESSAGE_TYPES.OTHER
   });

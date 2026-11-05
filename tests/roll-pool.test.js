@@ -6,19 +6,15 @@ import {
   summarizeD6Results
 } from "../scripts/rolls/pool.js";
 
-test("5 и 6 считаются успехами", () => {
+test("Только 5 и 6 дают успех", () => {
   assert.equal(classifyD6Result(5), "success");
   assert.equal(classifyD6Result(6), "success");
 });
 
-test("3 и 4 — серые неуспешные результаты", () => {
-  assert.equal(classifyD6Result(3), "neutral");
-  assert.equal(classifyD6Result(4), "neutral");
-});
-
-test("1 и 2 — красные низкие неуспешные результаты", () => {
-  assert.equal(classifyD6Result(1), "low");
-  assert.equal(classifyD6Result(2), "low");
+test("Результаты от 1 до 4 не дают успеха и имеют нейтральный стиль", () => {
+  for (const value of [1, 2, 3, 4]) {
+    assert.equal(classifyD6Result(value), "neutral");
+  }
 });
 
 test("Пул характеристики 3.5 — три кости и один доступный переброс", () => {
@@ -35,17 +31,26 @@ test("Целое значение характеристики даёт толь
   });
 });
 
-test("Сводка правильно считает успехи и неуспехи", () => {
-  assert.deepEqual(summarizeD6Results([1, 3, 5, 6]), {
+test("Сводка считает только успехи и не содержит подсчёта неуспехов", () => {
+  const summary = summarizeD6Results([1, 3, 5, 6]);
+  assert.deepEqual(summary, {
     dice: [
-      { value: 1, type: "low" },
+      { value: 1, type: "neutral" },
       { value: 3, type: "neutral" },
       { value: 5, type: "success" },
       { value: 6, type: "success" }
     ],
     total: 4,
-    successes: 2,
-    failures: 2
+    successes: 2
+  });
+  assert.equal("failures" in summary, false);
+});
+
+test("Пустой пул даёт ноль успехов", () => {
+  assert.deepEqual(summarizeD6Results([]), {
+    dice: [],
+    total: 0,
+    successes: 0
   });
 });
 
