@@ -2,7 +2,7 @@
   "id": "hollow-knight-rpg",
   "title": "Hollow Knight RPG",
   "description": "A fan-made tabletop roleplaying game system for Foundry Virtual Tabletop, based on The Unofficial Hollow Knight RPG.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
