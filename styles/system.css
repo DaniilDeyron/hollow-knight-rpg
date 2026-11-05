@@ -39,7 +39,6 @@
 }
 
 .hkrpg-sheet .field-label,
-.hkrpg-sheet .attribute-grid label,
 .hkrpg-sheet .resource-grid label {
   display: flex;
   flex-direction: column;
@@ -47,7 +46,6 @@
 }
 
 .hkrpg-sheet .field-label span,
-.hkrpg-sheet .attribute-grid label span,
 .hkrpg-sheet .resource-grid label > span,
 .hkrpg-sheet .derived-grid span {
   font-size: 0.85rem;
@@ -73,6 +71,74 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
+}
+
+.hkrpg-sheet .attribute-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  border: 1px solid var(--color-border-light-primary);
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.hkrpg-sheet .attribute-roll-button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 8px;
+  width: 100%;
+  min-height: 58px;
+  padding: 6px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.hkrpg-sheet .attribute-roll-button:hover {
+  background: var(--color-hover);
+}
+
+.hkrpg-sheet .attribute-roll-button > span {
+  font-weight: 700;
+}
+
+.hkrpg-sheet .attribute-roll-button > strong {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.hkrpg-sheet .attribute-roll-button > small {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+}
+
+.hkrpg-sheet .attribute-roll-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.hkrpg-sheet .attribute-edit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid var(--color-border-light-primary);
+  padding-top: 6px;
+}
+
+.hkrpg-sheet .attribute-edit span {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.hkrpg-sheet .attribute-edit input {
+  width: 72px;
+  text-align: center;
 }
 
 .hkrpg-sheet .paired-fields {
@@ -111,3 +177,148 @@
   width: 100%;
   resize: vertical;
 }
+
+/* Dice-pool result card displayed in the Foundry chat log. */
+.hkrpg-roll-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--color-border-light-primary);
+  border-radius: 7px;
+}
+
+.hkrpg-roll-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.hkrpg-roll-actor {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+}
+
+.hkrpg-roll-title {
+  margin: 2px 0 0;
+  border: 0;
+  font-size: 1.1rem;
+}
+
+.hkrpg-roll-formula {
+  flex: 0 0 auto;
+  padding: 3px 7px;
+  border: 1px solid var(--color-border-light-primary);
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.hkrpg-roll-dice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.hkrpg-die {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.hkrpg-die--success {
+  color: #176b36;
+  background: #d9f4e2;
+  border-color: #4fa46b;
+}
+
+.hkrpg-die--neutral {
+  color: #555b62;
+  background: #e8eaed;
+  border-color: #aeb4bb;
+}
+
+.hkrpg-die--low {
+  color: #9b2631;
+  background: #f8dadd;
+  border-color: #d76b75;
+}
+
+.hkrpg-roll-empty {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.hkrpg-roll-counts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.hkrpg-roll-count {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 9px;
+  border-radius: 5px;
+  background: var(--color-cool-5-20);
+}
+
+.hkrpg-roll-count strong {
+  font-size: 1.2rem;
+}
+
+.hkrpg-roll-count--success strong {
+  color: #238348;
+}
+
+.hkrpg-roll-count--failure strong {
+  color: var(--color-text-secondary);
+}
+
+.hkrpg-roll-total {
+  padding-top: 7px;
+  border-top: 1px solid var(--color-border-light-primary);
+  font-size: 1rem;
+}
+
+.hkrpg-roll-rerolls {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+}
+
+.hkrpg-roll-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 12px;
+  padding-top: 7px;
+  border-top: 1px solid var(--color-border-light-primary);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+}
+
+.hkrpg-roll-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hkrpg-legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.hkrpg-legend-dot--success { background: #4fa46b; }
+.hkrpg-legend-dot--neutral { background: #aeb4bb; }
+.hkrpg-legend-dot--low { background: #d76b75; }

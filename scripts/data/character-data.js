@@ -8,7 +8,7 @@ function statField() {
     nullable: false,
     initial: 0,
     min: 0,
-    max: 10,
+    max: 7,
     integer: false
   });
 }

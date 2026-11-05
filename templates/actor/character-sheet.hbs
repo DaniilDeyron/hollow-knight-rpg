@@ -19,10 +19,53 @@
   <section class="sheet-section">
     <h2>{{localize "HKRPG.Attributes"}}</h2>
     <div class="attribute-grid">
-      <label><span>{{localize "HKRPG.Attribute.Might"}}</span><input name="system.attributes.might" type="number" min="0" max="10" step="0.5" value="{{system.attributes.might}}" /></label>
-      <label><span>{{localize "HKRPG.Attribute.Insight"}}</span><input name="system.attributes.insight" type="number" min="0" max="10" step="0.5" value="{{system.attributes.insight}}" /></label>
-      <label><span>{{localize "HKRPG.Attribute.Shell"}}</span><input name="system.attributes.shell" type="number" min="0" max="10" step="0.5" value="{{system.attributes.shell}}" /></label>
-      <label><span>{{localize "HKRPG.Attribute.Grace"}}</span><input name="system.attributes.grace" type="number" min="0" max="10" step="0.5" value="{{system.attributes.grace}}" /></label>
+      <div class="attribute-card">
+        <button class="attribute-roll-button" type="button" data-attribute-roll="might">
+          <span>{{localize "HKRPG.Attribute.Might"}}</span>
+          <strong>{{system.attributes.might}}</strong>
+          <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
+        </button>
+        <label class="attribute-edit">
+          <span>{{localize "HKRPG.Roll.AttributeValue"}}</span>
+          <input name="system.attributes.might" type="number" min="0" max="7" step="0.5" value="{{system.attributes.might}}" />
+        </label>
+      </div>
+
+      <div class="attribute-card">
+        <button class="attribute-roll-button" type="button" data-attribute-roll="insight">
+          <span>{{localize "HKRPG.Attribute.Insight"}}</span>
+          <strong>{{system.attributes.insight}}</strong>
+          <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
+        </button>
+        <label class="attribute-edit">
+          <span>{{localize "HKRPG.Roll.AttributeValue"}}</span>
+          <input name="system.attributes.insight" type="number" min="0" max="7" step="0.5" value="{{system.attributes.insight}}" />
+        </label>
+      </div>
+
+      <div class="attribute-card">
+        <button class="attribute-roll-button" type="button" data-attribute-roll="shell">
+          <span>{{localize "HKRPG.Attribute.Shell"}}</span>
+          <strong>{{system.attributes.shell}}</strong>
+          <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
+        </button>
+        <label class="attribute-edit">
+          <span>{{localize "HKRPG.Roll.AttributeValue"}}</span>
+          <input name="system.attributes.shell" type="number" min="0" max="7" step="0.5" value="{{system.attributes.shell}}" />
+        </label>
+      </div>
+
+      <div class="attribute-card">
+        <button class="attribute-roll-button" type="button" data-attribute-roll="grace">
+          <span>{{localize "HKRPG.Attribute.Grace"}}</span>
+          <strong>{{system.attributes.grace}}</strong>
+          <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
+        </button>
+        <label class="attribute-edit">
+          <span>{{localize "HKRPG.Roll.AttributeValue"}}</span>
+          <input name="system.attributes.grace" type="number" min="0" max="7" step="0.5" value="{{system.attributes.grace}}" />
+        </label>
+      </div>
     </div>
   </section>
 

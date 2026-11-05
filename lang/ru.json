@@ -29,6 +29,10 @@
       "CarryingCapacity": "Нагрузка",
       "Maneuverability": "Манёвренность"
     },
+    "Roll": {
+      "ClickToRoll": "Нажмите, чтобы бросить",
+      "AttributeValue": "Значение"
+    },
     "Notes": "Заметки"
   }
 }
