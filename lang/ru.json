@@ -51,8 +51,8 @@
       "AddTemporary": "Добавить временный пункт",
       "RemoveTemporary": "Убрать временный пункт"
     },
-    "CustomReserves": "Дополнительные запасы",
-    "CustomReserve": "Свой запас",
+    "CustomReserves": "Запасы",
+    "CustomReserve": "Название запаса",
     "Movement": "Передвижение",
     "Derived": {
       "CarryingCapacity": "Нагрузка",

@@ -46,12 +46,10 @@
               {{#if resourcePips.heart.baseOverflow}}<span class="hkrpg-pip-overflow">+{{resourcePips.heart.baseOverflow}}</span>{{/if}}
             </div>
             <div class="hkrpg-resource-pips__temporary">
-              <button type="button" class="hkrpg-temp-adjust" data-resource-temp-adjust="heart" data-delta="-1" title="{{localize "HKRPG.Tracker.RemoveTemporary"}}" {{#unless isEditable}}disabled{{/unless}}>−</button>
               {{#each resourcePips.heart.temporary as |pip|}}
                 <span class="hkrpg-pip hkrpg-pip--heart hkrpg-pip--temporary"><span class="hkrpg-pip__shape">♥</span></span>
               {{/each}}
               {{#if resourcePips.heart.temporaryOverflow}}<span class="hkrpg-pip-overflow hkrpg-pip-overflow--temporary">+{{resourcePips.heart.temporaryOverflow}}</span>{{/if}}
-              <button type="button" class="hkrpg-temp-adjust" data-resource-temp-adjust="heart" data-delta="1" title="{{localize "HKRPG.Tracker.AddTemporary"}}" {{#unless isEditable}}disabled{{/unless}}>+</button>
             </div>
           </div>
         </div>
@@ -68,12 +66,10 @@
               {{#if resourcePips.soul.baseOverflow}}<span class="hkrpg-pip-overflow">+{{resourcePips.soul.baseOverflow}}</span>{{/if}}
             </div>
             <div class="hkrpg-resource-pips__temporary">
-              <button type="button" class="hkrpg-temp-adjust" data-resource-temp-adjust="soul" data-delta="-1" title="{{localize "HKRPG.Tracker.RemoveTemporary"}}" {{#unless isEditable}}disabled{{/unless}}>−</button>
               {{#each resourcePips.soul.temporary as |pip|}}
                 <span class="hkrpg-pip hkrpg-pip--soul hkrpg-pip--temporary"><span class="hkrpg-pip__shape"></span></span>
               {{/each}}
               {{#if resourcePips.soul.temporaryOverflow}}<span class="hkrpg-pip-overflow hkrpg-pip-overflow--temporary">+{{resourcePips.soul.temporaryOverflow}}</span>{{/if}}
-              <button type="button" class="hkrpg-temp-adjust" data-resource-temp-adjust="soul" data-delta="1" title="{{localize "HKRPG.Tracker.AddTemporary"}}" {{#unless isEditable}}disabled{{/unless}}>+</button>
             </div>
           </div>
         </div>
@@ -112,7 +108,6 @@
       <div class="hkrpg-overview-grid">
         <div class="hkrpg-overview-main">
           <section class="hkrpg-overview-section">
-            <h2>{{localize "HKRPG.Attributes"}}</h2>
             <div class="hkrpg-attributes-grid">
               <div class="hkrpg-attribute">
                 <label class="hkrpg-attribute-score">
@@ -178,38 +173,8 @@
             </div>
           </section>
 
-          <section class="hkrpg-overview-section">
-            <h2>{{localize "HKRPG.CustomReserves"}}</h2>
-            <div class="hkrpg-custom-reserves">
-              {{#each system.customReserves as |reserve key|}}
-                <div class="hkrpg-custom-reserve">
-                  <label class="hkrpg-custom-reserve__name">
-                    <span>{{localize "HKRPG.CustomReserve"}}</span>
-                    <input name="system.customReserves.{{key}}.label" type="text" value="{{reserve.label}}" />
-                  </label>
-                  <div class="hkrpg-tracker-fields">
-                    <label>
-                      <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
-                      <input name="system.customReserves.{{key}}.max" type="number" min="0" value="{{reserve.max}}" />
-                    </label>
-                    <label class="hkrpg-tracker-fields__current">
-                      <span>{{localize "HKRPG.Tracker.Current"}}</span>
-                      <input name="system.customReserves.{{key}}.current" type="number" min="0" value="{{reserve.current}}" />
-                    </label>
-                    <label>
-                      <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
-                      <input name="system.customReserves.{{key}}.temporary" type="number" min="0" value="{{reserve.temporary}}" />
-                    </label>
-                  </div>
-                </div>
-              {{/each}}
-            </div>
-          </section>
-        </div>
-
         <aside class="hkrpg-overview-side">
           <section class="hkrpg-overview-section">
-            <h2>{{localize "HKRPG.Resources"}}</h2>
             <div class="hkrpg-resource-trackers">
               <div class="hkrpg-resource-tracker">
                 <h3>{{localize "HKRPG.Resource.Heart"}}</h3>
@@ -282,6 +247,35 @@
           </section>
         </aside>
       </div>
+
+          <section class="hkrpg-overview-section hkrpg-custom-reserves-section">
+            <h2>{{localize "HKRPG.CustomReserves"}}</h2>
+            <div class="hkrpg-custom-reserves">
+              {{#each system.customReserves as |reserve key|}}
+                <div class="hkrpg-custom-reserve">
+                  <label class="hkrpg-custom-reserve__name">
+                    <input name="system.customReserves.{{key}}.label" type="text" value="{{reserve.label}}" placeholder="{{localize "HKRPG.CustomReserve"}}" aria-label="{{localize "HKRPG.CustomReserve"}}" />
+                  </label>
+                  <div class="hkrpg-tracker-fields">
+                    <label>
+                      <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
+                      <input name="system.customReserves.{{key}}.max" type="number" min="0" value="{{reserve.max}}" />
+                    </label>
+                    <label class="hkrpg-tracker-fields__current">
+                      <span>{{localize "HKRPG.Tracker.Current"}}</span>
+                      <input name="system.customReserves.{{key}}.current" type="number" min="0" value="{{reserve.current}}" />
+                    </label>
+                    <label>
+                      <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
+                      <input name="system.customReserves.{{key}}.temporary" type="number" min="0" value="{{reserve.temporary}}" />
+                    </label>
+                  </div>
+                </div>
+              {{/each}}
+            </div>
+          </section>
+        </div>
+
     </section>
 
     <section class="tab" data-group="primary" data-tab="development">
