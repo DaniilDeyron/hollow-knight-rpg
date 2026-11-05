@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildResourcePips } from "../scripts/rules/resource-tracker.js";
+import { buildResourcePips, getNextResourceValue } from "../scripts/rules/resource-tracker.js";
 
 test("Количество обычных пипсов соответствует максимуму", () => {
   const result = buildResourcePips(7, 6, 0);
@@ -36,4 +36,21 @@ test("Большие значения ограничиваются видимы�
   assert.equal(result.baseOverflow, 40);
   assert.equal(result.temporary.length, 10);
   assert.equal(result.temporaryOverflow, 32);
+});
+
+
+test("Нажатие на пустой пункт увеличивает ресурс до его номера", () => {
+  assert.equal(getNextResourceValue(3, 5, 8), 5);
+});
+
+test("Нажатие на последний заполненный пункт убирает один пункт", () => {
+  assert.equal(getNextResourceValue(5, 5, 8), 4);
+});
+
+test("Нажатие на более ранний заполненный пункт устанавливает выбранное значение", () => {
+  assert.equal(getNextResourceValue(7, 3, 8), 3);
+});
+
+test("Нельзя увеличить ресурс выше максимума", () => {
+  assert.equal(getNextResourceValue(5, 9, 7), 7);
 });

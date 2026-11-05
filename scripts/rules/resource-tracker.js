@@ -28,3 +28,23 @@ export function buildResourcePips(maximum = 0, current = 0, temporary = 0, visib
     temporaryOverflow: Math.max(0, temp - tempVisible)
   };
 }
+
+
+/**
+ * Clicking an unfilled pip sets the current amount to that pip's position.
+ * Clicking the last filled pip removes one point.
+ */
+export function getNextResourceValue(current, clickedPip, maximum) {
+  const toCount = (value) => {
+    const number = Number(value);
+    return Number.isFinite(number) ? Math.max(0, Math.floor(number)) : 0;
+  };
+
+  const currentValue = toCount(current);
+  const pipValue = toCount(clickedPip);
+  const maxValue = toCount(maximum);
+  if (pipValue < 1 || maxValue < 1) return currentValue;
+
+  const next = pipValue === currentValue ? Math.max(0, currentValue - 1) : pipValue;
+  return Math.min(maxValue, next);
+}

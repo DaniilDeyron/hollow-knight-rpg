@@ -1,5 +1,5 @@
 import { rollAttributeCheck } from "../rolls/pool.js";
-import { buildResourcePips } from "../rules/resource-tracker.js";
+import { buildResourcePips, getNextResourceValue } from "../rules/resource-tracker.js";
 
 export class HKCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -115,9 +115,10 @@ export class HKCharacterSheet extends ActorSheet {
 
     const value = Number(button.dataset.resourceValue);
     const current = Number(this.actor.system.resources[key] ?? 0);
+    const maximum = Number(this.actor.system.resources[key + "Max"] ?? 0);
     if (!Number.isInteger(value) || value < 1) return;
 
-    const next = value === current ? Math.max(0, value - 1) : value;
+    const next = getNextResourceValue(current, value, maximum);
     await this._updateTrackedResource(key, next);
   }
 
