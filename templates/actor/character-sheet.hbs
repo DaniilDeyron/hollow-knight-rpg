@@ -82,7 +82,7 @@
         <div class="hkrpg-satiety-maximum">
           <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
           <div class="hkrpg-satiety-maximum__control">
-            <input name="system.resources.satietyMaxOverride" type="number" min="0" max="999" step="1" value="{{system.derived.satietyMax}}" {{#unless isEditable}}disabled{{/unless}} />
+            <input data-derived-input="satietyMax" type="number" min="0" max="999" step="1" value="{{system.derived.satietyMax}}" {{#unless isEditable}}disabled{{/unless}} />
             <button type="button" class="hkrpg-derived-stat__reset" data-reset-derived="satietyMax" title="{{localize "HKRPG.Derived.ResetAutomatic"}}" aria-label="{{localize "HKRPG.Derived.ResetAutomatic"}}" {{#unless isEditable}}disabled{{/unless}}>↺</button>
           </div>
         </div>
@@ -277,7 +277,7 @@
                   <span>{{localize "HKRPG.Derived.Maneuverability"}}</span>
                   <button type="button" class="hkrpg-derived-stat__reset" data-reset-derived="maneuverability" title="{{localize "HKRPG.Derived.ResetAutomatic"}}" aria-label="{{localize "HKRPG.Derived.ResetAutomatic"}}" {{#unless isEditable}}disabled{{/unless}}>↺</button>
                 </div>
-                <input class="hkrpg-derived-stat__input" name="system.social.maneuverabilityOverride" type="number" min="0" max="999" step="1" value="{{system.derived.maneuverability}}" {{#unless isEditable}}disabled{{/unless}} />
+                <input class="hkrpg-derived-stat__input" data-derived-input="maneuverability" type="number" min="0" max="999" step="1" value="{{system.derived.maneuverability}}" {{#unless isEditable}}disabled{{/unless}} />
               </div>
             </div>
           </section>

@@ -53,6 +53,35 @@ export class HKCharacterSheet extends ActorSheet {
     html.find("[data-resource-current]").on("click", this._onResourcePipClick.bind(this));
     html.find("[data-resource-temp-adjust]").on("click", this._onTemporaryResourceAdjust.bind(this));
     html.find("[data-reset-derived]").on("click", this._onResetDerived.bind(this));
+    html.find("[data-derived-input]").on("change", this._onDerivedInputChange.bind(this));
+  }
+
+  async _onDerivedInputChange(event) {
+    if (!this.isEditable) return;
+
+    const input = event.currentTarget;
+    const paths = {
+      maneuverability: "system.social.maneuverabilityOverride",
+      satietyMax: "system.resources.satietyMaxOverride"
+    };
+    const path = paths[input.dataset.derivedInput];
+    if (!path) return;
+
+    const raw = String(input.value ?? "").trim();
+    const value = raw === "" ? null : Number(raw);
+    if (value !== null && (!Number.isFinite(value) || value < 0)) {
+      ui.notifications.warn("Введите число не меньше нуля.");
+      input.value = this.actor.system.derived[input.dataset.derivedInput] ?? 0;
+      return;
+    }
+
+    try {
+      await this.actor.update({ [path]: value });
+      this.render(false);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Derived value update failed", error);
+      ui.notifications.error("Не удалось сохранить значение. Подробности — в консоли (F12).");
+    }
   }
 
   async _onResetDerived(event) {
