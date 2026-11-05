@@ -172,6 +172,33 @@
               </label>
             </div>
           </section>
+
+          <section class="hkrpg-overview-section hkrpg-custom-reserves-section">
+            <h2>{{localize "HKRPG.CustomReserves"}}</h2>
+            <div class="hkrpg-custom-reserves">
+              {{#each system.customReserves as |reserve key|}}
+                <div class="hkrpg-custom-reserve">
+                  <label class="hkrpg-custom-reserve__name">
+                    <input name="system.customReserves.{{key}}.label" type="text" value="{{reserve.label}}" placeholder="{{localize "HKRPG.CustomReserve"}}" aria-label="{{localize "HKRPG.CustomReserve"}}" />
+                  </label>
+                  <div class="hkrpg-custom-reserve__fields">
+                    <label class="hkrpg-custom-reserve__maximum">
+                      <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
+                      <input name="system.customReserves.{{key}}.max" type="number" min="0" value="{{reserve.max}}" />
+                    </label>
+                    <label class="hkrpg-custom-reserve__current">
+                      <span>{{localize "HKRPG.Tracker.Current"}}</span>
+                      <input name="system.customReserves.{{key}}.current" type="number" min="0" value="{{reserve.current}}" />
+                    </label>
+                    <label class="hkrpg-custom-reserve__temporary">
+                      <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
+                      <input name="system.customReserves.{{key}}.temporary" type="number" min="0" value="{{reserve.temporary}}" />
+                    </label>
+                  </div>
+                </div>
+              {{/each}}
+            </div>
+          </section>
         </div>
 
         <aside class="hkrpg-overview-side">
@@ -249,32 +276,7 @@
         </aside>
       </div>
 
-          <section class="hkrpg-overview-section hkrpg-custom-reserves-section">
-            <h2>{{localize "HKRPG.CustomReserves"}}</h2>
-            <div class="hkrpg-custom-reserves">
-              {{#each system.customReserves as |reserve key|}}
-                <div class="hkrpg-custom-reserve">
-                  <label class="hkrpg-custom-reserve__name">
-                    <input name="system.customReserves.{{key}}.label" type="text" value="{{reserve.label}}" placeholder="{{localize "HKRPG.CustomReserve"}}" aria-label="{{localize "HKRPG.CustomReserve"}}" />
-                  </label>
-                  <div class="hkrpg-tracker-fields">
-                    <label>
-                      <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
-                      <input name="system.customReserves.{{key}}.max" type="number" min="0" value="{{reserve.max}}" />
-                    </label>
-                    <label class="hkrpg-tracker-fields__current">
-                      <span>{{localize "HKRPG.Tracker.Current"}}</span>
-                      <input name="system.customReserves.{{key}}.current" type="number" min="0" value="{{reserve.current}}" />
-                    </label>
-                    <label>
-                      <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
-                      <input name="system.customReserves.{{key}}.temporary" type="number" min="0" value="{{reserve.temporary}}" />
-                    </label>
-                  </div>
-                </div>
-              {{/each}}
-            </div>
-          </section>
+
 
     </section>
 

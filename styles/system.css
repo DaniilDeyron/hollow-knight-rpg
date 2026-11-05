@@ -1229,3 +1229,110 @@
 .hkrpg-sheet small {
   color: #f2f5fb;
 }
+
+
+/* Keep the three custom resource cards directly below the left-side attributes. */
+.hkrpg-custom-reserves-section {
+  width: 100%;
+  margin-top: 0;
+}
+
+.hkrpg-custom-reserves-section > h2 {
+  display: block;
+  margin: 0 0 8px;
+  padding: 0 0 5px;
+  border-bottom: 1px solid #506783;
+  color: #f2f5fb !important;
+  font-size: 1rem;
+}
+
+.hkrpg-custom-reserves {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 8px;
+}
+
+.hkrpg-custom-reserve {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding: 7px 8px 9px;
+  border: 1px solid #4b6380 !important;
+  border-radius: 4px;
+  background: rgb(18 30 49 / 86%) !important;
+}
+
+.hkrpg-custom-reserve__name {
+  display: block !important;
+  margin: 0 3px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #506783;
+}
+
+.hkrpg-custom-reserve__name input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 25px;
+  padding: 1px 4px;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #f2f5fb !important;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.hkrpg-custom-reserve__fields {
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.2fr) minmax(0, 0.86fr);
+  align-items: end;
+  gap: 5px;
+}
+
+.hkrpg-custom-reserve__fields label {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-width: 0;
+  gap: 3px;
+}
+
+.hkrpg-custom-reserve__fields label > span {
+  color: #aebfd4 !important;
+  font-size: 0.68rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.hkrpg-custom-reserve__fields input {
+  width: 100%;
+  min-width: 0;
+  height: 47px;
+  padding: 2px 3px;
+  color: #f4f7fc !important;
+  text-align: center;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.hkrpg-custom-reserve__current input {
+  height: 61px;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .hkrpg-custom-reserves {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .hkrpg-custom-reserves {
+    grid-template-columns: 1fr;
+  }
+}
