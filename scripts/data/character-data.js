@@ -48,6 +48,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
       profile: new fields.SchemaField({
         player: textField(),
         milestone: valueField(),
+        minorAdvancements: valueField(),
         description: textField()
       }),
       attributes: new fields.SchemaField({
