@@ -51,7 +51,7 @@ export class HKCharacterSheet extends ActorSheet {
     super.activateListeners(html);
     html.find("[data-attribute-roll]").on("click", this._onRollAttribute.bind(this));
     html.find("[data-resource-current]").on("click", this._onResourcePipClick.bind(this));
-    html.find("[data-resource-temp-adjust]").on("click", this._onTemporaryResourceAdjust.bind(this));
+    html.find("[data-resource-temp-consume]").on("click", this._onTemporaryResourcePipClick.bind(this));
     html.find("[data-reset-derived]").on("click", this._onResetDerived.bind(this));
     html.find("[data-derived-input]").on("change", this._onDerivedInputChange.bind(this));
   }
@@ -122,20 +122,18 @@ export class HKCharacterSheet extends ActorSheet {
     await this._updateTrackedResource(key, next);
   }
 
-  async _onTemporaryResourceAdjust(event) {
+  async _onTemporaryResourcePipClick(event) {
     event.preventDefault();
     if (!this.isEditable) return;
 
-    const button = event.currentTarget;
-    const key = button.dataset.resourceTempAdjust;
+    const key = event.currentTarget.dataset.resourceTempConsume;
     if (!["heart", "soul"].includes(key)) return;
 
-    const delta = Number(button.dataset.delta);
-    if (![-1, 1].includes(delta)) return;
-
     const current = Number(this.actor.system.resources[key + "Temp"] ?? 0);
-    const next = Math.max(0, current + delta);
-    await this._updateTrackedResource(key + "Temp", next);
+    if (!Number.isFinite(current) || current <= 0) return;
+
+    // Each blue pip represents one temporary point; clicking it consumes one.
+    await this._updateTrackedResource(key + "Temp", Math.max(0, Math.floor(current) - 1));
   }
 
   async _updateTrackedResource(key, value) {

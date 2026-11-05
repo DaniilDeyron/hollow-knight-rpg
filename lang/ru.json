@@ -50,7 +50,8 @@
       "Current": "Текущий",
       "Temporary": "Врем.",
       "AddTemporary": "Добавить временный пункт",
-      "RemoveTemporary": "Убрать временный пункт"
+      "RemoveTemporary": "Убрать временный пункт",
+      "SpendTemporary": "Потратить временный пункт"
     },
     "CustomReserves": "Запасы",
     "CustomReserve": "Название запаса",

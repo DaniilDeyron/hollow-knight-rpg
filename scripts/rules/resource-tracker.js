@@ -31,8 +31,9 @@ export function buildResourcePips(maximum = 0, current = 0, temporary = 0, visib
 
 
 /**
- * Clicking an unfilled pip sets the current amount to that pip's position.
- * Clicking the last filled pip removes one point.
+ * The resource bar is anchored on the left:
+ * - clicking a filled pip removes that pip and every pip to its right;
+ * - clicking an empty pip fills through the selected pip.
  */
 export function getNextResourceValue(current, clickedPip, maximum) {
   const toCount = (value) => {
@@ -45,6 +46,6 @@ export function getNextResourceValue(current, clickedPip, maximum) {
   const maxValue = toCount(maximum);
   if (pipValue < 1 || maxValue < 1) return currentValue;
 
-  const next = pipValue === currentValue ? Math.max(0, currentValue - 1) : pipValue;
+  const next = pipValue <= currentValue ? pipValue - 1 : pipValue;
   return Math.min(maxValue, next);
 }

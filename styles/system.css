@@ -1975,3 +1975,11 @@
   .hkrpg.sheet.actor .hkrpg-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; min-height: 0; height: auto; padding: 4px 2px 7px; }
   .hkrpg.sheet.actor .hkrpg-tabs .item { min-height: 32px; padding: 6px 3px 8px; font-size: 0.78rem; }
 }
+
+/* Temporary resource pips are clickable one-point consume controls. */
+.hkrpg-resource-pips__temporary .hkrpg-pip {
+  cursor: pointer;
+}
+.hkrpg-resource-pips__temporary .hkrpg-pip:disabled {
+  cursor: default;
+}

@@ -43,7 +43,7 @@
             </div>
             <div class="hkrpg-resource-pips__temporary">
               {{#each resourcePips.heart.temporary as |pip|}}
-                <span class="hkrpg-pip hkrpg-pip--heart hkrpg-pip--temporary"><svg class="hkrpg-pip__svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21.2 10.4 19.8C4.7 14.7 1 11.3 1 7.2 1 3.9 3.6 1.4 6.9 1.4c2 0 3.9.9 5.1 2.5 1.2-1.6 3.1-2.5 5.1-2.5C20.4 1.4 23 3.9 23 7.2c0 4.1-3.7 7.5-9.4 12.6L12 21.2Z"/></svg></span>
+                <button type="button" class="hkrpg-pip hkrpg-pip--heart hkrpg-pip--temporary" data-resource-temp-consume="heart" title="{{localize "HKRPG.Tracker.SpendTemporary"}}" aria-label="{{localize "HKRPG.Tracker.SpendTemporary"}}" {{#unless isEditable}}disabled{{/unless}}><svg class="hkrpg-pip__svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21.2 10.4 19.8C4.7 14.7 1 11.3 1 7.2 1 3.9 3.6 1.4 6.9 1.4c2 0 3.9.9 5.1 2.5 1.2-1.6 3.1-2.5 5.1-2.5C20.4 1.4 23 3.9 23 7.2c0 4.1-3.7 7.5-9.4 12.6L12 21.2Z"/></svg></button>
               {{/each}}
               {{#if resourcePips.heart.temporaryOverflow}}<span class="hkrpg-pip-overflow hkrpg-pip-overflow--temporary">+{{resourcePips.heart.temporaryOverflow}}</span>{{/if}}
             </div>
@@ -63,7 +63,7 @@
             </div>
             <div class="hkrpg-resource-pips__temporary">
               {{#each resourcePips.soul.temporary as |pip|}}
-                <span class="hkrpg-pip hkrpg-pip--soul hkrpg-pip--temporary"><span class="hkrpg-pip__shape"></span></span>
+                <button type="button" class="hkrpg-pip hkrpg-pip--soul hkrpg-pip--temporary" data-resource-temp-consume="soul" title="{{localize "HKRPG.Tracker.SpendTemporary"}}" aria-label="{{localize "HKRPG.Tracker.SpendTemporary"}}" {{#unless isEditable}}disabled{{/unless}}><span class="hkrpg-pip__shape"></span></button>
               {{/each}}
               {{#if resourcePips.soul.temporaryOverflow}}<span class="hkrpg-pip-overflow hkrpg-pip-overflow--temporary">+{{resourcePips.soul.temporaryOverflow}}</span>{{/if}}
             </div>
