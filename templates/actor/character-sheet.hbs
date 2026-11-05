@@ -34,13 +34,48 @@
       </div>
 
       <div class="hkrpg-header-resources">
-        <div class="hkrpg-header-resource">
+        <div class="hkrpg-header-resource hkrpg-header-resource--heart">
+          <span class="hkrpg-header-resource__icon" aria-hidden="true">♥</span>
           <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Heart"}}</span>
-          <strong>{{system.resources.heart}} / {{system.resources.heartMax}}</strong>
+          <strong class="hkrpg-header-resource__value">{{system.resources.heart}} / {{system.resources.heartMax}}</strong>
+          <div class="hkrpg-resource-pips">
+            <div class="hkrpg-resource-pips__base">
+              {{#each resourcePips.heart.base as |pip|}}
+                <button type="button" class="hkrpg-pip hkrpg-pip--heart {{#if pip.filled}}is-filled{{else}}is-empty{{/if}}" data-resource-current="heart" data-resource-value="{{pip.value}}" title="{{pip.value}}" {{#unless isEditable}}disabled{{/unless}}><span class="hkrpg-pip__shape">♥</span></button>
+              {{/each}}
+              {{#if resourcePips.heart.baseOverflow}}<span class="hkrpg-pip-overflow">+{{resourcePips.heart.baseOverflow}}</span>{{/if}}
+            </div>
+            <div class="hkrpg-resource-pips__temporary">
+              <button type="button" class="hkrpg-temp-adjust" data-resource-temp-adjust="heart" data-delta="-1" title="{{localize "HKRPG.Tracker.RemoveTemporary"}}" {{#unless isEditable}}disabled{{/unless}}>−</button>
+              {{#each resourcePips.heart.temporary as |pip|}}
+                <span class="hkrpg-pip hkrpg-pip--heart hkrpg-pip--temporary"><span class="hkrpg-pip__shape">♥</span></span>
+              {{/each}}
+              {{#if resourcePips.heart.temporaryOverflow}}<span class="hkrpg-pip-overflow hkrpg-pip-overflow--temporary">+{{resourcePips.heart.temporaryOverflow}}</span>{{/if}}
+              <button type="button" class="hkrpg-temp-adjust" data-resource-temp-adjust="heart" data-delta="1" title="{{localize "HKRPG.Tracker.AddTemporary"}}" {{#unless isEditable}}disabled{{/unless}}>+</button>
+            </div>
+          </div>
         </div>
-        <div class="hkrpg-header-resource">
+
+        <div class="hkrpg-header-resource hkrpg-header-resource--soul">
+          <span class="hkrpg-header-resource__icon hkrpg-header-resource__icon--soul" aria-hidden="true"></span>
           <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Soul"}}</span>
-          <strong>{{system.resources.soul}} / {{system.resources.soulMax}}</strong>
+          <strong class="hkrpg-header-resource__value">{{system.resources.soul}} / {{system.resources.soulMax}}</strong>
+          <div class="hkrpg-resource-pips">
+            <div class="hkrpg-resource-pips__base">
+              {{#each resourcePips.soul.base as |pip|}}
+                <button type="button" class="hkrpg-pip hkrpg-pip--soul {{#if pip.filled}}is-filled{{else}}is-empty{{/if}}" data-resource-current="soul" data-resource-value="{{pip.value}}" title="{{pip.value}}" {{#unless isEditable}}disabled{{/unless}}><span class="hkrpg-pip__shape"></span></button>
+              {{/each}}
+              {{#if resourcePips.soul.baseOverflow}}<span class="hkrpg-pip-overflow">+{{resourcePips.soul.baseOverflow}}</span>{{/if}}
+            </div>
+            <div class="hkrpg-resource-pips__temporary">
+              <button type="button" class="hkrpg-temp-adjust" data-resource-temp-adjust="soul" data-delta="-1" title="{{localize "HKRPG.Tracker.RemoveTemporary"}}" {{#unless isEditable}}disabled{{/unless}}>−</button>
+              {{#each resourcePips.soul.temporary as |pip|}}
+                <span class="hkrpg-pip hkrpg-pip--soul hkrpg-pip--temporary"><span class="hkrpg-pip__shape"></span></span>
+              {{/each}}
+              {{#if resourcePips.soul.temporaryOverflow}}<span class="hkrpg-pip-overflow hkrpg-pip-overflow--temporary">+{{resourcePips.soul.temporaryOverflow}}</span>{{/if}}
+              <button type="button" class="hkrpg-temp-adjust" data-resource-temp-adjust="soul" data-delta="1" title="{{localize "HKRPG.Tracker.AddTemporary"}}" {{#unless isEditable}}disabled{{/unless}}>+</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

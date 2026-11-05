@@ -24,20 +24,11 @@ function valueField({ initial = 0, max = 999, integer = true } = {}) {
   });
 }
 
-function textField(initial = "") {
+function textField() {
   return new fields.StringField({
     required: true,
     nullable: false,
-    initial
-  });
-}
-
-function customReserveField() {
-  return new fields.SchemaField({
-    label: textField("Свой запас"),
-    current: valueField(),
-    max: valueField(),
-    temporary: valueField()
+    initial: ""
   });
 }
 
@@ -66,12 +57,6 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         shell: statField(),
         grace: statField()
       }),
-      attributeTemps: new fields.SchemaField({
-        might: valueField({ integer: false }),
-        insight: valueField({ integer: false }),
-        shell: valueField({ integer: false }),
-        grace: valueField({ integer: false })
-      }),
       social: new fields.SchemaField({
         cute: valueField({ integer: false }),
         spook: valueField({ integer: false }),
@@ -80,20 +65,12 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
       resources: new fields.SchemaField({
         heart: valueField(),
         heartMax: valueField(),
-        heartTemp: valueField(),
         stamina: valueField(),
         staminaMax: valueField(),
-        staminaTemp: valueField(),
         soul: valueField(),
         soulMax: valueField(),
-        soulTemp: valueField(),
         hunger: valueField(),
         satiety: valueField()
-      }),
-      customReserves: new fields.SchemaField({
-        reserve1: customReserveField(),
-        reserve2: customReserveField(),
-        reserve3: customReserveField()
       }),
       inventory: new fields.SchemaField({
         currency: valueField({ max: 999999 })

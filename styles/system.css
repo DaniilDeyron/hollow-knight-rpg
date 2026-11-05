@@ -661,3 +661,198 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Clickable Heart and Soul tracks in the character header */
+.hkrpg-header-resources {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hkrpg-header-resource {
+  display: grid;
+  grid-template-columns: 18px 64px 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 5px 8px;
+  border: 1px solid var(--color-border-light-primary);
+  border-radius: 4px;
+}
+
+.hkrpg-header-resource__icon {
+  color: #e9e8f0;
+  font-size: 1.05rem;
+  line-height: 1;
+  text-align: center;
+}
+
+.hkrpg-header-resource__icon--soul {
+  width: 11px;
+  height: 14px;
+  justify-self: center;
+  background: currentColor;
+  border-radius: 70% 70% 70% 0;
+  transform: rotate(-45deg);
+}
+
+.hkrpg-header-resource__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hkrpg-header-resource__value {
+  min-width: 0;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.hkrpg-resource-pips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 7px;
+  min-width: 0;
+}
+
+.hkrpg-resource-pips__base,
+.hkrpg-resource-pips__temporary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.hkrpg-pip {
+  display: inline-flex;
+  flex: 0 0 16px;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.hkrpg-pip:hover {
+  background: transparent;
+  filter: brightness(1.35);
+  transform: scale(1.12);
+}
+
+.hkrpg-pip:focus-visible,
+.hkrpg-temp-adjust:focus-visible {
+  outline: 1px solid #91c8dc;
+  outline-offset: 2px;
+}
+
+.hkrpg-pip:disabled,
+.hkrpg-temp-adjust:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.hkrpg-pip__shape {
+  display: block;
+  color: #e7e7ee;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.24;
+  transition: opacity 120ms ease, color 120ms ease, filter 120ms ease;
+}
+
+.hkrpg-pip.is-filled .hkrpg-pip__shape {
+  opacity: 1;
+  filter: drop-shadow(0 0 2px rgb(235 239 255 / 45%));
+}
+
+.hkrpg-pip--soul .hkrpg-pip__shape {
+  width: 11px;
+  height: 14px;
+  border-radius: 70% 70% 70% 0;
+  background: #e7e7ee;
+  transform: rotate(-45deg);
+}
+
+.hkrpg-pip--soul.is-empty .hkrpg-pip__shape {
+  opacity: 0.22;
+}
+
+.hkrpg-pip--temporary .hkrpg-pip__shape,
+.hkrpg-pip-overflow--temporary {
+  color: #8bd6ef;
+  opacity: 1;
+  filter: drop-shadow(0 0 3px rgb(91 190 224 / 55%));
+}
+
+.hkrpg-pip--soul.hkrpg-pip--temporary .hkrpg-pip__shape {
+  background: #8bd6ef;
+}
+
+.hkrpg-resource-pips__temporary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+  padding-left: 5px;
+  border-left: 1px solid var(--color-border-light-primary);
+}
+
+.hkrpg-temp-adjust {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #8bd6ef;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.hkrpg-temp-adjust:hover {
+  background: transparent;
+  color: #b5edff;
+  text-shadow: 0 0 5px rgb(91 190 224 / 70%);
+}
+
+.hkrpg-pip-overflow {
+  color: var(--color-text-secondary);
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .hkrpg-header-resource {
+    grid-template-columns: 18px 58px 45px minmax(0, 1fr);
+    gap: 5px;
+  }
+
+  .hkrpg-resource-pips {
+    gap: 3px;
+  }
+
+  .hkrpg-pip {
+    flex-basis: 14px;
+    width: 14px;
+  }
+
+  .hkrpg-pip__shape {
+    font-size: 14px;
+  }
+}

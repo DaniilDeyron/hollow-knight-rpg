@@ -47,7 +47,9 @@
     "Tracker": {
       "Maximum": "Макс.",
       "Current": "Текущий",
-      "Temporary": "Врем."
+      "Temporary": "Врем.",
+      "AddTemporary": "Добавить временный пункт",
+      "RemoveTemporary": "Убрать временный пункт"
     },
     "CustomReserves": "Дополнительные запасы",
     "CustomReserve": "Свой запас",

@@ -1,0 +1,30 @@
+/**
+ * Builds compact, render-ready pip arrays for resource trackers.
+ * The displayed pip count follows the maximum; temporary points are separate.
+ */
+export function buildResourcePips(maximum = 0, current = 0, temporary = 0, visibleLimit = 40) {
+  const toCount = (value) => {
+    const number = Number(value);
+    return Number.isFinite(number) ? Math.max(0, Math.floor(number)) : 0;
+  };
+
+  const limit = Math.max(1, toCount(visibleLimit));
+  const max = toCount(maximum);
+  const value = toCount(current);
+  const temp = toCount(temporary);
+  const baseVisible = Math.min(max, limit);
+  const tempVisible = Math.min(temp, limit);
+
+  return {
+    base: Array.from({ length: baseVisible }, (_, index) => ({
+      value: index + 1,
+      filled: index < value
+    })),
+    temporary: Array.from({ length: tempVisible }, (_, index) => ({
+      value: index + 1,
+      filled: true
+    })),
+    baseOverflow: Math.max(0, max - baseVisible),
+    temporaryOverflow: Math.max(0, temp - tempVisible)
+  };
+}
