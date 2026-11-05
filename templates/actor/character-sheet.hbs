@@ -94,12 +94,13 @@
     </section>
   </header>
 
-  <nav class="hkrpg-tabs" data-group="primary">
+  <nav class="hkrpg-tabs" data-group="primary" aria-label="Разделы персонажа">
     <a class="item" data-tab="overview">{{localize "HKRPG.Tabs.Overview"}}</a>
-    <a class="item" data-tab="development">{{localize "HKRPG.Tabs.Development"}}</a>
-    <a class="item" data-tab="skills">{{localize "HKRPG.Tabs.Skills"}}</a>
+    <a class="item" data-tab="features">{{localize "HKRPG.Tabs.Features"}}</a>
+    <a class="item" data-tab="charms">{{localize "HKRPG.Tabs.Charms"}}</a>
     <a class="item" data-tab="equipment">{{localize "HKRPG.Tabs.Equipment"}}</a>
-    <a class="item" data-tab="notes">{{localize "HKRPG.Tabs.Notes"}}</a>
+    <a class="item" data-tab="effects">{{localize "HKRPG.Tabs.Effects"}}</a>
+    <a class="item" data-tab="journal">{{localize "HKRPG.Tabs.Journal"}}</a>
   </nav>
 
   <div class="hkrpg-tab-content">
@@ -290,8 +291,8 @@
 
     </section>
 
-    <section class="tab" data-group="primary" data-tab="development">
-      <div class="hkrpg-section-grid">
+        <section class="tab" data-group="primary" data-tab="features">
+      <div class="hkrpg-section-grid hkrpg-features-grid">
         <section class="hkrpg-panel">
           <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Traits"}}</h2><span>{{itemGroups.traits.length}}</span></div>
           {{#if itemGroups.traits.length}}
@@ -308,24 +309,6 @@
             <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoPaths"}}</p>
           {{/if}}
         </section>
-        <section class="hkrpg-panel">
-          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Charms"}}</h2><span>{{itemGroups.charms.length}}</span></div>
-          {{#if itemGroups.charms.length}}
-            <ul class="hkrpg-item-list">{{#each itemGroups.charms as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
-          {{else}}
-            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoCharms"}}</p>
-          {{/if}}
-          <div class="hkrpg-derived-strip"><div><span>{{localize "HKRPG.Derived.BeltSize"}}</span><strong>{{system.derived.beltSize}}</strong></div></div>
-        </section>
-        <section class="hkrpg-panel">
-          <h2>{{localize "HKRPG.Development.Marks"}}</h2>
-          <p class="hkrpg-empty">{{localize "HKRPG.Empty.MarksLater"}}</p>
-        </section>
-      </div>
-    </section>
-
-    <section class="tab" data-group="primary" data-tab="skills">
-      <div class="hkrpg-section-grid">
         <section class="hkrpg-panel">
           <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Proficiencies"}}</h2><span>{{itemGroups.proficiencies.length}}</span></div>
           {{#if itemGroups.proficiencies.length}}
@@ -346,7 +329,21 @@
       </div>
     </section>
 
-    <section class="tab" data-group="primary" data-tab="equipment">
+    <section class="tab" data-group="primary" data-tab="charms">
+      <div class="hkrpg-section-grid hkrpg-charms-grid">
+        <section class="hkrpg-panel hkrpg-charms-panel">
+          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Charms"}}</h2><span>{{itemGroups.charms.length}}</span></div>
+          {{#if itemGroups.charms.length}}
+            <ul class="hkrpg-item-list">{{#each itemGroups.charms as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
+          {{else}}
+            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoCharms"}}</p>
+          {{/if}}
+          <div class="hkrpg-derived-strip"><div><span>{{localize "HKRPG.Derived.BeltSize"}}</span><strong>{{system.derived.beltSize}}</strong></div></div>
+        </section>
+      </div>
+    </section>
+
+<section class="tab" data-group="primary" data-tab="equipment">
       <div class="hkrpg-section-grid">
         <section class="hkrpg-panel">
           <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Equipment.Inventory"}}</h2><span>{{itemGroups.equipment.length}}</span></div>
@@ -388,7 +385,16 @@
       </section>
     </section>
 
-    <section class="tab" data-group="primary" data-tab="notes">
+    <section class="tab" data-group="primary" data-tab="effects">
+      <div class="hkrpg-section-grid hkrpg-effects-grid">
+        <section class="hkrpg-panel hkrpg-effects-panel">
+          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Marks"}}</h2></div>
+          <p class="hkrpg-empty">{{localize "HKRPG.Empty.MarksLater"}}</p>
+        </section>
+      </div>
+    </section>
+
+<section class="tab" data-group="primary" data-tab="journal">
       <div class="hkrpg-notes-layout">
         <section class="hkrpg-panel">
           <h2>{{localize "HKRPG.Profile.Description"}}</h2>

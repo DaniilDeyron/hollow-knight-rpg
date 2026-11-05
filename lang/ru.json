@@ -12,10 +12,11 @@
     },
     "Tabs": {
       "Overview": "Обзор",
-      "Development": "Развитие",
-      "Skills": "Умения и техники",
+      "Features": "Особенности",
+      "Charms": "Амулеты",
       "Equipment": "Снаряжение",
-      "Notes": "Заметки"
+      "Effects": "Эффекты",
+      "Journal": "Дневник"
     },
     "Size": {
       "Label": "Размер",
