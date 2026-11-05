@@ -1,0 +1,52 @@
+<form class="hkrpg-sheet flexcol" autocomplete="off">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    <div class="header-fields">
+      <input class="character-name" name="name" type="text" value="{{actor.name}}" placeholder="Имя жука" />
+      <label class="field-label">
+        <span>{{localize "HKRPG.Size.Label"}}</span>
+        <select name="system.size">
+          {{#select system.size}}
+            <option value="small">{{localize "HKRPG.Size.Small"}}</option>
+            <option value="medium">{{localize "HKRPG.Size.Medium"}}</option>
+            <option value="large">{{localize "HKRPG.Size.Large"}}</option>
+          {{/select}}
+        </select>
+      </label>
+    </div>
+  </header>
+
+  <section class="sheet-section">
+    <h2>{{localize "HKRPG.Attributes"}}</h2>
+    <div class="attribute-grid">
+      <label><span>{{localize "HKRPG.Attribute.Might"}}</span><input name="system.attributes.might" type="number" min="0" max="10" step="0.5" value="{{system.attributes.might}}" /></label>
+      <label><span>{{localize "HKRPG.Attribute.Insight"}}</span><input name="system.attributes.insight" type="number" min="0" max="10" step="0.5" value="{{system.attributes.insight}}" /></label>
+      <label><span>{{localize "HKRPG.Attribute.Shell"}}</span><input name="system.attributes.shell" type="number" min="0" max="10" step="0.5" value="{{system.attributes.shell}}" /></label>
+      <label><span>{{localize "HKRPG.Attribute.Grace"}}</span><input name="system.attributes.grace" type="number" min="0" max="10" step="0.5" value="{{system.attributes.grace}}" /></label>
+    </div>
+  </section>
+
+  <section class="sheet-section">
+    <h2>{{localize "HKRPG.Resources"}}</h2>
+    <div class="resource-grid">
+      <label><span>{{localize "HKRPG.Resource.Heart"}}</span><div class="paired-fields"><input name="system.resources.heart" type="number" min="0" value="{{system.resources.heart}}" /><span>/</span><input name="system.resources.heartMax" type="number" min="0" value="{{system.resources.heartMax}}" /></div></label>
+      <label><span>{{localize "HKRPG.Resource.Stamina"}}</span><div class="paired-fields"><input name="system.resources.stamina" type="number" min="0" value="{{system.resources.stamina}}" /><span>/</span><input name="system.resources.staminaMax" type="number" min="0" value="{{system.resources.staminaMax}}" /></div></label>
+      <label><span>{{localize "HKRPG.Resource.Soul"}}</span><div class="paired-fields"><input name="system.resources.soul" type="number" min="0" value="{{system.resources.soul}}" /><span>/</span><input name="system.resources.soulMax" type="number" min="0" value="{{system.resources.soulMax}}" /></div></label>
+      <label><span>{{localize "HKRPG.Resource.Hunger"}}</span><input name="system.resources.hunger" type="number" min="0" value="{{system.resources.hunger}}" /></label>
+      <label><span>{{localize "HKRPG.Resource.Satiety"}}</span><input name="system.resources.satiety" type="number" min="0" value="{{system.resources.satiety}}" /></label>
+    </div>
+  </section>
+
+  <section class="sheet-section">
+    <h2>{{localize "HKRPG.Derived"}}</h2>
+    <div class="derived-grid">
+      <div><span>{{localize "HKRPG.Derived.CarryingCapacity"}}</span><strong>{{system.derived.carryingCapacity}}</strong></div>
+      <div><span>{{localize "HKRPG.Derived.Maneuverability"}}</span><strong>{{system.derived.maneuverability}}</strong></div>
+    </div>
+  </section>
+
+  <section class="sheet-section notes-section">
+    <h2>{{localize "HKRPG.Notes"}}</h2>
+    <textarea name="system.notes" rows="5" placeholder="Заметки о персонаже...">{{system.notes}}</textarea>
+  </section>
+</form>
