@@ -1616,3 +1616,186 @@
 .hkrpg-resource-pips__base .hkrpg-pip {
   pointer-events: auto;
 }
+
+
+/* Typography pass: quiet supporting labels, strong character statistics. */
+.hkrpg.sheet.actor .window-content,
+.hkrpg-sheet {
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 14px;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  color: #eef3fc;
+}
+
+.hkrpg-sheet h1,
+.hkrpg-sheet h2,
+.hkrpg-sheet h3 {
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  color: #f4f6fc !important;
+  letter-spacing: 0.025em;
+}
+
+.hkrpg-sheet .hkrpg-name-field input {
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+.hkrpg-sheet .hkrpg-sheet-header label > span,
+.hkrpg-sheet .hkrpg-satiety-summary label > span,
+.hkrpg-sheet .hkrpg-tracker-fields label > span,
+.hkrpg-sheet .hkrpg-custom-reserve__fields label > span {
+  color: #aebfd5 !important;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+.hkrpg-sheet .hkrpg-overview-section > h2,
+.hkrpg-sheet .hkrpg-custom-reserves-section > h2 {
+  color: #e7eefb !important;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  text-shadow: 0 1px 5px rgb(142 179 221 / 16%);
+}
+
+/* Main characteristics: labels and numeric values are intentionally bold. */
+.hkrpg-sheet .hkrpg-attribute-score > span {
+  color: #f3f6fc !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.025em;
+  line-height: 1.2;
+}
+
+.hkrpg.sheet.actor .hkrpg-attribute-score input {
+  color: #ffffff !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: 0.015em;
+  line-height: 1;
+  text-shadow: 0 1px 7px rgb(177 207 244 / 16%);
+}
+
+.hkrpg-sheet .hkrpg-attribute-temporary > span {
+  color: #aebfd5 !important;
+  font-size: 0.72rem !important;
+  font-weight: 600;
+}
+
+.hkrpg-sheet .hkrpg-secondary-stat > span,
+.hkrpg-sheet .hkrpg-secondary-stat--rollable > label > span {
+  color: #e2eaf7 !important;
+  font-size: 0.92rem !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.02em;
+}
+
+.hkrpg.sheet.actor .hkrpg-secondary-stat input,
+.hkrpg.sheet.actor .hkrpg-secondary-stat strong {
+  color: #ffffff !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 1.65rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Resource labels remain smaller; totals carry the visual weight. */
+.hkrpg-sheet .hkrpg-header-resource__name {
+  color: #e8eef8 !important;
+  font-size: 0.91rem;
+  font-weight: 700;
+}
+
+.hkrpg-sheet .hkrpg-header-resource__value {
+  color: #ffffff !important;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.hkrpg-sheet .hkrpg-resource-tracker h3 {
+  color: #f1f4fb !important;
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.hkrpg.sheet.actor .hkrpg-tracker-fields input,
+.hkrpg.sheet.actor .hkrpg-custom-reserve__fields input,
+.hkrpg.sheet.actor .hkrpg-satiety-values input,
+.hkrpg.sheet.actor .hkrpg-satiety-maximum__control input {
+  color: #ffffff !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.hkrpg.sheet.actor .hkrpg-tracker-fields__current input,
+.hkrpg.sheet.actor .hkrpg-custom-reserve__current input {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.hkrpg.sheet.actor .hkrpg-custom-reserve__name input {
+  color: #e8effa !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.hkrpg-sheet .hkrpg-derived-stat__heading > span {
+  color: #e8effa !important;
+  font-size: 0.92rem;
+  font-weight: 750;
+}
+
+.hkrpg.sheet.actor .hkrpg-derived-stat__input {
+  color: #ffffff !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 1.65rem;
+  font-weight: 800;
+}
+
+.hkrpg-sheet .hkrpg-tabs .item {
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  color: #b8c7dc !important;
+  font-size: 0.86rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.hkrpg-sheet .hkrpg-tabs .item.active {
+  color: #ffffff !important;
+  font-weight: 800;
+  text-shadow: 0 0 7px rgb(145 187 234 / 24%);
+}
+
+.hkrpg-sheet .hkrpg-panel h2,
+.hkrpg-sheet .hkrpg-panel-heading h2 {
+  color: #eff4fc !important;
+  font-size: 1rem;
+  font-weight: 750;
+}
+
+.hkrpg-sheet .hkrpg-empty,
+.hkrpg-sheet .hkrpg-derived-strip span {
+  color: #9eafc7 !important;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.hkrpg-sheet .hkrpg-roll__title {
+  color: #f4f6fc !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.hkrpg-sheet .hkrpg-roll__result strong {
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-weight: 800;
+}
