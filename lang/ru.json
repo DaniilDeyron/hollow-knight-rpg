@@ -44,6 +44,14 @@
       "Hunger": "Голод",
       "Satiety": "Сытость"
     },
+    "Tracker": {
+      "Maximum": "Макс.",
+      "Current": "Текущий",
+      "Temporary": "Врем."
+    },
+    "CustomReserves": "Дополнительные запасы",
+    "CustomReserve": "Свой запас",
+    "Movement": "Передвижение",
     "Derived": {
       "CarryingCapacity": "Нагрузка",
       "Maneuverability": "Манёвренность",

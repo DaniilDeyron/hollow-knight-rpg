@@ -1,36 +1,67 @@
 <form class="hkrpg-sheet flexcol" autocomplete="off">
   <header class="hkrpg-sheet-header">
     <img class="hkrpg-portrait" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
-    <div class="hkrpg-identity">
+
+    <div class="hkrpg-header-main">
       <label class="hkrpg-name-field">
         <span>{{localize "HKRPG.Profile.Name"}}</span>
         <input name="name" type="text" value="{{actor.name}}" placeholder="Имя жука" />
       </label>
-      <label>
-        <span>{{localize "HKRPG.Profile.Player"}}</span>
-        <input name="system.profile.player" type="text" value="{{system.profile.player}}" />
-      </label>
+
+      <div class="hkrpg-header-fields">
+        <label>
+          <span>{{localize "HKRPG.Profile.Player"}}</span>
+          <input name="system.profile.player" type="text" value="{{system.profile.player}}" />
+        </label>
+        <label>
+          <span>{{localize "HKRPG.Size.Label"}}</span>
+          <select name="system.size">
+            {{#select system.size}}
+              <option value="small">{{localize "HKRPG.Size.Small"}}</option>
+              <option value="medium">{{localize "HKRPG.Size.Medium"}}</option>
+              <option value="large">{{localize "HKRPG.Size.Large"}}</option>
+            {{/select}}
+          </select>
+        </label>
+        <label>
+          <span>{{localize "HKRPG.Profile.Milestone"}}</span>
+          <input name="system.profile.milestone" type="number" min="0" value="{{system.profile.milestone}}" />
+        </label>
+        <label>
+          <span>{{localize "HKRPG.Profile.MinorAdvancements"}}</span>
+          <input name="system.profile.minorAdvancements" type="number" min="0" value="{{system.profile.minorAdvancements}}" />
+        </label>
+      </div>
+
+      <div class="hkrpg-header-resources">
+        <div class="hkrpg-header-resource">
+          <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Heart"}}</span>
+          <strong>{{system.resources.heart}} / {{system.resources.heartMax}}</strong>
+        </div>
+        <div class="hkrpg-header-resource">
+          <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Soul"}}</span>
+          <strong>{{system.resources.soul}} / {{system.resources.soulMax}}</strong>
+        </div>
+      </div>
     </div>
-    <div class="hkrpg-header-meta">
-      <label>
-        <span>{{localize "HKRPG.Size.Label"}}</span>
-        <select name="system.size">
-          {{#select system.size}}
-            <option value="small">{{localize "HKRPG.Size.Small"}}</option>
-            <option value="medium">{{localize "HKRPG.Size.Medium"}}</option>
-            <option value="large">{{localize "HKRPG.Size.Large"}}</option>
-          {{/select}}
-        </select>
+
+    <section class="hkrpg-satiety-summary">
+      <h2>{{localize "HKRPG.Resource.Satiety"}}</h2>
+      <div class="hkrpg-satiety-values">
+        <label>
+          <span>{{localize "HKRPG.Tracker.Current"}}</span>
+          <input name="system.resources.satiety" type="number" min="0" value="{{system.resources.satiety}}" />
+        </label>
+        <div class="hkrpg-satiety-maximum">
+          <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
+          <strong>{{system.derived.satietyMax}}</strong>
+        </div>
+      </div>
+      <label class="hkrpg-hunger-field">
+        <span>{{localize "HKRPG.Resource.Hunger"}}</span>
+        <input name="system.resources.hunger" type="number" min="0" value="{{system.resources.hunger}}" />
       </label>
-      <label>
-        <span>{{localize "HKRPG.Profile.Milestone"}}</span>
-        <input name="system.profile.milestone" type="number" min="0" value="{{system.profile.milestone}}" />
-      </label>
-      <label>
-        <span>{{localize "HKRPG.Profile.MinorAdvancements"}}</span>
-        <input name="system.profile.minorAdvancements" type="number" min="0" value="{{system.profile.minorAdvancements}}" />
-      </label>
-    </div>
+    </section>
   </header>
 
   <nav class="hkrpg-tabs" data-group="primary">
@@ -44,72 +75,177 @@
   <div class="hkrpg-tab-content">
     <section class="tab" data-group="primary" data-tab="overview">
       <div class="hkrpg-overview-grid">
-        <section class="hkrpg-panel hkrpg-profile-description">
-          <h2>{{localize "HKRPG.Profile.Description"}}</h2>
-          <textarea name="system.profile.description" rows="5">{{system.profile.description}}</textarea>
-        </section>
+        <div class="hkrpg-overview-main">
+          <section class="hkrpg-overview-section">
+            <h2>{{localize "HKRPG.Attributes"}}</h2>
+            <div class="hkrpg-attributes-grid">
+              <div class="hkrpg-attribute">
+                <label class="hkrpg-attribute-score">
+                  <span>{{localize "HKRPG.Attribute.Might"}}</span>
+                  <input name="system.attributes.might" type="number" min="0" max="7" step="0.5" value="{{system.attributes.might}}" />
+                </label>
+                <label class="hkrpg-attribute-temporary">
+                  <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
+                  <input name="system.attributeTemps.might" type="number" min="0" step="0.5" value="{{system.attributeTemps.might}}" />
+                </label>
+                <button type="button" data-attribute-roll="might" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
+              </div>
 
-        <section class="hkrpg-panel">
-          <h2>{{localize "HKRPG.Attributes"}}</h2>
-          <div class="hkrpg-attributes-grid">
-            <div class="hkrpg-attribute">
-              <button type="button" data-attribute-roll="might" class="hkrpg-attribute-roll">
-                <span>{{localize "HKRPG.Attribute.Might"}}</span>
-                <strong>{{system.attributes.might}}</strong>
-                <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
-              </button>
-              <label><span>{{localize "HKRPG.Roll.AttributeValue"}}</span><input name="system.attributes.might" type="number" min="0" max="7" step="0.5" value="{{system.attributes.might}}" /></label>
-            </div>
-            <div class="hkrpg-attribute">
-              <button type="button" data-attribute-roll="insight" class="hkrpg-attribute-roll">
-                <span>{{localize "HKRPG.Attribute.Insight"}}</span>
-                <strong>{{system.attributes.insight}}</strong>
-                <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
-              </button>
-              <label><span>{{localize "HKRPG.Roll.AttributeValue"}}</span><input name="system.attributes.insight" type="number" min="0" max="7" step="0.5" value="{{system.attributes.insight}}" /></label>
-            </div>
-            <div class="hkrpg-attribute">
-              <button type="button" data-attribute-roll="shell" class="hkrpg-attribute-roll">
-                <span>{{localize "HKRPG.Attribute.Shell"}}</span>
-                <strong>{{system.attributes.shell}}</strong>
-                <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
-              </button>
-              <label><span>{{localize "HKRPG.Roll.AttributeValue"}}</span><input name="system.attributes.shell" type="number" min="0" max="7" step="0.5" value="{{system.attributes.shell}}" /></label>
-            </div>
-            <div class="hkrpg-attribute">
-              <button type="button" data-attribute-roll="grace" class="hkrpg-attribute-roll">
-                <span>{{localize "HKRPG.Attribute.Grace"}}</span>
-                <strong>{{system.attributes.grace}}</strong>
-                <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
-              </button>
-              <label><span>{{localize "HKRPG.Roll.AttributeValue"}}</span><input name="system.attributes.grace" type="number" min="0" max="7" step="0.5" value="{{system.attributes.grace}}" /></label>
-            </div>
-          </div>
-        </section>
+              <div class="hkrpg-attribute">
+                <label class="hkrpg-attribute-score">
+                  <span>{{localize "HKRPG.Attribute.Insight"}}</span>
+                  <input name="system.attributes.insight" type="number" min="0" max="7" step="0.5" value="{{system.attributes.insight}}" />
+                </label>
+                <label class="hkrpg-attribute-temporary">
+                  <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
+                  <input name="system.attributeTemps.insight" type="number" min="0" step="0.5" value="{{system.attributeTemps.insight}}" />
+                </label>
+                <button type="button" data-attribute-roll="insight" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
+              </div>
 
-        <section class="hkrpg-panel">
-          <h2>{{localize "HKRPG.Resources"}}</h2>
-          <div class="hkrpg-resource-grid">
-            <label><span>{{localize "HKRPG.Resource.Heart"}}</span><div class="hkrpg-paired"><input name="system.resources.heart" type="number" min="0" value="{{system.resources.heart}}" /><b>/</b><input name="system.resources.heartMax" type="number" min="0" value="{{system.resources.heartMax}}" /></div></label>
-            <label><span>{{localize "HKRPG.Resource.Soul"}}</span><div class="hkrpg-paired"><input name="system.resources.soul" type="number" min="0" value="{{system.resources.soul}}" /><b>/</b><input name="system.resources.soulMax" type="number" min="0" value="{{system.resources.soulMax}}" /></div></label>
-            <label><span>{{localize "HKRPG.Resource.Stamina"}}</span><div class="hkrpg-paired"><input name="system.resources.stamina" type="number" min="0" value="{{system.resources.stamina}}" /><b>/</b><input name="system.resources.staminaMax" type="number" min="0" value="{{system.resources.staminaMax}}" /></div></label>
-            <label><span>{{localize "HKRPG.Resource.Hunger"}}</span><input name="system.resources.hunger" type="number" min="0" value="{{system.resources.hunger}}" /></label>
-            <label><span>{{localize "HKRPG.Resource.Satiety"}}</span><div class="hkrpg-paired"><input name="system.resources.satiety" type="number" min="0" value="{{system.resources.satiety}}" /><span>/ {{system.derived.satietyMax}}</span></div></label>
-          </div>
-        </section>
+              <div class="hkrpg-attribute">
+                <label class="hkrpg-attribute-score">
+                  <span>{{localize "HKRPG.Attribute.Shell"}}</span>
+                  <input name="system.attributes.shell" type="number" min="0" max="7" step="0.5" value="{{system.attributes.shell}}" />
+                </label>
+                <label class="hkrpg-attribute-temporary">
+                  <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
+                  <input name="system.attributeTemps.shell" type="number" min="0" step="0.5" value="{{system.attributeTemps.shell}}" />
+                </label>
+                <button type="button" data-attribute-roll="shell" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
+              </div>
 
-        <section class="hkrpg-panel">
-          <h2>{{localize "HKRPG.OtherAttributes"}}</h2>
-          <div class="hkrpg-secondary-grid">
-            <label><span>{{localize "HKRPG.Secondary.Cute"}}</span><input name="system.social.cute" type="number" min="0" step="0.5" value="{{system.social.cute}}" /></label>
-            <label><span>{{localize "HKRPG.Secondary.Spook"}}</span><input name="system.social.spook" type="number" min="0" step="0.5" value="{{system.social.spook}}" /></label>
-            <label><span>{{localize "HKRPG.Secondary.Speed"}}</span><input name="system.social.speed" type="number" min="0" value="{{system.social.speed}}" /></label>
-          </div>
-          <div class="hkrpg-derived-strip">
-            <div><span>{{localize "HKRPG.Derived.Maneuverability"}}</span><strong>{{system.derived.maneuverability}}</strong></div>
-            <div><span>{{localize "HKRPG.Derived.CarryingCapacity"}}</span><strong>{{system.derived.carryingCapacity}}</strong></div>
-          </div>
-        </section>
+              <div class="hkrpg-attribute">
+                <label class="hkrpg-attribute-score">
+                  <span>{{localize "HKRPG.Attribute.Grace"}}</span>
+                  <input name="system.attributes.grace" type="number" min="0" max="7" step="0.5" value="{{system.attributes.grace}}" />
+                </label>
+                <label class="hkrpg-attribute-temporary">
+                  <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
+                  <input name="system.attributeTemps.grace" type="number" min="0" step="0.5" value="{{system.attributeTemps.grace}}" />
+                </label>
+                <button type="button" data-attribute-roll="grace" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
+              </div>
+            </div>
+          </section>
+
+          <section class="hkrpg-overview-section">
+            <h2>{{localize "HKRPG.OtherAttributes"}}</h2>
+            <div class="hkrpg-secondary-grid">
+              <label class="hkrpg-secondary-stat">
+                <span>{{localize "HKRPG.Secondary.Spook"}}</span>
+                <input name="system.social.spook" type="number" min="0" step="0.5" value="{{system.social.spook}}" />
+              </label>
+              <label class="hkrpg-secondary-stat">
+                <span>{{localize "HKRPG.Secondary.Cute"}}</span>
+                <input name="system.social.cute" type="number" min="0" step="0.5" value="{{system.social.cute}}" />
+              </label>
+            </div>
+          </section>
+
+          <section class="hkrpg-overview-section">
+            <h2>{{localize "HKRPG.CustomReserves"}}</h2>
+            <div class="hkrpg-custom-reserves">
+              {{#each system.customReserves as |reserve key|}}
+                <div class="hkrpg-custom-reserve">
+                  <label class="hkrpg-custom-reserve__name">
+                    <span>{{localize "HKRPG.CustomReserve"}}</span>
+                    <input name="system.customReserves.{{key}}.label" type="text" value="{{reserve.label}}" />
+                  </label>
+                  <div class="hkrpg-tracker-fields">
+                    <label>
+                      <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
+                      <input name="system.customReserves.{{key}}.max" type="number" min="0" value="{{reserve.max}}" />
+                    </label>
+                    <label class="hkrpg-tracker-fields__current">
+                      <span>{{localize "HKRPG.Tracker.Current"}}</span>
+                      <input name="system.customReserves.{{key}}.current" type="number" min="0" value="{{reserve.current}}" />
+                    </label>
+                    <label>
+                      <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
+                      <input name="system.customReserves.{{key}}.temporary" type="number" min="0" value="{{reserve.temporary}}" />
+                    </label>
+                  </div>
+                </div>
+              {{/each}}
+            </div>
+          </section>
+        </div>
+
+        <aside class="hkrpg-overview-side">
+          <section class="hkrpg-overview-section">
+            <h2>{{localize "HKRPG.Resources"}}</h2>
+            <div class="hkrpg-resource-trackers">
+              <div class="hkrpg-resource-tracker">
+                <h3>{{localize "HKRPG.Resource.Heart"}}</h3>
+                <div class="hkrpg-tracker-fields">
+                  <label>
+                    <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
+                    <input name="system.resources.heartMax" type="number" min="0" value="{{system.resources.heartMax}}" />
+                  </label>
+                  <label class="hkrpg-tracker-fields__current">
+                    <span>{{localize "HKRPG.Tracker.Current"}}</span>
+                    <input name="system.resources.heart" type="number" min="0" value="{{system.resources.heart}}" />
+                  </label>
+                  <label>
+                    <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
+                    <input name="system.resources.heartTemp" type="number" min="0" value="{{system.resources.heartTemp}}" />
+                  </label>
+                </div>
+              </div>
+
+              <div class="hkrpg-resource-tracker">
+                <h3>{{localize "HKRPG.Resource.Soul"}}</h3>
+                <div class="hkrpg-tracker-fields">
+                  <label>
+                    <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
+                    <input name="system.resources.soulMax" type="number" min="0" value="{{system.resources.soulMax}}" />
+                  </label>
+                  <label class="hkrpg-tracker-fields__current">
+                    <span>{{localize "HKRPG.Tracker.Current"}}</span>
+                    <input name="system.resources.soul" type="number" min="0" value="{{system.resources.soul}}" />
+                  </label>
+                  <label>
+                    <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
+                    <input name="system.resources.soulTemp" type="number" min="0" value="{{system.resources.soulTemp}}" />
+                  </label>
+                </div>
+              </div>
+
+              <div class="hkrpg-resource-tracker">
+                <h3>{{localize "HKRPG.Resource.Stamina"}}</h3>
+                <div class="hkrpg-tracker-fields">
+                  <label>
+                    <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
+                    <input name="system.resources.staminaMax" type="number" min="0" value="{{system.resources.staminaMax}}" />
+                  </label>
+                  <label class="hkrpg-tracker-fields__current">
+                    <span>{{localize "HKRPG.Tracker.Current"}}</span>
+                    <input name="system.resources.stamina" type="number" min="0" value="{{system.resources.stamina}}" />
+                  </label>
+                  <label>
+                    <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
+                    <input name="system.resources.staminaTemp" type="number" min="0" value="{{system.resources.staminaTemp}}" />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="hkrpg-overview-section">
+            <h2>{{localize "HKRPG.Movement"}}</h2>
+            <div class="hkrpg-movement-stats">
+              <label class="hkrpg-secondary-stat">
+                <span>{{localize "HKRPG.Secondary.Speed"}}</span>
+                <input name="system.social.speed" type="number" min="0" value="{{system.social.speed}}" />
+              </label>
+              <div class="hkrpg-secondary-stat hkrpg-derived-stat">
+                <span>{{localize "HKRPG.Derived.Maneuverability"}}</span>
+                <strong>{{system.derived.maneuverability}}</strong>
+              </div>
+            </div>
+          </section>
+        </aside>
       </div>
     </section>
 
@@ -212,10 +348,16 @@
     </section>
 
     <section class="tab" data-group="primary" data-tab="notes">
-      <section class="hkrpg-panel hkrpg-notes-panel">
-        <h2>{{localize "HKRPG.Notes"}}</h2>
-        <textarea name="system.notes" rows="22" placeholder="{{localize "HKRPG.NotesPlaceholder"}}">{{system.notes}}</textarea>
-      </section>
+      <div class="hkrpg-notes-layout">
+        <section class="hkrpg-panel">
+          <h2>{{localize "HKRPG.Profile.Description"}}</h2>
+          <textarea name="system.profile.description" rows="8">{{system.profile.description}}</textarea>
+        </section>
+        <section class="hkrpg-panel hkrpg-notes-panel">
+          <h2>{{localize "HKRPG.Notes"}}</h2>
+          <textarea name="system.notes" rows="16" placeholder="{{localize "HKRPG.NotesPlaceholder"}}">{{system.notes}}</textarea>
+        </section>
+      </div>
     </section>
   </div>
 </form>

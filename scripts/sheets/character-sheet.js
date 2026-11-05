@@ -5,8 +5,8 @@ export class HKCharacterSheet extends ActorSheet {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["hkrpg", "sheet", "actor"],
       template: "systems/hollow-knight-rpg/templates/actor/character-sheet.hbs",
-      width: 900,
-      height: 820,
+      width: 1100,
+      height: 900,
       resizable: true,
       tabs: [
         {
