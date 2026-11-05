@@ -60,10 +60,15 @@ export class HKCharacterSheet extends ActorSheet {
     if (!this.isEditable) return;
 
     const key = event.currentTarget.dataset.resetDerived;
-    if (key !== "maneuverability") return;
+    const paths = {
+      maneuverability: "system.social.maneuverabilityOverride",
+      satietyMax: "system.resources.satietyMaxOverride"
+    };
+    const path = paths[key];
+    if (!path) return;
 
     try {
-      await this.actor.update({ "system.social.maneuverabilityOverride": null });
+      await this.actor.update({ [path]: null });
       this.render(false);
     } catch (error) {
       console.error("Hollow Knight RPG | Derived value reset failed", error);

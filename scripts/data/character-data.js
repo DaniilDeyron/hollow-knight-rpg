@@ -24,11 +24,20 @@ function valueField({ initial = 0, max = 999, integer = true } = {}) {
   });
 }
 
-function textField() {
+function textField(initial = "") {
   return new fields.StringField({
     required: true,
     nullable: false,
-    initial: ""
+    initial
+  });
+}
+
+function customReserveField() {
+  return new fields.SchemaField({
+    label: textField("Свой запас"),
+    current: valueField(),
+    max: valueField(),
+    temporary: valueField()
   });
 }
 
@@ -57,6 +66,12 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         shell: statField(),
         grace: statField()
       }),
+      attributeTemps: new fields.SchemaField({
+        might: valueField({ max: 100, integer: false }),
+        insight: valueField({ max: 100, integer: false }),
+        shell: valueField({ max: 100, integer: false }),
+        grace: valueField({ max: 100, integer: false })
+      }),
       social: new fields.SchemaField({
         cute: valueField({ integer: false }),
         spook: valueField({ integer: false }),
@@ -73,12 +88,28 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
       resources: new fields.SchemaField({
         heart: valueField(),
         heartMax: valueField(),
+        heartTemp: valueField(),
         stamina: valueField(),
         staminaMax: valueField(),
+        staminaTemp: valueField(),
         soul: valueField(),
         soulMax: valueField(),
+        soulTemp: valueField(),
         hunger: valueField(),
-        satiety: valueField()
+        satiety: valueField(),
+        satietyMaxOverride: new fields.NumberField({
+          required: false,
+          nullable: true,
+          initial: null,
+          min: 0,
+          max: 999,
+          integer: true
+        })
+      }),
+      customReserves: new fields.SchemaField({
+        reserve1: customReserveField(),
+        reserve2: customReserveField(),
+        reserve3: customReserveField()
       }),
       inventory: new fields.SchemaField({
         currency: valueField({ max: 999999 })
@@ -96,7 +127,8 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
 
   prepareDerivedData() {
     const derived = calculateDerivedStats(this.attributes, this.resources, {
-      maneuverability: this.social.maneuverabilityOverride
+      maneuverability: this.social.maneuverabilityOverride,
+      satietyMax: this.resources.satietyMaxOverride
     });
     Object.assign(this.derived, derived);
   }

@@ -18,6 +18,8 @@ export function calculateDerivedStats(attributes = {}, resources = {}, overrides
       : Math.floor(Math.max(0, safe(Number(overrides.maneuverability)))),
     techniqueSlots: Math.floor(safe(insight)),
     beltSize: Math.floor(safe(shell)),
-    satietyMax: Math.max(safe(hunger), 10)
+    satietyMax: overrides.satietyMax == null
+      ? Math.max(safe(hunger), 10)
+      : Math.floor(Math.max(0, safe(Number(overrides.satietyMax))))
   };
 }

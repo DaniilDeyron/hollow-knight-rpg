@@ -10,10 +10,6 @@
 
       <div class="hkrpg-header-fields">
         <label>
-          <span>{{localize "HKRPG.Profile.Player"}}</span>
-          <input name="system.profile.player" type="text" value="{{system.profile.player}}" />
-        </label>
-        <label>
           <span>{{localize "HKRPG.Size.Label"}}</span>
           <select name="system.size">
             {{#select system.size}}
@@ -85,7 +81,10 @@
         </label>
         <div class="hkrpg-satiety-maximum">
           <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
-          <strong>{{system.derived.satietyMax}}</strong>
+          <div class="hkrpg-satiety-maximum__control">
+            <input name="system.resources.satietyMaxOverride" type="number" min="0" max="999" step="1" value="{{system.derived.satietyMax}}" {{#unless isEditable}}disabled{{/unless}} />
+            <button type="button" class="hkrpg-derived-stat__reset" data-reset-derived="satietyMax" title="{{localize "HKRPG.Derived.ResetAutomatic"}}" aria-label="{{localize "HKRPG.Derived.ResetAutomatic"}}" {{#unless isEditable}}disabled{{/unless}}>↺</button>
+          </div>
         </div>
       </div>
       <label class="hkrpg-hunger-field">
@@ -162,14 +161,20 @@
           <section class="hkrpg-overview-section">
             <h2>{{localize "HKRPG.OtherAttributes"}}</h2>
             <div class="hkrpg-secondary-grid">
-              <label class="hkrpg-secondary-stat">
-                <span>{{localize "HKRPG.Secondary.Spook"}}</span>
-                <input name="system.social.spook" type="number" min="0" step="0.5" value="{{system.social.spook}}" />
-              </label>
-              <label class="hkrpg-secondary-stat">
-                <span>{{localize "HKRPG.Secondary.Cute"}}</span>
-                <input name="system.social.cute" type="number" min="0" step="0.5" value="{{system.social.cute}}" />
-              </label>
+              <div class="hkrpg-secondary-stat hkrpg-secondary-stat--rollable">
+                <label>
+                  <span>{{localize "HKRPG.Secondary.Spook"}}</span>
+                  <input name="system.social.spook" type="number" min="0" step="0.5" value="{{system.social.spook}}" />
+                </label>
+                <button type="button" data-attribute-roll="spook" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
+              </div>
+              <div class="hkrpg-secondary-stat hkrpg-secondary-stat--rollable">
+                <label>
+                  <span>{{localize "HKRPG.Secondary.Cute"}}</span>
+                  <input name="system.social.cute" type="number" min="0" step="0.5" value="{{system.social.cute}}" />
+                </label>
+                <button type="button" data-attribute-roll="cute" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
+              </div>
             </div>
           </section>
 

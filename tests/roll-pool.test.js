@@ -57,3 +57,34 @@ test("Пустой пул даёт ноль успехов", () => {
 test("Неверный результат кости отклоняется", () => {
   assert.throws(() => classifyD6Result(7), RangeError);
 });
+
+test("Временный бонус прибавляется к общему пулу костей", () => {
+  assert.deepEqual(getAttributePool(3, 2), {
+    diceCount: 5,
+    rerollsAvailable: 0
+  });
+});
+
+test("Временный дробный бонус учитывается вместе с половинным значением характеристики", () => {
+  assert.deepEqual(getAttributePool(3, 0.5), {
+    diceCount: 3,
+    rerollsAvailable: 1
+  });
+});
+
+test("Временный бонус не может уменьшить пул костей", () => {
+  assert.deepEqual(getAttributePool(3, -2), {
+    diceCount: 3,
+    rerollsAvailable: 0
+  });
+});
+
+test("Ручной максимум Сытости переопределяет автоматическое значение", async () => {
+  const { calculateDerivedStats } = await import("../scripts/rules/derived.js");
+  assert.equal(calculateDerivedStats({}, { hunger: 4 }, { satietyMax: 14 }).satietyMax, 14);
+});
+
+test("Пустое ручное значение максимума Сытости возвращает автоматический расчёт", async () => {
+  const { calculateDerivedStats } = await import("../scripts/rules/derived.js");
+  assert.equal(calculateDerivedStats({}, { hunger: 4 }, { satietyMax: null }).satietyMax, 10);
+});

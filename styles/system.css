@@ -1396,3 +1396,82 @@
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
+
+
+/* Wider character portrait, with no Player field in the header. */
+.hkrpg.sheet.actor .hkrpg-sheet-header {
+  grid-template-columns: 154px minmax(0, 1fr) 154px;
+}
+
+.hkrpg.sheet.actor .hkrpg-portrait {
+  width: 154px;
+  height: 112px;
+  object-fit: cover;
+}
+
+.hkrpg.sheet.actor .hkrpg-header-fields {
+  grid-template-columns: minmax(82px, 0.9fr) minmax(74px, 0.7fr) minmax(112px, 1fr);
+}
+
+/* Roll buttons for Spook and Cute. */
+.hkrpg-secondary-stat--rollable {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 36px;
+  align-items: end;
+  gap: 7px;
+}
+
+.hkrpg-secondary-stat--rollable > label {
+  min-width: 0;
+}
+
+.hkrpg-secondary-stat--rollable > label > span {
+  color: #f2f5fb !important;
+  font-size: 0.9rem !important;
+  font-weight: 600;
+}
+
+.hkrpg-secondary-stat--rollable .hkrpg-attribute-roll {
+  width: 36px;
+  height: 36px;
+  margin-bottom: 2px;
+}
+
+/* Editable Satiety maximum. */
+.hkrpg-satiety-maximum__control {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 4px;
+}
+
+.hkrpg-satiety-maximum__control input {
+  width: 100%;
+  min-width: 0;
+  min-height: 34px;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.hkrpg-satiety-maximum__control .hkrpg-derived-stat__reset {
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+}
+
+@media (max-width: 760px) {
+  .hkrpg.sheet.actor .hkrpg-sheet-header {
+    grid-template-columns: 112px minmax(0, 1fr);
+  }
+
+  .hkrpg.sheet.actor .hkrpg-portrait {
+    width: 112px;
+    height: 84px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-header-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

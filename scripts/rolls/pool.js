@@ -4,11 +4,14 @@
  * Core rule: a result of 5 or 6 is a success.
  * Attribute .5 values grant a reroll; they do not add a full die.
  */
-export function getAttributePool(attributeValue) {
+export function getAttributePool(attributeValue, temporaryValue = 0) {
   const value = Number(attributeValue);
+  const temporary = Number(temporaryValue);
   const safeValue = Number.isFinite(value) ? Math.max(0, value) : 0;
-  const diceCount = Math.floor(safeValue);
-  const fraction = safeValue - diceCount;
+  const safeTemporary = Number.isFinite(temporary) ? Math.max(0, temporary) : 0;
+  const totalValue = safeValue + safeTemporary;
+  const diceCount = Math.floor(totalValue);
+  const fraction = totalValue - diceCount;
 
   return {
     diceCount,
@@ -74,17 +77,22 @@ function renderDice(values) {
 }
 
 export async function rollAttributeCheck(actor, attributeKey) {
-  const attributeNames = {
-    might: "HKRPG.Attribute.Might",
-    insight: "HKRPG.Attribute.Insight",
-    shell: "HKRPG.Attribute.Shell",
-    grace: "HKRPG.Attribute.Grace"
+  const characteristicSources = {
+    might: { localizationKey: "HKRPG.Attribute.Might", group: "attributes", temporary: true },
+    insight: { localizationKey: "HKRPG.Attribute.Insight", group: "attributes", temporary: true },
+    shell: { localizationKey: "HKRPG.Attribute.Shell", group: "attributes", temporary: true },
+    grace: { localizationKey: "HKRPG.Attribute.Grace", group: "attributes", temporary: true },
+    spook: { localizationKey: "HKRPG.Secondary.Spook", group: "social", temporary: false },
+    cute: { localizationKey: "HKRPG.Secondary.Cute", group: "social", temporary: false }
   };
-  const localizationKey = attributeNames[attributeKey];
-  if (!localizationKey) throw new Error("Неизвестная характеристика.");
+  const characteristic = characteristicSources[attributeKey];
+  if (!characteristic) throw new Error("Неизвестная характеристика.");
 
-  const value = Number(actor.system.attributes[attributeKey] ?? 0);
-  const { diceCount, rerollsAvailable } = getAttributePool(value);
+  const value = Number(actor.system[characteristic.group]?.[attributeKey] ?? 0);
+  const temporaryValue = characteristic.temporary
+    ? Number(actor.system.attributeTemps?.[attributeKey] ?? 0)
+    : 0;
+  const { diceCount, rerollsAvailable } = getAttributePool(value, temporaryValue);
   const { roll, results } = await rollD6Pool(diceCount);
   const summary = summarizeD6Results(results);
   const label = game.i18n.localize(localizationKey);
