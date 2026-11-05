@@ -24,9 +24,11 @@
       "Hunger": "Голод",
       "Satiety": "Сытость"
     },
-    "Derived": "Производные показатели",
-    "Derived.CarryingCapacity": "Нагрузка",
-    "Derived.Maneuverability": "Манёвренность",
+    "Derived": {
+      "Label": "Производные показатели",
+      "CarryingCapacity": "Нагрузка",
+      "Maneuverability": "Манёвренность"
+    },
     "Notes": "Заметки"
   }
 }
