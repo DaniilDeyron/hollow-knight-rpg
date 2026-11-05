@@ -95,7 +95,7 @@ export async function rollAttributeCheck(actor, attributeKey) {
   const { diceCount, rerollsAvailable } = getAttributePool(value, temporaryValue);
   const { roll, results } = await rollD6Pool(diceCount);
   const summary = summarizeD6Results(results);
-  const label = game.i18n.localize(localizationKey);
+  const label = game.i18n.localize(characteristic.localizationKey);
   const successesLabel = pluralizeRussian(summary.successes, ["успех", "успеха", "успехов"]);
   const formula = `${diceCount}d6`;
   const rerollText = rerollsAvailable
