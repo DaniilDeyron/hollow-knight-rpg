@@ -1,9 +1,18 @@
 <form class="hkrpg-sheet flexcol" autocomplete="off">
-  <header class="sheet-header">
-    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
-    <div class="header-fields">
-      <input class="character-name" name="name" type="text" value="{{actor.name}}" placeholder="Имя жука" />
-      <label class="field-label">
+  <header class="hkrpg-sheet-header">
+    <img class="hkrpg-portrait" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+    <div class="hkrpg-identity">
+      <label class="hkrpg-name-field">
+        <span>{{localize "HKRPG.Profile.Name"}}</span>
+        <input name="name" type="text" value="{{actor.name}}" placeholder="Имя жука" />
+      </label>
+      <label>
+        <span>{{localize "HKRPG.Profile.Player"}}</span>
+        <input name="system.profile.player" type="text" value="{{system.profile.player}}" />
+      </label>
+    </div>
+    <div class="hkrpg-header-meta">
+      <label>
         <span>{{localize "HKRPG.Size.Label"}}</span>
         <select name="system.size">
           {{#select system.size}}
@@ -13,83 +22,196 @@
           {{/select}}
         </select>
       </label>
+      <label>
+        <span>{{localize "HKRPG.Profile.Milestone"}}</span>
+        <input name="system.profile.milestone" type="number" min="0" value="{{system.profile.milestone}}" />
+      </label>
     </div>
   </header>
 
-  <section class="sheet-section">
-    <h2>{{localize "HKRPG.Attributes"}}</h2>
-    <div class="attribute-grid">
-      <div class="attribute-card">
-        <button class="attribute-roll-button" type="button" data-attribute-roll="might">
-          <span>{{localize "HKRPG.Attribute.Might"}}</span>
-          <strong>{{system.attributes.might}}</strong>
-          <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
-        </button>
-        <label class="attribute-edit">
-          <span>{{localize "HKRPG.Roll.AttributeValue"}}</span>
-          <input name="system.attributes.might" type="number" min="0" max="7" step="0.5" value="{{system.attributes.might}}" />
-        </label>
+  <nav class="hkrpg-tabs" data-group="primary">
+    <a class="item" data-tab="overview">{{localize "HKRPG.Tabs.Overview"}}</a>
+    <a class="item" data-tab="development">{{localize "HKRPG.Tabs.Development"}}</a>
+    <a class="item" data-tab="skills">{{localize "HKRPG.Tabs.Skills"}}</a>
+    <a class="item" data-tab="equipment">{{localize "HKRPG.Tabs.Equipment"}}</a>
+    <a class="item" data-tab="notes">{{localize "HKRPG.Tabs.Notes"}}</a>
+  </nav>
+
+  <div class="hkrpg-tab-content">
+    <section class="tab" data-group="primary" data-tab="overview">
+      <div class="hkrpg-overview-grid">
+        <section class="hkrpg-panel hkrpg-profile-description">
+          <h2>{{localize "HKRPG.Profile.Description"}}</h2>
+          <textarea name="system.profile.description" rows="5">{{system.profile.description}}</textarea>
+        </section>
+
+        <section class="hkrpg-panel">
+          <h2>{{localize "HKRPG.Attributes"}}</h2>
+          <div class="hkrpg-attributes-grid">
+            <div class="hkrpg-attribute">
+              <button type="button" data-attribute-roll="might" class="hkrpg-attribute-roll">
+                <span>{{localize "HKRPG.Attribute.Might"}}</span>
+                <strong>{{system.attributes.might}}</strong>
+                <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
+              </button>
+              <label><span>{{localize "HKRPG.Roll.AttributeValue"}}</span><input name="system.attributes.might" type="number" min="0" max="7" step="0.5" value="{{system.attributes.might}}" /></label>
+            </div>
+            <div class="hkrpg-attribute">
+              <button type="button" data-attribute-roll="insight" class="hkrpg-attribute-roll">
+                <span>{{localize "HKRPG.Attribute.Insight"}}</span>
+                <strong>{{system.attributes.insight}}</strong>
+                <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
+              </button>
+              <label><span>{{localize "HKRPG.Roll.AttributeValue"}}</span><input name="system.attributes.insight" type="number" min="0" max="7" step="0.5" value="{{system.attributes.insight}}" /></label>
+            </div>
+            <div class="hkrpg-attribute">
+              <button type="button" data-attribute-roll="shell" class="hkrpg-attribute-roll">
+                <span>{{localize "HKRPG.Attribute.Shell"}}</span>
+                <strong>{{system.attributes.shell}}</strong>
+                <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
+              </button>
+              <label><span>{{localize "HKRPG.Roll.AttributeValue"}}</span><input name="system.attributes.shell" type="number" min="0" max="7" step="0.5" value="{{system.attributes.shell}}" /></label>
+            </div>
+            <div class="hkrpg-attribute">
+              <button type="button" data-attribute-roll="grace" class="hkrpg-attribute-roll">
+                <span>{{localize "HKRPG.Attribute.Grace"}}</span>
+                <strong>{{system.attributes.grace}}</strong>
+                <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
+              </button>
+              <label><span>{{localize "HKRPG.Roll.AttributeValue"}}</span><input name="system.attributes.grace" type="number" min="0" max="7" step="0.5" value="{{system.attributes.grace}}" /></label>
+            </div>
+          </div>
+        </section>
+
+        <section class="hkrpg-panel">
+          <h2>{{localize "HKRPG.Resources"}}</h2>
+          <div class="hkrpg-resource-grid">
+            <label><span>{{localize "HKRPG.Resource.Heart"}}</span><div class="hkrpg-paired"><input name="system.resources.heart" type="number" min="0" value="{{system.resources.heart}}" /><b>/</b><input name="system.resources.heartMax" type="number" min="0" value="{{system.resources.heartMax}}" /></div></label>
+            <label><span>{{localize "HKRPG.Resource.Soul"}}</span><div class="hkrpg-paired"><input name="system.resources.soul" type="number" min="0" value="{{system.resources.soul}}" /><b>/</b><input name="system.resources.soulMax" type="number" min="0" value="{{system.resources.soulMax}}" /></div></label>
+            <label><span>{{localize "HKRPG.Resource.Stamina"}}</span><div class="hkrpg-paired"><input name="system.resources.stamina" type="number" min="0" value="{{system.resources.stamina}}" /><b>/</b><input name="system.resources.staminaMax" type="number" min="0" value="{{system.resources.staminaMax}}" /></div></label>
+            <label><span>{{localize "HKRPG.Resource.Hunger"}}</span><input name="system.resources.hunger" type="number" min="0" value="{{system.resources.hunger}}" /></label>
+            <label><span>{{localize "HKRPG.Resource.Satiety"}}</span><div class="hkrpg-paired"><input name="system.resources.satiety" type="number" min="0" value="{{system.resources.satiety}}" /><span>/ {{system.derived.satietyMax}}</span></div></label>
+          </div>
+        </section>
+
+        <section class="hkrpg-panel">
+          <h2>{{localize "HKRPG.OtherAttributes"}}</h2>
+          <div class="hkrpg-secondary-grid">
+            <label><span>{{localize "HKRPG.Secondary.Cute"}}</span><input name="system.social.cute" type="number" min="0" step="0.5" value="{{system.social.cute}}" /></label>
+            <label><span>{{localize "HKRPG.Secondary.Spook"}}</span><input name="system.social.spook" type="number" min="0" step="0.5" value="{{system.social.spook}}" /></label>
+            <label><span>{{localize "HKRPG.Secondary.Speed"}}</span><input name="system.social.speed" type="number" min="0" value="{{system.social.speed}}" /></label>
+          </div>
+          <div class="hkrpg-derived-strip">
+            <div><span>{{localize "HKRPG.Derived.Maneuverability"}}</span><strong>{{system.derived.maneuverability}}</strong></div>
+            <div><span>{{localize "HKRPG.Derived.CarryingCapacity"}}</span><strong>{{system.derived.carryingCapacity}}</strong></div>
+          </div>
+        </section>
       </div>
+    </section>
 
-      <div class="attribute-card">
-        <button class="attribute-roll-button" type="button" data-attribute-roll="insight">
-          <span>{{localize "HKRPG.Attribute.Insight"}}</span>
-          <strong>{{system.attributes.insight}}</strong>
-          <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
-        </button>
-        <label class="attribute-edit">
-          <span>{{localize "HKRPG.Roll.AttributeValue"}}</span>
-          <input name="system.attributes.insight" type="number" min="0" max="7" step="0.5" value="{{system.attributes.insight}}" />
-        </label>
+    <section class="tab" data-group="primary" data-tab="development">
+      <div class="hkrpg-section-grid">
+        <section class="hkrpg-panel">
+          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Traits"}}</h2><span>{{itemGroups.traits.length}}</span></div>
+          {{#if itemGroups.traits.length}}
+            <ul class="hkrpg-item-list">{{#each itemGroups.traits as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
+          {{else}}
+            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoTraits"}}</p>
+          {{/if}}
+        </section>
+        <section class="hkrpg-panel">
+          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Paths"}}</h2><span>{{itemGroups.paths.length}}</span></div>
+          {{#if itemGroups.paths.length}}
+            <ul class="hkrpg-item-list">{{#each itemGroups.paths as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
+          {{else}}
+            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoPaths"}}</p>
+          {{/if}}
+        </section>
+        <section class="hkrpg-panel">
+          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Charms"}}</h2><span>{{itemGroups.charms.length}}</span></div>
+          {{#if itemGroups.charms.length}}
+            <ul class="hkrpg-item-list">{{#each itemGroups.charms as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
+          {{else}}
+            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoCharms"}}</p>
+          {{/if}}
+          <div class="hkrpg-derived-strip"><div><span>{{localize "HKRPG.Derived.BeltSize"}}</span><strong>{{system.derived.beltSize}}</strong></div></div>
+        </section>
+        <section class="hkrpg-panel">
+          <h2>{{localize "HKRPG.Development.Marks"}}</h2>
+          <p class="hkrpg-empty">{{localize "HKRPG.Empty.MarksLater"}}</p>
+        </section>
       </div>
+    </section>
 
-      <div class="attribute-card">
-        <button class="attribute-roll-button" type="button" data-attribute-roll="shell">
-          <span>{{localize "HKRPG.Attribute.Shell"}}</span>
-          <strong>{{system.attributes.shell}}</strong>
-          <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
-        </button>
-        <label class="attribute-edit">
-          <span>{{localize "HKRPG.Roll.AttributeValue"}}</span>
-          <input name="system.attributes.shell" type="number" min="0" max="7" step="0.5" value="{{system.attributes.shell}}" />
-        </label>
+    <section class="tab" data-group="primary" data-tab="skills">
+      <div class="hkrpg-section-grid">
+        <section class="hkrpg-panel">
+          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Proficiencies"}}</h2><span>{{itemGroups.proficiencies.length}}</span></div>
+          {{#if itemGroups.proficiencies.length}}
+            <ul class="hkrpg-item-list">{{#each itemGroups.proficiencies as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
+          {{else}}
+            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoProficiencies"}}</p>
+          {{/if}}
+        </section>
+        <section class="hkrpg-panel">
+          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Techniques"}}</h2><span>{{itemGroups.techniques.length}}</span></div>
+          <div class="hkrpg-derived-strip"><div><span>{{localize "HKRPG.Derived.TechniqueSlots"}}</span><strong>{{system.derived.techniqueSlots}}</strong></div></div>
+          {{#if itemGroups.techniques.length}}
+            <ul class="hkrpg-item-list">{{#each itemGroups.techniques as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
+          {{else}}
+            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoTechniques"}}</p>
+          {{/if}}
+        </section>
       </div>
+    </section>
 
-      <div class="attribute-card">
-        <button class="attribute-roll-button" type="button" data-attribute-roll="grace">
-          <span>{{localize "HKRPG.Attribute.Grace"}}</span>
-          <strong>{{system.attributes.grace}}</strong>
-          <small>{{localize "HKRPG.Roll.ClickToRoll"}}</small>
-        </button>
-        <label class="attribute-edit">
-          <span>{{localize "HKRPG.Roll.AttributeValue"}}</span>
-          <input name="system.attributes.grace" type="number" min="0" max="7" step="0.5" value="{{system.attributes.grace}}" />
-        </label>
+    <section class="tab" data-group="primary" data-tab="equipment">
+      <div class="hkrpg-section-grid">
+        <section class="hkrpg-panel">
+          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Equipment.Inventory"}}</h2><span>{{itemGroups.equipment.length}}</span></div>
+          {{#if itemGroups.equipment.length}}
+            <ul class="hkrpg-item-list">{{#each itemGroups.equipment as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
+          {{else}}
+            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoEquipment"}}</p>
+          {{/if}}
+        </section>
+        <section class="hkrpg-panel">
+          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Equipment.Weapons"}}</h2><span>{{itemGroups.weapons.length}}</span></div>
+          {{#if itemGroups.weapons.length}}
+            <ul class="hkrpg-item-list">{{#each itemGroups.weapons as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
+          {{else}}
+            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoWeapons"}}</p>
+          {{/if}}
+        </section>
+        <section class="hkrpg-panel">
+          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Equipment.Shields"}}</h2><span>{{itemGroups.shields.length}}</span></div>
+          {{#if itemGroups.shields.length}}
+            <ul class="hkrpg-item-list">{{#each itemGroups.shields as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
+          {{else}}
+            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoShields"}}</p>
+          {{/if}}
+        </section>
+        <section class="hkrpg-panel">
+          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Equipment.Armor"}}</h2><span>{{itemGroups.armor.length}}</span></div>
+          {{#if itemGroups.armor.length}}
+            <ul class="hkrpg-item-list">{{#each itemGroups.armor as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
+          {{else}}
+            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoArmor"}}</p>
+          {{/if}}
+        </section>
       </div>
-    </div>
-  </section>
+      <section class="hkrpg-panel hkrpg-equipment-footer">
+        <label><span>{{localize "HKRPG.Equipment.Currency"}}</span><input name="system.inventory.currency" type="number" min="0" value="{{system.inventory.currency}}" /></label>
+        <div class="hkrpg-derived-strip"><div><span>{{localize "HKRPG.Derived.CarryingCapacity"}}</span><strong>{{system.derived.carryingCapacity}}</strong></div><div><span>{{localize "HKRPG.Derived.BeltSize"}}</span><strong>{{system.derived.beltSize}}</strong></div></div>
+        <p class="hkrpg-empty">{{localize "HKRPG.Empty.WeightLater"}}</p>
+      </section>
+    </section>
 
-  <section class="sheet-section">
-    <h2>{{localize "HKRPG.Resources"}}</h2>
-    <div class="resource-grid">
-      <label><span>{{localize "HKRPG.Resource.Heart"}}</span><div class="paired-fields"><input name="system.resources.heart" type="number" min="0" value="{{system.resources.heart}}" /><span>/</span><input name="system.resources.heartMax" type="number" min="0" value="{{system.resources.heartMax}}" /></div></label>
-      <label><span>{{localize "HKRPG.Resource.Stamina"}}</span><div class="paired-fields"><input name="system.resources.stamina" type="number" min="0" value="{{system.resources.stamina}}" /><span>/</span><input name="system.resources.staminaMax" type="number" min="0" value="{{system.resources.staminaMax}}" /></div></label>
-      <label><span>{{localize "HKRPG.Resource.Soul"}}</span><div class="paired-fields"><input name="system.resources.soul" type="number" min="0" value="{{system.resources.soul}}" /><span>/</span><input name="system.resources.soulMax" type="number" min="0" value="{{system.resources.soulMax}}" /></div></label>
-      <label><span>{{localize "HKRPG.Resource.Hunger"}}</span><input name="system.resources.hunger" type="number" min="0" value="{{system.resources.hunger}}" /></label>
-      <label><span>{{localize "HKRPG.Resource.Satiety"}}</span><input name="system.resources.satiety" type="number" min="0" value="{{system.resources.satiety}}" /></label>
-    </div>
-  </section>
-
-  <section class="sheet-section">
-    <h2>{{localize "HKRPG.Derived.Label"}}</h2>
-    <div class="derived-grid">
-      <div><span>{{localize "HKRPG.Derived.CarryingCapacity"}}</span><strong>{{system.derived.carryingCapacity}}</strong></div>
-      <div><span>{{localize "HKRPG.Derived.Maneuverability"}}</span><strong>{{system.derived.maneuverability}}</strong></div>
-    </div>
-  </section>
-
-  <section class="sheet-section notes-section">
-    <h2>{{localize "HKRPG.Notes"}}</h2>
-    <textarea name="system.notes" rows="5" placeholder="Заметки о персонаже...">{{system.notes}}</textarea>
-  </section>
+    <section class="tab" data-group="primary" data-tab="notes">
+      <section class="hkrpg-panel hkrpg-notes-panel">
+        <h2>{{localize "HKRPG.Notes"}}</h2>
+        <textarea name="system.notes" rows="22" placeholder="{{localize "HKRPG.NotesPlaceholder"}}">{{system.notes}}</textarea>
+      </section>
+    </section>
+  </div>
 </form>

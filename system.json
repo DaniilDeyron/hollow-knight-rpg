@@ -35,7 +35,10 @@
     "Item": {
       "trait": {},
       "path": {},
+      "proficiency": {},
       "weapon": {},
+      "shield": {},
+      "armor": {},
       "charm": {},
       "technique": {},
       "equipment": {}

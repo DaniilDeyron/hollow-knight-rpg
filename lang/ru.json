@@ -3,20 +3,39 @@
     "Sheets": {
       "Character": "Лист жука"
     },
+    "Profile": {
+      "Name": "Имя",
+      "Player": "Игрок",
+      "Milestone": "Веха",
+      "Description": "Описание"
+    },
+    "Tabs": {
+      "Overview": "Обзор",
+      "Development": "Развитие",
+      "Skills": "Умения и техники",
+      "Equipment": "Снаряжение",
+      "Notes": "Заметки"
+    },
     "Size": {
       "Label": "Размер",
       "Small": "Мелкий",
       "Medium": "Средний",
       "Large": "Большой"
     },
-    "Attributes": "Характеристики",
+    "Attributes": "Главные характеристики",
     "Attribute": {
       "Might": "Мощь",
       "Insight": "Проницательность",
       "Shell": "Панцирь",
       "Grace": "Грация"
     },
-    "Resources": "Ресурсы",
+    "OtherAttributes": "Другие характеристики",
+    "Secondary": {
+      "Cute": "Привлекательность",
+      "Spook": "Жуть",
+      "Speed": "Скорость"
+    },
+    "Resources": "Запасы",
     "Resource": {
       "Heart": "Сердце",
       "Stamina": "Выносливость",
@@ -25,14 +44,44 @@
       "Satiety": "Сытость"
     },
     "Derived": {
-      "Label": "Производные показатели",
       "CarryingCapacity": "Нагрузка",
-      "Maneuverability": "Манёвренность"
+      "Maneuverability": "Манёвренность",
+      "TechniqueSlots": "Ячейки Техник",
+      "BeltSize": "Размер Пояса"
     },
     "Roll": {
       "ClickToRoll": "Нажмите, чтобы бросить",
       "AttributeValue": "Значение"
     },
-    "Notes": "Заметки"
+    "Development": {
+      "Traits": "Черты",
+      "Paths": "Пути",
+      "Charms": "Надетые Амулеты",
+      "Marks": "Метки",
+      "Proficiencies": "Умения",
+      "Techniques": "Техники"
+    },
+    "Equipment": {
+      "Inventory": "Снаряжение",
+      "Weapons": "Оружие",
+      "Shields": "Щиты",
+      "Armor": "Броня",
+      "Currency": "Валюта"
+    },
+    "Empty": {
+      "NoTraits": "Черты персонажа появятся здесь.",
+      "NoPaths": "Выбранные Пути появятся здесь.",
+      "NoCharms": "Надетые Амулеты появятся здесь.",
+      "MarksLater": "Расчёт и управление Метками подключим вместе с механикой Путей и Амулетов.",
+      "NoProficiencies": "Умения и связанные с ними навыки появятся здесь.",
+      "NoTechniques": "Подготовленные Техники появятся здесь.",
+      "NoEquipment": "Предметы снаряжения появятся здесь.",
+      "NoWeapons": "Оружие появится здесь.",
+      "NoShields": "Щиты появятся здесь.",
+      "NoArmor": "Броня появится здесь.",
+      "WeightLater": "Подсчёт общего веса подключим вместе с карточками предметов."
+    },
+    "Notes": "Заметки",
+    "NotesPlaceholder": "Личные записи, история и другая информация о персонаже..."
   }
 }

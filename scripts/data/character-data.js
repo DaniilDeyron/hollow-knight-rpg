@@ -13,14 +13,22 @@ function statField() {
   });
 }
 
-function resourceField() {
+function valueField({ initial = 0, max = 999, integer = true } = {}) {
   return new fields.NumberField({
     required: true,
     nullable: false,
-    initial: 0,
+    initial,
     min: 0,
-    max: 999,
-    integer: true
+    max,
+    integer
+  });
+}
+
+function textField() {
+  return new fields.StringField({
+    required: true,
+    nullable: false,
+    initial: ""
   });
 }
 
@@ -37,37 +45,48 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
           large: "HKRPG.Size.Large"
         }
       }),
+      profile: new fields.SchemaField({
+        player: textField(),
+        milestone: valueField(),
+        description: textField()
+      }),
       attributes: new fields.SchemaField({
         might: statField(),
         insight: statField(),
         shell: statField(),
         grace: statField()
       }),
+      social: new fields.SchemaField({
+        cute: valueField({ integer: false }),
+        spook: valueField({ integer: false }),
+        speed: valueField()
+      }),
       resources: new fields.SchemaField({
-        heart: resourceField(),
-        heartMax: resourceField(),
-        stamina: resourceField(),
-        staminaMax: resourceField(),
-        soul: resourceField(),
-        soulMax: resourceField(),
-        hunger: resourceField(),
-        satiety: resourceField()
+        heart: valueField(),
+        heartMax: valueField(),
+        stamina: valueField(),
+        staminaMax: valueField(),
+        soul: valueField(),
+        soulMax: valueField(),
+        hunger: valueField(),
+        satiety: valueField()
+      }),
+      inventory: new fields.SchemaField({
+        currency: valueField({ max: 999999 })
       }),
       derived: new fields.SchemaField({
-        carryingCapacity: resourceField(),
-        maneuverability: resourceField()
+        carryingCapacity: valueField(),
+        maneuverability: valueField(),
+        techniqueSlots: valueField(),
+        beltSize: valueField(),
+        satietyMax: valueField()
       }),
-      notes: new fields.StringField({
-        required: true,
-        nullable: false,
-        initial: ""
-      })
+      notes: textField()
     };
   }
 
   prepareDerivedData() {
-    const derived = calculateDerivedStats(this.attributes);
-    this.derived.carryingCapacity = derived.carryingCapacity;
-    this.derived.maneuverability = derived.maneuverability;
+    const derived = calculateDerivedStats(this.attributes, this.resources);
+    Object.assign(this.derived, derived);
   }
 }

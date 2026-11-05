@@ -5,9 +5,17 @@ export class HKCharacterSheet extends ActorSheet {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["hkrpg", "sheet", "actor"],
       template: "systems/hollow-knight-rpg/templates/actor/character-sheet.hbs",
-      width: 760,
-      height: 860,
-      resizable: true
+      width: 900,
+      height: 820,
+      resizable: true,
+      tabs: [
+        {
+          navSelector: ".hkrpg-tabs",
+          contentSelector: ".hkrpg-tab-content",
+          initial: "overview",
+          group: "primary"
+        }
+      ]
     });
   }
 
@@ -15,6 +23,20 @@ export class HKCharacterSheet extends ActorSheet {
     const context = super.getData(options);
     context.system = this.actor.system;
     context.isEditable = this.isEditable;
+
+    const items = this.actor.items.contents;
+    context.itemGroups = {
+      traits: items.filter((item) => item.type === "trait"),
+      paths: items.filter((item) => item.type === "path"),
+      charms: items.filter((item) => item.type === "charm"),
+      proficiencies: items.filter((item) => item.type === "proficiency"),
+      techniques: items.filter((item) => item.type === "technique"),
+      equipment: items.filter((item) => item.type === "equipment"),
+      weapons: items.filter((item) => item.type === "weapon"),
+      shields: items.filter((item) => item.type === "shield"),
+      armor: items.filter((item) => item.type === "armor")
+    };
+
     return context;
   }
 
