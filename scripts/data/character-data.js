@@ -1,3 +1,5 @@
+import { calculateDerivedStats } from "../rules/derived.js";
+
 const fields = foundry.data.fields;
 
 function statField() {
@@ -64,7 +66,8 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
   }
 
   prepareDerivedData() {
-    this.derived.carryingCapacity = Math.floor(this.attributes.might ?? 0);
-    this.derived.maneuverability = Math.ceil((this.attributes.grace ?? 0) / 2);
+    const derived = calculateDerivedStats(this.attributes);
+    this.derived.carryingCapacity = derived.carryingCapacity;
+    this.derived.maneuverability = derived.maneuverability;
   }
 }
