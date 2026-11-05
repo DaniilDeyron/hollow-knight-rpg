@@ -1,0 +1,67 @@
+name: Build and publish Foundry package
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Increment patch version
+        id: version
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+          const manifest = JSON.parse(fs.readFileSync("system.json", "utf8"));
+          const parts = manifest.version.split(".").map(Number);
+          if (parts.length !== 3 || parts.some((part) => !Number.isInteger(part))) {
+            throw new Error("system.json version must use MAJOR.MINOR.PATCH");
+          }
+          parts[2] += 1;
+          manifest.version = parts.join(".");
+          fs.writeFileSync("system.json", JSON.stringify(manifest, null, 2) + "\n");
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${manifest.version}\n`);
+          NODE
+
+      - name: Commit manifest version
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add system.json
+          git commit -m "Release v${VERSION}"
+          git push origin HEAD:main
+
+      - name: Validate manifest, localization, and JavaScript
+        run: |
+          node -e "JSON.parse(require('node:fs').readFileSync('system.json', 'utf8'))"
+          node -e "JSON.parse(require('node:fs').readFileSync('lang/ru.json', 'utf8'))"
+          npm test
+          for file in scripts/main.js scripts/data/character-data.js scripts/rules/derived.js scripts/sheets/character-sheet.js; do
+            node --check "$file"
+          done
+
+      - name: Build Foundry package
+        run: |
+          rm -f hollow-knight-rpg.zip
+          zip -r hollow-knight-rpg.zip system.json scripts templates styles lang
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          gh release create "v${VERSION}" hollow-knight-rpg.zip \
+            --target "$(git rev-parse HEAD)" \
+            --title "Hollow Knight RPG v${VERSION}" \
+            --notes "Пакет системы для Foundry VTT 13. Автоматически собран из main." \
+            --latest
