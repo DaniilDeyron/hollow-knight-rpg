@@ -49,11 +49,47 @@ export class HKCharacterSheet extends ActorSheet {
 
   activateListeners(html) {
     super.activateListeners(html);
-    html.find("[data-attribute-roll]").on("click", this._onRollAttribute.bind(this));
-    html.find("[data-resource-current]").on("click", this._onResourcePipClick.bind(this));
-    html.find("[data-resource-temp-consume]").on("click", this._onTemporaryResourcePipClick.bind(this));
-    html.find("[data-reset-derived]").on("click", this._onResetDerived.bind(this));
-    html.find("[data-derived-input]").on("change", this._onDerivedInputChange.bind(this));
+
+    // Use native delegated listeners. They work with both the legacy jQuery
+    // wrapper and the HTMLElement supplied by Foundry sheet renderers.
+    const root = html?.[0] ?? html;
+    if (!root || typeof root.addEventListener !== "function") {
+      console.error("Hollow Knight RPG | Could not attach sheet event listeners", html);
+      return;
+    }
+    if (root.dataset.hkrpgEventsBound === "true") return;
+    root.dataset.hkrpgEventsBound = "true";
+
+    root.addEventListener("click", (event) => {
+      const target = event.target?.closest?.(
+        "[data-attribute-roll], [data-resource-current], [data-resource-temp-consume], [data-reset-derived]"
+      );
+      if (!target || !root.contains(target)) return;
+
+      const wrappedEvent = {
+        preventDefault: () => event.preventDefault(),
+        currentTarget: target
+      };
+
+      if (target.matches("[data-resource-current]")) {
+        void this._onResourcePipClick(wrappedEvent);
+      } else if (target.matches("[data-resource-temp-consume]")) {
+        void this._onTemporaryResourcePipClick(wrappedEvent);
+      } else if (target.matches("[data-attribute-roll]")) {
+        void this._onRollAttribute(wrappedEvent);
+      } else if (target.matches("[data-reset-derived]")) {
+        void this._onResetDerived(wrappedEvent);
+      }
+    });
+
+    root.addEventListener("change", (event) => {
+      const target = event.target?.closest?.("[data-derived-input]");
+      if (!target || !root.contains(target)) return;
+      void this._onDerivedInputChange({
+        preventDefault: () => event.preventDefault(),
+        currentTarget: target
+      });
+    });
   }
 
   async _onDerivedInputChange(event) {
@@ -141,7 +177,7 @@ export class HKCharacterSheet extends ActorSheet {
       const update = {};
       update["system.resources." + key] = value;
       await this.actor.update(update);
-      this.render(false);
+      this.render(true);
     } catch (error) {
       console.error("Hollow Knight RPG | Resource update failed", error);
       ui.notifications.error("Не удалось обновить запас персонажа. Подробности — в консоли (F12).");
