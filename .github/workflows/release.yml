@@ -63,8 +63,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          gh release create "v${VERSION}" hollow-knight-rpg.zip \
-            --target "$(git rev-parse HEAD)" \
-            --title "Hollow Knight RPG v${VERSION}" \
-            --notes "Пакет системы для Foundry VTT 13. Автоматически собран из main." \
-            --latest
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            gh release upload "v${VERSION}" hollow-knight-rpg.zip --clobber
+            gh release edit "v${VERSION}" \
+              --title "Hollow Knight RPG v${VERSION}" \
+              --notes "Пакет системы для Foundry VTT 13. Автоматически собран из main." \
+              --latest
+          else
+            gh release create "v${VERSION}" hollow-knight-rpg.zip \
+              --target "$(git rev-parse HEAD)" \
+              --title "Hollow Knight RPG v${VERSION}" \
+              --notes "Пакет системы для Foundry VTT 13. Автоматически собран из main." \
+              --latest
+          fi
