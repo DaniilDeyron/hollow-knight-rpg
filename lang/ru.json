@@ -1,0 +1,32 @@
+{
+  "HKRPG": {
+    "Sheets": {
+      "Character": "Лист жука"
+    },
+    "Size": {
+      "Label": "Размер",
+      "Small": "Мелкий",
+      "Medium": "Средний",
+      "Large": "Большой"
+    },
+    "Attributes": "Характеристики",
+    "Attribute": {
+      "Might": "Мощь",
+      "Insight": "Проницательность",
+      "Shell": "Панцирь",
+      "Grace": "Грация"
+    },
+    "Resources": "Ресурсы",
+    "Resource": {
+      "Heart": "Сердце",
+      "Stamina": "Выносливость",
+      "Soul": "Душа",
+      "Hunger": "Голод",
+      "Satiety": "Сытость"
+    },
+    "Derived": "Производные показатели",
+    "Derived.CarryingCapacity": "Нагрузка",
+    "Derived.Maneuverability": "Манёвренность",
+    "Notes": "Заметки"
+  }
+}
