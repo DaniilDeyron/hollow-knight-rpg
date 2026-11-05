@@ -1477,17 +1477,18 @@
 }
 
 
-/* Preserve the portrait's natural proportions instead of cropping it to a short banner. */
+/* Preserve the portrait's natural proportions and give it a little more room. */
 .hkrpg.sheet.actor .hkrpg-sheet-header {
+  grid-template-columns: 176px minmax(0, 1fr) 154px;
   align-items: start;
 }
 
 .hkrpg.sheet.actor .hkrpg-portrait {
   display: block;
   align-self: start;
-  width: 154px;
+  width: 176px;
   height: auto;
-  max-height: 220px;
+  max-height: 240px;
   aspect-ratio: auto;
   object-fit: contain;
   object-position: center top;
@@ -1495,10 +1496,14 @@
 }
 
 @media (max-width: 760px) {
+  .hkrpg.sheet.actor .hkrpg-sheet-header {
+    grid-template-columns: 128px minmax(0, 1fr);
+  }
+
   .hkrpg.sheet.actor .hkrpg-portrait {
-    width: 112px;
+    width: 128px;
     height: auto;
-    max-height: 180px;
+    max-height: 190px;
   }
 }
 
