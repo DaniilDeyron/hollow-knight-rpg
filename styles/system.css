@@ -1837,3 +1837,66 @@
   width: 100%;
   box-sizing: border-box;
 }
+
+
+/* Final alignment pass: make both overview columns begin and end evenly. */
+.hkrpg-overview-grid {
+  align-items: start;
+}
+
+.hkrpg-overview-main,
+.hkrpg-overview-side {
+  min-width: 0;
+}
+
+.hkrpg-overview-side {
+  gap: 7px;
+}
+
+.hkrpg-overview-side .hkrpg-resource-column__heading {
+  margin-bottom: 5px;
+  line-height: 1.35;
+}
+
+.hkrpg-overview-side .hkrpg-resource-trackers {
+  gap: 6px;
+}
+
+.hkrpg-overview-side .hkrpg-resource-tracker {
+  margin: 0;
+}
+
+.hkrpg-overview-side .hkrpg-resource-tracker:last-child {
+  margin-bottom: 0;
+}
+
+/* Enlarge the portrait again and give it the same visual height as the header bars. */
+.hkrpg.sheet.actor .hkrpg-sheet-header {
+  grid-template-columns: 200px minmax(0, 1fr) 154px;
+  align-items: stretch;
+}
+
+.hkrpg.sheet.actor .hkrpg-portrait {
+  width: 200px;
+  height: 200px;
+  min-height: 200px;
+  max-height: 250px;
+  align-self: stretch;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  object-position: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 760px) {
+  .hkrpg.sheet.actor .hkrpg-sheet-header {
+    grid-template-columns: 142px minmax(0, 1fr);
+  }
+
+  .hkrpg.sheet.actor .hkrpg-portrait {
+    width: 142px;
+    height: 142px;
+    min-height: 142px;
+    max-height: 190px;
+  }
+}
