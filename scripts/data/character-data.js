@@ -60,7 +60,15 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
       social: new fields.SchemaField({
         cute: valueField({ integer: false }),
         spook: valueField({ integer: false }),
-        speed: valueField()
+        speed: valueField(),
+        maneuverabilityOverride: new fields.NumberField({
+          required: false,
+          nullable: true,
+          initial: null,
+          min: 0,
+          max: 999,
+          integer: true
+        })
       }),
       resources: new fields.SchemaField({
         heart: valueField(),
@@ -87,7 +95,9 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
   }
 
   prepareDerivedData() {
-    const derived = calculateDerivedStats(this.attributes, this.resources);
+    const derived = calculateDerivedStats(this.attributes, this.resources, {
+      maneuverability: this.social.maneuverabilityOverride
+    });
     Object.assign(this.derived, derived);
   }
 }

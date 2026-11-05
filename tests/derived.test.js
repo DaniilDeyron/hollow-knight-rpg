@@ -33,3 +33,11 @@ test("Пустые характеристики дают нулевые знач
     satietyMax: 10
   });
 });
+
+test("Ручное значение Манёвренности переопределяет расчёт от Грации", () => {
+  assert.equal(calculateDerivedStats({ grace: 3 }, {}, { maneuverability: 5 }).maneuverability, 5);
+});
+
+test("Пустое ручное значение Манёвренности возвращает автоматический расчёт", () => {
+  assert.equal(calculateDerivedStats({ grace: 5 }, {}, { maneuverability: null }).maneuverability, 3);
+});

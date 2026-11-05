@@ -58,7 +58,8 @@
       "CarryingCapacity": "Нагрузка",
       "Maneuverability": "Манёвренность",
       "TechniqueSlots": "Ячейки Техник",
-      "BeltSize": "Размер Пояса"
+      "BeltSize": "Размер Пояса",
+      "ResetAutomatic": "Вернуть автоматический расчёт"
     },
     "Roll": {
       "ClickToRoll": "Нажмите, чтобы бросить",

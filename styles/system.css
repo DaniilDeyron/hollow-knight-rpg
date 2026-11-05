@@ -1336,3 +1336,63 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Editable Maneuverability with an automatic-calculation reset */
+.hkrpg-derived-stat {
+  gap: 6px;
+}
+
+.hkrpg-derived-stat__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+}
+
+.hkrpg-derived-stat__heading > span {
+  min-width: 0;
+  color: #f2f5fb !important;
+  font-weight: 600;
+}
+
+.hkrpg-derived-stat__reset {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  min-height: 22px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #536d8b;
+  border-radius: 3px;
+  background: rgb(60 89 125 / 24%);
+  color: #a9c1dc !important;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.hkrpg-derived-stat__reset:hover {
+  background: rgb(100 146 194 / 24%);
+  color: #ffffff !important;
+}
+
+.hkrpg-derived-stat__reset:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.hkrpg-derived-stat__input {
+  width: 100%;
+  min-height: 42px;
+  padding: 3px 6px;
+  border: 1px solid #536d8b !important;
+  border-radius: 3px;
+  background: rgb(5 12 23 / 78%) !important;
+  color: #f4f7fc !important;
+  font-size: 1.45rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}

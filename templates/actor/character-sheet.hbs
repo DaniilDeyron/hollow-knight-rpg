@@ -268,8 +268,11 @@
                 <input name="system.social.speed" type="number" min="0" value="{{system.social.speed}}" />
               </label>
               <div class="hkrpg-secondary-stat hkrpg-derived-stat">
-                <span>{{localize "HKRPG.Derived.Maneuverability"}}</span>
-                <strong>{{system.derived.maneuverability}}</strong>
+                <div class="hkrpg-derived-stat__heading">
+                  <span>{{localize "HKRPG.Derived.Maneuverability"}}</span>
+                  <button type="button" class="hkrpg-derived-stat__reset" data-reset-derived="maneuverability" title="{{localize "HKRPG.Derived.ResetAutomatic"}}" aria-label="{{localize "HKRPG.Derived.ResetAutomatic"}}" {{#unless isEditable}}disabled{{/unless}}>↺</button>
+                </div>
+                <input class="hkrpg-derived-stat__input" name="system.social.maneuverabilityOverride" type="number" min="0" max="999" step="1" value="{{system.derived.maneuverability}}" {{#unless isEditable}}disabled{{/unless}} />
               </div>
             </div>
           </section>

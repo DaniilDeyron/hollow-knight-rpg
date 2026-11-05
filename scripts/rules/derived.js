@@ -2,7 +2,7 @@
  * Pure, source-backed derived character values.
  * Keep these calculations outside the sheet so they can be reused and tested.
  */
-export function calculateDerivedStats(attributes = {}, resources = {}) {
+export function calculateDerivedStats(attributes = {}, resources = {}, overrides = {}) {
   const might = Number(attributes.might ?? 0);
   const insight = Number(attributes.insight ?? 0);
   const shell = Number(attributes.shell ?? 0);
@@ -13,7 +13,9 @@ export function calculateDerivedStats(attributes = {}, resources = {}) {
 
   return {
     carryingCapacity: Math.floor(safe(might)),
-    maneuverability: Math.ceil(safe(grace) / 2),
+    maneuverability: overrides.maneuverability == null
+      ? Math.ceil(safe(grace) / 2)
+      : Math.floor(Math.max(0, safe(Number(overrides.maneuverability)))),
     techniqueSlots: Math.floor(safe(insight)),
     beltSize: Math.floor(safe(shell)),
     satietyMax: Math.max(safe(hunger), 10)

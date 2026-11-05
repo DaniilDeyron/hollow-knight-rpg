@@ -52,6 +52,23 @@ export class HKCharacterSheet extends ActorSheet {
     html.find("[data-attribute-roll]").on("click", this._onRollAttribute.bind(this));
     html.find("[data-resource-current]").on("click", this._onResourcePipClick.bind(this));
     html.find("[data-resource-temp-adjust]").on("click", this._onTemporaryResourceAdjust.bind(this));
+    html.find("[data-reset-derived]").on("click", this._onResetDerived.bind(this));
+  }
+
+  async _onResetDerived(event) {
+    event.preventDefault();
+    if (!this.isEditable) return;
+
+    const key = event.currentTarget.dataset.resetDerived;
+    if (key !== "maneuverability") return;
+
+    try {
+      await this.actor.update({ "system.social.maneuverabilityOverride": null });
+      this.render(false);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Derived value reset failed", error);
+      ui.notifications.error("Не удалось вернуть автоматический расчёт. Подробности — в консоли (F12).");
+    }
   }
 
   async _onResourcePipClick(event) {
