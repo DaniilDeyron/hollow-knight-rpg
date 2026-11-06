@@ -30,7 +30,8 @@ test("Пустые характеристики дают нулевые знач
     maneuverability: 0,
     techniqueSlots: 0,
     beltSize: 0,
-    satietyMax: 10
+    satietyMax: 10,
+    notchesMax: 3
   });
 });
 
@@ -48,4 +49,12 @@ test("Ручной максимум Сытости переопределяет 
 
 test("Пустое ручное значение максимума Сытости возвращает автоматический расчёт", () => {
   assert.equal(calculateDerivedStats({}, { hunger: 4 }, { satietyMax: null }).satietyMax, 10);
+});
+
+test("Максимум Меток равен трём базовым плюс ранги Путей", () => {
+  assert.equal(calculateDerivedStats({}, {}, { pathRanks: 0 }).notchesMax, 3);
+  assert.equal(calculateDerivedStats({}, {}, { pathRanks: 4 }).notchesMax, 7);
+});
+test("Дополнительные Метки прибавляются поверх рангов Путей", () => {
+  assert.equal(calculateDerivedStats({}, { notchesBonus: 1 }, { pathRanks: 3 }).notchesMax, 7);
 });

@@ -8,6 +8,8 @@ export function calculateDerivedStats(attributes = {}, resources = {}, overrides
   const shell = Number(attributes.shell ?? 0);
   const grace = Number(attributes.grace ?? 0);
   const hunger = Number(resources.hunger ?? 0);
+  const pathRanks = Number(overrides.pathRanks ?? 0);
+  const notchBonus = Number(overrides.notchBonus ?? resources.notchesBonus ?? 0);
 
   const safe = (value) => Number.isFinite(value) ? value : 0;
 
@@ -20,6 +22,7 @@ export function calculateDerivedStats(attributes = {}, resources = {}, overrides
     beltSize: Math.floor(safe(shell)),
     satietyMax: overrides.satietyMax == null
       ? Math.max(safe(hunger), 10)
-      : Math.floor(Math.max(0, safe(Number(overrides.satietyMax))))
+      : Math.floor(Math.max(0, safe(Number(overrides.satietyMax)))),
+    notchesMax: Math.max(0, 3 + Math.floor(Math.max(0, safe(pathRanks))) + Math.floor(Math.max(0, safe(notchBonus))))
   };
 }

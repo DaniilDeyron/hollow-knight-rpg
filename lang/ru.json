@@ -1,7 +1,8 @@
 {
   "HKRPG": {
     "Sheets": {
-      "Character": "Лист жука"
+      "Character": "Лист жука",
+      "Charm": "Амулет"
     },
     "Profile": {
       "Name": "Имя",
@@ -104,6 +105,29 @@
       "Mastery": "Мастерство",
       "SkillNamePlaceholder": "Навык",
       "SkillGroupNamePlaceholder": "Название умения"
+    },
+    "Charms": {
+      "Equipped": "Надето",
+      "EquippedCount": "шт.",
+      "Collection": "Коллекция",
+      "CollectionHint": "Перетащите амулет в верхнюю область, чтобы надеть его",
+      "DropToEquip": "Перетащите амулеты сюда, чтобы надеть",
+      "DropToCollection": "Перетащите сюда надетый амулет, чтобы снять",
+      "Notches": "Метки",
+      "NotchesFormula": "3 базовые + Ранги Путей + дополнительные Метки",
+      "BonusNotches": "Доп. Метки",
+      "NotchCost": "Стоимость в Метках (⊚)",
+      "Overcharmed": "Переочарован",
+      "OvercharmedDescription": "Весь получаемый урон удваивается.",
+      "RestRule": "Надевать и снимать амулеты можно только во время отдыха.",
+      "Create": "Создать амулет",
+      "Edit": "Изменить амулет",
+      "Unequip": "Снять амулет",
+      "NamePlaceholder": "Название амулета",
+      "ErrorDuplicate": "Нельзя надеть несколько копий одного амулета.",
+      "ErrorNoFreeNotch": "Нельзя надеть амулет: нет ни одной свободной Метки.",
+      "ErrorAlreadyOvercharmed": "Нельзя надеть ещё один амулет сверх доступных Меток.",
+      "ErrorCannotEquip": "Не удалось надеть амулет."
     }
   }
 }

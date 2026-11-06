@@ -148,6 +148,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         })
       }),
       resources: new fields.SchemaField({
+        notchesBonus: valueField({ max: 99 }),
         heart: valueField(),
         heartMax: valueField(),
         heartTemp: valueField(),
@@ -181,7 +182,8 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         maneuverability: valueField(),
         techniqueSlots: valueField(),
         beltSize: valueField(),
-        satietyMax: valueField()
+        satietyMax: valueField(),
+        notchesMax: valueField()
       }),
       featureSheet: new fields.SchemaField({
         traits: fixedRowSlots(traitSheetRowField, 10),
@@ -198,9 +200,15 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
   }
 
   prepareDerivedData() {
+    const pathRanks = Object.values(this.featureSheet.paths ?? {}).reduce((total, path) => {
+      return total + ["rank1", "rank2", "rank3"].filter((key) => Boolean(path?.[key])).length;
+    }, 0);
+
     const derived = calculateDerivedStats(this.attributes, this.resources, {
       maneuverability: this.social.maneuverabilityOverride,
-      satietyMax: this.resources.satietyMaxOverride
+      satietyMax: this.resources.satietyMaxOverride,
+      pathRanks,
+      notchBonus: this.resources.notchesBonus
     });
     Object.assign(this.derived, derived);
   }

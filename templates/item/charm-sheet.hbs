@@ -1,0 +1,16 @@
+<form class="{{cssClass}}" autocomplete="off">
+  <header class="hkrpg-charm-item-header">
+    <img class="hkrpg-charm-item-image" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+    <label class="hkrpg-charm-item-title">
+      <span>{{localize "HKRPG.Profile.Name"}}</span>
+      <input name="name" type="text" value="{{item.name}}" placeholder="{{localize "HKRPG.Charms.NamePlaceholder"}}" {{#unless isEditable}}disabled{{/unless}} />
+    </label>
+  </header>
+  <section class="hkrpg-charm-item-cost">
+    <div class="hkrpg-charm-item-cost__symbol">⊚</div>
+    <label>
+      <span>{{localize "HKRPG.Charms.NotchCost"}}</span>
+      <input name="system.notches" type="number" min="1" max="99" step="1" value="{{system.notches}}" {{#unless isEditable}}disabled{{/unless}} />
+    </label>
+  </section>
+</form>

@@ -1,6 +1,7 @@
 import { rollAttributeCheck } from "../rolls/pool.js";
 import { buildResourcePips } from "../rules/resource-tracker.js";
 import { buildFeatureRows, buildSkillGroups, countFeatureMarks } from "../rules/feature-sheet.js";
+import { buildCharmNotchState, evaluateCharmEquip } from "../rules/charm-tracker.js";
 
 export class HKCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -11,6 +12,10 @@ export class HKCharacterSheet extends ActorSheet {
       height: 900,
       resizable: true,
       submitOnChange: true,
+      dragDrop: [
+        ...(super.defaultOptions.dragDrop ?? []),
+        { dragSelector: "[data-charm-item-id]", dropSelector: "[data-charm-dropzone]" }
+      ],
       tabs: [
         {
           navSelector: ".hkrpg-tabs",
@@ -35,10 +40,13 @@ export class HKCharacterSheet extends ActorSheet {
     };
 
     const items = this.actor.items.contents;
+    const charms = items.filter((item) => item.type === "charm");
     context.itemGroups = {
       traits: items.filter((item) => item.type === "trait"),
       paths: items.filter((item) => item.type === "path"),
-      charms: items.filter((item) => item.type === "charm"),
+      charms,
+      equippedCharms: charms.filter((item) => Boolean(item.system.equipped)),
+      collectionCharms: charms.filter((item) => !item.system.equipped),
       proficiencies: items.filter((item) => item.type === "proficiency"),
       techniques: items.filter((item) => item.type === "technique"),
       equipment: items.filter((item) => item.type === "equipment"),
@@ -46,6 +54,8 @@ export class HKCharacterSheet extends ActorSheet {
       shields: items.filter((item) => item.type === "shield"),
       armor: items.filter((item) => item.type === "armor")
     };
+    context.charmNotches = buildCharmNotchState(this.actor.system.derived.notchesMax, charms);
+    context.notchBonus = this.actor.system.resources.notchesBonus;
 
     const featureSheet = this.actor.system.featureSheet;
     context.featureRows = {
@@ -121,6 +131,9 @@ export class HKCharacterSheet extends ActorSheet {
     }
 
     bind("[data-resource-field]", "change", this._onResourceFieldChange);
+    bind("[data-create-charm]", "click", this._onCreateCharm);
+    bind("[data-edit-charm]", "click", this._onEditCharm);
+    bind("[data-unequip-charm]", "click", this._onUnequipCharm);
     bind("[data-attribute-roll]", "click", this._onRollAttribute);
     bind("[data-reset-derived]", "click", this._onResetDerived);
     bind("[data-derived-input]", "change", this._onDerivedInputChange);
@@ -183,7 +196,7 @@ export class HKCharacterSheet extends ActorSheet {
     const allowedKeys = [
       "heart", "soul", "stamina",
       "heartMax", "soulMax", "staminaMax",
-      "heartTemp", "soulTemp", "staminaTemp"
+      "heartTemp", "soulTemp", "staminaTemp", "notchesBonus"
     ];
     if (!allowedKeys.includes(key)) return;
 
@@ -211,7 +224,7 @@ export class HKCharacterSheet extends ActorSheet {
   async _updateTrackedResource(key, value) {
     const allowedKeys = [
       "heart", "soul", "stamina",
-      "heartTemp", "soulTemp", "staminaTemp"
+      "heartTemp", "soulTemp", "staminaTemp", "notchesBonus"
     ];
     const numericValue = Number(value);
     if (!allowedKeys.includes(key) || !Number.isFinite(numericValue) || numericValue < 0) {
@@ -220,6 +233,11 @@ export class HKCharacterSheet extends ActorSheet {
     }
 
     const nextValue = Math.floor(numericValue);
+    if (key === "notchesBonus") {
+      await this._updateTrackedResources({ "system.resources.notchesBonus": nextValue });
+      return;
+    }
+
     if (["heart", "soul", "stamina"].includes(key)) {
       const maximum = Number(this.actor.system.resources[key + "Max"] ?? 0);
       await this._updateTrackedResources({
@@ -240,6 +258,143 @@ export class HKCharacterSheet extends ActorSheet {
     } catch (error) {
       console.error("Hollow Knight RPG | Resource update failed", error);
       ui.notifications.error("Не удалось обновить запас персонажа. Подробности — в консоли (F12).");
+    }
+  }
+
+  async _onCreateCharm(event) {
+    event.preventDefault();
+    if (!this.isEditable) return;
+    try {
+      const [charm] = await this.actor.createEmbeddedDocuments("Item", [{
+        name: "Новый амулет", type: "charm", img: "icons/svg/item-bag.svg",
+        system: { notches: 1, equipped: false, overcharmed: false }
+      }]);
+      charm?.sheet?.render(true);
+      this.render(true);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to create Charm", error);
+      ui.notifications.error("Не удалось создать амулет. Подробности — в консоли (F12).");
+    }
+  }
+
+  async _onEditCharm(event) {
+    event.preventDefault();
+    const item = this.actor.items.get(event.currentTarget.dataset.editCharm);
+    if (item?.type === "charm") item.sheet.render(true);
+  }
+
+  async _onUnequipCharm(event) {
+    event.preventDefault();
+    if (!this.isEditable) return;
+    const item = this.actor.items.get(event.currentTarget.dataset.unequipCharm);
+    if (item?.type !== "charm" || !item.system.equipped) return;
+    try {
+      await item.update({ "system.equipped": false, "system.overcharmed": false });
+      this.render(true);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to unequip Charm", error);
+      ui.notifications.error("Не удалось снять амулет. Подробности — в консоли (F12).");
+    }
+  }
+
+  _onDragStart(event) {
+    const itemId = event.currentTarget?.dataset?.charmItemId;
+    const item = itemId ? this.actor.items.get(itemId) : null;
+    if (!item) return super._onDragStart(event);
+    event.dataTransfer.setData("text/plain", JSON.stringify(item.toDragData()));
+  }
+
+  async _onDrop(event) {
+    const dropzone = event.target?.closest?.("[data-charm-dropzone]");
+    if (!dropzone) return super._onDrop(event);
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.isEditable) return false;
+
+    let data;
+    try {
+      data = TextEditor.getDragEventData(event);
+    } catch (error) {
+      console.warn("Hollow Knight RPG | Could not read dropped Item data", error);
+      return false;
+    }
+    if (data?.type !== "Item" || !data.uuid) {
+      ui.notifications.warn("Сюда можно перетащить только предмет типа «Амулет».");
+      return false;
+    }
+
+    let item;
+    try {
+      item = await fromUuid(data.uuid);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to resolve dropped Item", error);
+      return false;
+    }
+    if (!item || item.documentName !== "Item" || item.type !== "charm") {
+      ui.notifications.warn("Эта область принимает только амулеты.");
+      return false;
+    }
+
+    return dropzone.dataset.charmDropzone === "equipped"
+      ? this._equipDroppedCharm(item)
+      : this._moveDroppedCharmToCollection(item);
+  }
+
+  async _equipDroppedCharm(sourceItem) {
+    if (sourceItem.parent === this.actor && sourceItem.system.equipped) return true;
+    const equipped = this.actor.items.filter((item) =>
+      item.type === "charm" && item.system.equipped && item.id !== sourceItem.id
+    );
+    const result = evaluateCharmEquip(this.actor.system.derived.notchesMax, equipped, sourceItem);
+    if (!result.allowed) {
+      const messages = {
+        duplicate: "HKRPG.Charms.ErrorDuplicate",
+        "no-free-notch": "HKRPG.Charms.ErrorNoFreeNotch",
+        "already-overcharmed": "HKRPG.Charms.ErrorAlreadyOvercharmed"
+      };
+      ui.notifications.warn(game.i18n.localize(messages[result.reason] ?? "HKRPG.Charms.ErrorCannotEquip"));
+      return false;
+    }
+
+    try {
+      if (sourceItem.parent === this.actor) {
+        await sourceItem.update({
+          "system.equipped": true,
+          "system.overcharmed": result.overcharmed
+        });
+      } else {
+        const itemData = sourceItem.toObject();
+        delete itemData._id;
+        itemData.system = { ...itemData.system, equipped: true, overcharmed: result.overcharmed };
+        await this.actor.createEmbeddedDocuments("Item", [itemData]);
+      }
+      this.render(true);
+      return true;
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to equip Charm", error);
+      ui.notifications.error("Не удалось надеть амулет. Подробности — в консоли (F12).");
+      return false;
+    }
+  }
+
+  async _moveDroppedCharmToCollection(sourceItem) {
+    try {
+      if (sourceItem.parent === this.actor) {
+        if (sourceItem.system.equipped) {
+          await sourceItem.update({ "system.equipped": false, "system.overcharmed": false });
+        }
+      } else {
+        const itemData = sourceItem.toObject();
+        delete itemData._id;
+        itemData.system = { ...itemData.system, equipped: false, overcharmed: false };
+        await this.actor.createEmbeddedDocuments("Item", [itemData]);
+      }
+      this.render(true);
+      return true;
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to move Charm to collection", error);
+      ui.notifications.error("Не удалось переместить амулет. Подробности — в консоли (F12).");
+      return false;
     }
   }
 

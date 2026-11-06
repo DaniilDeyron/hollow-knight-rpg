@@ -384,16 +384,86 @@
       </div>
     </section>
 
-    <section class="tab" data-group="primary" data-tab="charms">
-      <div class="hkrpg-section-grid hkrpg-charms-grid">
-        <section class="hkrpg-panel hkrpg-charms-panel">
-          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Charms"}}</h2><span>{{itemGroups.charms.length}}</span></div>
-          {{#if itemGroups.charms.length}}
-            <ul class="hkrpg-item-list">{{#each itemGroups.charms as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
-          {{else}}
-            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoCharms"}}</p>
+    <section class="tab hkrpg-charms-tab" data-group="primary" data-tab="charms">
+      <div class="hkrpg-charms-page">
+        <section class="hkrpg-charms-equipped-panel">
+          <header class="hkrpg-charms-section-heading">
+            <h2>{{localize "HKRPG.Charms.Equipped"}}</h2>
+            <span>{{itemGroups.equippedCharms.length}} {{localize "HKRPG.Charms.EquippedCount"}}</span>
+          </header>
+          <div class="hkrpg-charms-equipped-dropzone hkrpg-charm-dropzone" data-charm-dropzone="equipped">
+            {{#if itemGroups.equippedCharms.length}}
+              {{#each itemGroups.equippedCharms as |charm|}}
+                <article class="hkrpg-charm-token hkrpg-charm-draggable" data-charm-item-id="{{charm.id}}" draggable="true" title="{{charm.name}} · ⊚ {{charm.system.notches}}">
+                  <img src="{{charm.img}}" alt="{{charm.name}}" />
+                  <span class="hkrpg-charm-token__cost">{{charm.system.notches}}</span>
+                  <button type="button" class="hkrpg-charm-token__remove" data-unequip-charm="{{charm.id}}" title="{{localize "HKRPG.Charms.Unequip"}}" aria-label="{{localize "HKRPG.Charms.Unequip"}}" {{#unless ../isEditable}}disabled{{/unless}}>×</button>
+                </article>
+              {{/each}}
+            {{else}}
+              <p class="hkrpg-charms-drop-hint">{{localize "HKRPG.Charms.DropToEquip"}}</p>
+            {{/if}}
+          </div>
+        </section>
+
+        <section class="hkrpg-notches-panel">
+          <header class="hkrpg-charms-section-heading hkrpg-notches-heading">
+            <div>
+              <h2>{{localize "HKRPG.Charms.Notches"}} <span>⊚</span></h2>
+              <p>{{localize "HKRPG.Charms.NotchesFormula"}}</p>
+            </div>
+            <div class="hkrpg-notches-summary">
+              <strong>{{charmNotches.used}} / {{charmNotches.maximum}}</strong>
+              <label>
+                <span>{{localize "HKRPG.Charms.BonusNotches"}}</span>
+                <input data-resource-field="notchesBonus" type="number" min="0" max="99" step="1" value="{{notchBonus}}" {{#unless isEditable}}disabled{{/unless}} />
+              </label>
+            </div>
+          </header>
+          <div class="hkrpg-notch-track" aria-label="{{localize "HKRPG.Charms.Notches"}}">
+            {{#each charmNotches.slots as |notch|}}
+              <span class="hkrpg-notch {{#if notch.filled}}is-filled{{/if}}" title="{{notch.value}}"></span>
+            {{/each}}
+            {{#if charmNotches.overflow}}<span class="hkrpg-notch-overflow">+{{charmNotches.overflow}}</span>{{/if}}
+          </div>
+          {{#if charmNotches.overcharmed}}
+            <div class="hkrpg-overcharmed-warning">
+              <strong>{{localize "HKRPG.Charms.Overcharmed"}}</strong>
+              <span>{{localize "HKRPG.Charms.OvercharmedDescription"}}</span>
+            </div>
           {{/if}}
-          <div class="hkrpg-derived-strip"><div><span>{{localize "HKRPG.Derived.BeltSize"}}</span><strong>{{system.derived.beltSize}}</strong></div></div>
+          <p class="hkrpg-charms-rule-note">{{localize "HKRPG.Charms.RestRule"}}</p>
+        </section>
+
+        <section class="hkrpg-charms-collection-panel">
+          <header class="hkrpg-charms-section-heading">
+            <div>
+              <h2>{{localize "HKRPG.Charms.Collection"}}</h2>
+              <p>{{localize "HKRPG.Charms.CollectionHint"}}</p>
+            </div>
+            <button type="button" class="hkrpg-charm-create" data-create-charm {{#unless isEditable}}disabled{{/unless}}>
+              <span>＋</span> {{localize "HKRPG.Charms.Create"}}
+            </button>
+          </header>
+          <div class="hkrpg-charms-collection-dropzone hkrpg-charm-dropzone" data-charm-dropzone="collection">
+            {{#if itemGroups.collectionCharms.length}}
+              <div class="hkrpg-charms-collection-grid">
+                {{#each itemGroups.collectionCharms as |charm|}}
+                  <article class="hkrpg-charm-card hkrpg-charm-draggable" data-charm-item-id="{{charm.id}}" draggable="true">
+                    <button type="button" class="hkrpg-charm-card__edit" data-edit-charm="{{charm.id}}" title="{{localize "HKRPG.Charms.Edit"}}" aria-label="{{localize "HKRPG.Charms.Edit"}}">
+                      <img src="{{charm.img}}" alt="{{charm.name}}" />
+                    </button>
+                    <div class="hkrpg-charm-card__details">
+                      <strong title="{{charm.name}}">{{charm.name}}</strong>
+                      <span>⊚ {{charm.system.notches}}</span>
+                    </div>
+                  </article>
+                {{/each}}
+              </div>
+            {{else}}
+              <p class="hkrpg-charms-drop-hint">{{localize "HKRPG.Charms.DropToCollection"}}</p>
+            {{/if}}
+          </div>
         </section>
       </div>
     </section>
