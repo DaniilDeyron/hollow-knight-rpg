@@ -55,6 +55,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         }
       }),
       profile: new fields.SchemaField({
+        // Legacy data retained for older actor records; the current sheet no longer displays it.
         player: textField(),
         milestone: valueField(),
         minorAdvancements: valueField(),

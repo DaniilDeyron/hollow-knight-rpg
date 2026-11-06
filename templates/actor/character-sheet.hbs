@@ -30,7 +30,7 @@
       </div>
 
       <div class="hkrpg-header-resources">
-        <div class="hkrpg-header-resource hkrpg-header-resource--heart">
+        <div class="hkrpg-header-resource">
           <svg class="hkrpg-header-resource__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21.2 10.4 19.8C4.7 14.7 1 11.3 1 7.2 1 3.9 3.6 1.4 6.9 1.4c2 0 3.9.9 5.1 2.5 1.2-1.6 3.1-2.5 5.1-2.5C20.4 1.4 23 3.9 23 7.2c0 4.1-3.7 7.5-9.4 12.6L12 21.2Z"/></svg>
           <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Heart"}}</span>
           <strong class="hkrpg-header-resource__value">{{system.resources.heart}} / {{system.resources.heartMax}}</strong>
@@ -50,7 +50,7 @@
           </div>
         </div>
 
-        <div class="hkrpg-header-resource hkrpg-header-resource--soul">
+        <div class="hkrpg-header-resource">
           <span class="hkrpg-header-resource__icon hkrpg-header-resource__icon--soul" aria-hidden="true"></span>
           <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Soul"}}</span>
           <strong class="hkrpg-header-resource__value">{{system.resources.soul}} / {{system.resources.soulMax}}</strong>
@@ -189,7 +189,7 @@
                     <input name="system.customReserves.{{key}}.label" type="text" value="{{reserve.label}}" placeholder="{{localize "HKRPG.CustomReserve"}}" aria-label="{{localize "HKRPG.CustomReserve"}}" />
                   </label>
                   <div class="hkrpg-custom-reserve__fields">
-                    <label class="hkrpg-custom-reserve__maximum">
+                    <label>
                       <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
                       <input name="system.customReserves.{{key}}.max" type="number" min="0" value="{{reserve.max}}" />
                     </label>
@@ -197,7 +197,7 @@
                       <span>{{localize "HKRPG.Tracker.Current"}}</span>
                       <input name="system.customReserves.{{key}}.current" type="number" min="0" value="{{reserve.current}}" />
                     </label>
-                    <label class="hkrpg-custom-reserve__temporary">
+                    <label>
                       <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
                       <input name="system.customReserves.{{key}}.temporary" type="number" min="0" value="{{reserve.temporary}}" />
                     </label>
@@ -292,7 +292,7 @@
     </section>
 
         <section class="tab" data-group="primary" data-tab="features">
-      <div class="hkrpg-section-grid hkrpg-features-grid">
+      <div class="hkrpg-section-grid">
         <section class="hkrpg-panel">
           <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Traits"}}</h2><span>{{itemGroups.traits.length}}</span></div>
           {{#if itemGroups.traits.length}}
