@@ -82,3 +82,19 @@ test("Любая временная иконка отправляет новое
   const result = buildResourcePips(10, 10, 3);
   assert.deepEqual(result.temporary.map((pip) => pip.clickValue), [2,2,2]);
 });
+
+
+test("Для каждого обычного сердечка формируется явное целевое значение ресурса", () => {
+  const pips = buildResourcePips(10, 10, 0).base;
+  assert.deepEqual(pips.map((pip) => pip.clickValue), [0,1,2,3,4,5,6,7,8,9]);
+});
+
+test("Для пустого седьмого сердечка формируется значение 7", () => {
+  const pips = buildResourcePips(10, 1, 0).base;
+  assert.equal(pips[6].clickValue, 7);
+});
+
+test("Временные иконки формируют новое число временного запаса", () => {
+  const pips = buildResourcePips(10, 10, 3).temporary;
+  assert.deepEqual(pips.map((pip) => pip.clickValue), [2,2,2]);
+});

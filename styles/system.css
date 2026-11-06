@@ -2167,20 +2167,7 @@
   transform: scale(1.1);
 }
 
-.hkrpg.sheet.actor .hkrpg-pip__control {
-  position: absolute;
-  width: 1px !important;
-  height: 1px !important;
-  min-width: 1px !important;
-  min-height: 1px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-  opacity: 0;
-  clip-path: inset(50%);
-  overflow: hidden;
-  pointer-events: none;
-}
+
 
 .hkrpg.sheet.actor .hkrpg-pip__control:focus-visible + .hkrpg-pip__svg,
 .hkrpg.sheet.actor .hkrpg-pip__control:focus-visible + .hkrpg-pip__shape {
@@ -2236,3 +2223,35 @@
   opacity: 1 !important;
   filter: drop-shadow(0 0 4px rgb(93 196 240 / 72%));
 }
+
+
+/* Resource pips are direct action buttons, not hidden form controls. */
+.hkrpg.sheet.actor .hkrpg-pip {
+  appearance: none;
+  -webkit-appearance: none;
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 2;
+  position: relative;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.hkrpg.sheet.actor .hkrpg-pip:hover {
+  background: transparent;
+  filter: brightness(1.3);
+}
+
+.hkrpg.sheet.actor .hkrpg-pip:active {
+  transform: scale(0.92);
+}
+
+.hkrpg.sheet.actor .hkrpg-pip:disabled {
+  cursor: default;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.hkrpg.sheet.actor .hkrpg-pip__control { display: none !important; }

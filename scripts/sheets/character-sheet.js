@@ -78,8 +78,37 @@ export class HKCharacterSheet extends ActorSheet {
       });
     };
 
-    // Heart and Soul pips are native form radios with unique numeric values.
-    // Foundry's submitOnChange writes the selected value directly to Actor data.
+    // Heart and Soul use real buttons. A capture-phase listener on the
+    // form receives the click before Foundry or a child control can stop it.
+    const root = html?.[0] ?? html;
+    if (root?.addEventListener && root.dataset.hkrpgResourceCapture !== "true") {
+      root.dataset.hkrpgResourceCapture = "true";
+      root.addEventListener("click", async (event) => {
+        const pip = event.target?.closest?.("[data-resource-pip]");
+        if (!pip || !root.contains(pip)) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        if (!this.isEditable || pip.disabled) return;
+
+        const key = pip.dataset.resourcePip;
+        const next = Number(pip.dataset.resourceTarget);
+        if (!["heart", "soul", "heartTemp", "soulTemp"].includes(key)) return;
+        if (!Number.isInteger(next) || next < 0) return;
+
+        const maximum = (key === "heart" || key === "soul")
+          ? Number(this.actor.system.resources[key + "Max"] ?? 0)
+          : Number.POSITIVE_INFINITY;
+        if (next > maximum) return;
+
+        await this._updateTrackedResource(key, next);
+      }, true);
+    } else if (!root?.addEventListener) {
+      console.error("Hollow Knight RPG | Could not attach capture listener for resource pips", html);
+    }
+
     bind("[data-resource-field]", "change", this._onResourceFieldChange);
     bind("[data-attribute-roll]", "click", this._onRollAttribute);
     bind("[data-reset-derived]", "click", this._onResetDerived);
