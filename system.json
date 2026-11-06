@@ -14,7 +14,7 @@
   ],
   "url": "https://github.com/DaniilDeyron/hollow-knight-rpg",
   "manifest": "https://raw.githubusercontent.com/DaniilDeyron/hollow-knight-rpg/main/system.json",
-  "download": "https://github.com/DaniilDeyron/hollow-knight-rpg/releases/latest/download/hollow-knight-rpg.zip",
+  "download": "https://github.com/DaniilDeyron/hollow-knight-rpg/releases/download/v0.1.35/hollow-knight-rpg.zip",
   "esmodules": [
     "scripts/main.js"
   ],

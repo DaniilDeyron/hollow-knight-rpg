@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: foundry-release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -53,10 +57,34 @@ jobs:
             node --check "$file"
           done
 
-      - name: Build Foundry package
+      - name: Build and verify Foundry package
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           rm -f hollow-knight-rpg.zip
           zip -r hollow-knight-rpg.zip system.json scripts templates styles lang
+
+          node --input-type=module <<'NODE'
+          import { execFileSync } from "node:child_process";
+          const expected = process.env.VERSION;
+          const packaged = JSON.parse(execFileSync("unzip", ["-p", "hollow-knight-rpg.zip", "system.json"], { encoding: "utf8" }));
+          if (packaged.version !== expected) {
+            throw new Error(`ZIP manifest mismatch: expected ${expected}, got ${packaged.version}`);
+          }
+          const entries = execFileSync("unzip", ["-Z1", "hollow-knight-rpg.zip"], { encoding: "utf8" }).trim().split("\n");
+          for (const required of ["system.json", "scripts/main.js", "scripts/sheets/character-sheet.js", "templates/actor/character-sheet.hbs", "styles/system.css", "lang/ru.json"]) {
+            if (!entries.includes(required)) throw new Error(`Missing package entry: ${required}`);
+          }
+          console.log(`Verified packaged system.json version: ${packaged.version}`);
+          NODE
+
+      - name: Archive verified package
+        uses: actions/upload-artifact@v4
+        with:
+          name: hollow-knight-rpg-v${{ steps.version.outputs.version }}
+          path: hollow-knight-rpg.zip
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Create GitHub Release
         env:
