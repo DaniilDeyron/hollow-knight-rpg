@@ -1,5 +1,6 @@
 import { rollAttributeCheck } from "../rolls/pool.js";
 import { buildResourcePips } from "../rules/resource-tracker.js";
+import { buildFeatureRows, countFeatureMarks } from "../rules/feature-sheet.js";
 
 export class HKCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -45,6 +46,14 @@ export class HKCharacterSheet extends ActorSheet {
       shields: items.filter((item) => item.type === "shield"),
       armor: items.filter((item) => item.type === "armor")
     };
+
+    const featureSheet = this.actor.system.featureSheet;
+    context.featureRows = {
+      traits: buildFeatureRows(featureSheet.traits, context.itemGroups.traits, 10, ["attraction", "spook", "hunger"]),
+      paths: buildFeatureRows(featureSheet.paths, context.itemGroups.paths, 6, ["rank1", "rank2", "rank3"]),
+      techniques: buildFeatureRows(featureSheet.techniques, context.itemGroups.techniques, 9, ["marked"])
+    };
+    context.featureTotals = countFeatureMarks(context.featureRows.traits, ["attraction", "spook", "hunger"]);
 
     return context;
   }

@@ -41,6 +41,47 @@ function customReserveField() {
   });
 }
 
+function booleanField() {
+  return new fields.BooleanField({
+    required: true,
+    nullable: false,
+    initial: false
+  });
+}
+
+function traitSheetRowField() {
+  return new fields.SchemaField({
+    name: textField(),
+    attraction: booleanField(),
+    spook: booleanField(),
+    hunger: booleanField()
+  });
+}
+
+function pathSheetRowField() {
+  return new fields.SchemaField({
+    name: textField(),
+    rank1: booleanField(),
+    rank2: booleanField(),
+    rank3: booleanField()
+  });
+}
+
+function techniqueSheetRowField() {
+  return new fields.SchemaField({
+    name: textField(),
+    marked: booleanField()
+  });
+}
+
+function fixedRowSlots(factory, count) {
+  const schema = {};
+  for (let index = 1; index <= count; index += 1) {
+    schema[`slot${index}`] = factory();
+  }
+  return new fields.SchemaField(schema);
+}
+
 export class HKCharacterData extends foundry.abstract.TypeDataModel {
   static defineSchema() {
     return {
@@ -121,6 +162,11 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         techniqueSlots: valueField(),
         beltSize: valueField(),
         satietyMax: valueField()
+      }),
+      featureSheet: new fields.SchemaField({
+        traits: fixedRowSlots(traitSheetRowField, 10),
+        paths: fixedRowSlots(pathSheetRowField, 6),
+        techniques: fixedRowSlots(techniqueSheetRowField, 9)
       }),
       notes: textField()
     };
