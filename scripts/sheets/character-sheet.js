@@ -29,7 +29,8 @@ export class HKCharacterSheet extends ActorSheet {
     const resources = this.actor.system.resources;
     context.resourcePips = {
       heart: buildResourcePips(resources.heartMax, resources.heart, resources.heartTemp),
-      soul: buildResourcePips(resources.soulMax, resources.soul, resources.soulTemp)
+      soul: buildResourcePips(resources.soulMax, resources.soul, resources.soulTemp),
+      stamina: buildResourcePips(resources.staminaMax, resources.stamina, resources.staminaTemp)
     };
 
     const items = this.actor.items.contents;
@@ -95,10 +96,10 @@ export class HKCharacterSheet extends ActorSheet {
 
         const key = pip.dataset.resourcePip;
         const next = Number(pip.dataset.resourceTarget);
-        if (!["heart", "soul", "heartTemp", "soulTemp"].includes(key)) return;
+        if (!["heart", "soul", "stamina", "heartTemp", "soulTemp", "staminaTemp"].includes(key)) return;
         if (!Number.isInteger(next) || next < 0) return;
 
-        const maximum = (key === "heart" || key === "soul")
+        const maximum = ["heart", "soul", "stamina"].includes(key)
           ? Number(this.actor.system.resources[key + "Max"] ?? 0)
           : Number.POSITIVE_INFINITY;
         if (next > maximum) return;
@@ -169,7 +170,10 @@ export class HKCharacterSheet extends ActorSheet {
 
     const input = event.currentTarget;
     const key = input.dataset.resourceField;
-    const allowedKeys = ["heart", "soul", "heartTemp", "soulTemp"];
+    const allowedKeys = [
+      "heartMax", "soulMax", "staminaMax",
+      "heartTemp", "soulTemp", "staminaTemp"
+    ];
     if (!allowedKeys.includes(key)) return;
 
     const parsed = Number(input.value);
@@ -178,24 +182,49 @@ export class HKCharacterSheet extends ActorSheet {
       return;
     }
 
-    await this._updateTrackedResource(key, Math.floor(parsed));
+    const nextValue = Math.floor(parsed);
+    if (key.endsWith("Max")) {
+      const resourceKey = key.slice(0, -3);
+      const current = Number(this.actor.system.resources[resourceKey] ?? 0);
+      const updates = {
+        [`system.resources.${key}`]: nextValue
+      };
+      if (current > nextValue) updates[`system.resources.${resourceKey}`] = nextValue;
+      await this._updateTrackedResources(updates);
+      return;
+    }
+
+    await this._updateTrackedResource(key, nextValue);
   }
 
   async _updateTrackedResource(key, value) {
-    const allowedKeys = ["heart", "soul", "heartTemp", "soulTemp"];
+    const allowedKeys = [
+      "heart", "soul", "stamina",
+      "heartTemp", "soulTemp", "staminaTemp"
+    ];
     const numericValue = Number(value);
     if (!allowedKeys.includes(key) || !Number.isFinite(numericValue) || numericValue < 0) {
       console.warn("Hollow Knight RPG | Rejected invalid resource update", { key, value });
       return;
     }
 
-    try {
-      await this.actor.update({
-        [`system.resources.${key}`]: Math.floor(numericValue)
+    const nextValue = Math.floor(numericValue);
+    if (["heart", "soul", "stamina"].includes(key)) {
+      const maximum = Number(this.actor.system.resources[key + "Max"] ?? 0);
+      await this._updateTrackedResources({
+        [`system.resources.${key}`]: Math.min(nextValue, maximum)
       });
+      return;
+    }
 
-      // Actor.update is authoritative; render again so the header pips and
-      // all numeric resource fields are regenerated from the same saved data.
+    await this._updateTrackedResources({
+      [`system.resources.${key}`]: nextValue
+    });
+  }
+
+  async _updateTrackedResources(updates) {
+    try {
+      await this.actor.update(updates);
       this.render(true);
     } catch (error) {
       console.error("Hollow Knight RPG | Resource update failed", error);

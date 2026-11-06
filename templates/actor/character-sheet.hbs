@@ -30,7 +30,7 @@
       </div>
 
       <div class="hkrpg-header-resources">
-        <div class="hkrpg-header-resource">
+        <div class="hkrpg-header-resource hkrpg-header-resource--heart">
           <svg class="hkrpg-header-resource__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21.2 10.4 19.8C4.7 14.7 1 11.3 1 7.2 1 3.9 3.6 1.4 6.9 1.4c2 0 3.9.9 5.1 2.5 1.2-1.6 3.1-2.5 5.1-2.5C20.4 1.4 23 3.9 23 7.2c0 4.1-3.7 7.5-9.4 12.6L12 21.2Z"/></svg>
           <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Heart"}}</span>
           <strong class="hkrpg-header-resource__value">{{system.resources.heart}} / {{system.resources.heartMax}}</strong>
@@ -48,9 +48,13 @@
               {{#if resourcePips.heart.temporaryOverflow}}<span class="hkrpg-pip-overflow hkrpg-pip-overflow--temporary">+{{resourcePips.heart.temporaryOverflow}}</span>{{/if}}
             </div>
           </div>
+          <div class="hkrpg-header-resource__fields">
+            <label><span>{{localize "HKRPG.Tracker.Maximum"}}</span><input data-resource-field="heartMax" type="number" min="0" value="{{system.resources.heartMax}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+            <label><span>{{localize "HKRPG.Tracker.Temporary"}}</span><input data-resource-field="heartTemp" type="number" min="0" value="{{system.resources.heartTemp}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+          </div>
         </div>
 
-        <div class="hkrpg-header-resource">
+        <div class="hkrpg-header-resource hkrpg-header-resource--soul">
           <span class="hkrpg-header-resource__icon hkrpg-header-resource__icon--soul" aria-hidden="true"></span>
           <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Soul"}}</span>
           <strong class="hkrpg-header-resource__value">{{system.resources.soul}} / {{system.resources.soulMax}}</strong>
@@ -68,10 +72,36 @@
               {{#if resourcePips.soul.temporaryOverflow}}<span class="hkrpg-pip-overflow hkrpg-pip-overflow--temporary">+{{resourcePips.soul.temporaryOverflow}}</span>{{/if}}
             </div>
           </div>
+          <div class="hkrpg-header-resource__fields">
+            <label><span>{{localize "HKRPG.Tracker.Maximum"}}</span><input data-resource-field="soulMax" type="number" min="0" value="{{system.resources.soulMax}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+            <label><span>{{localize "HKRPG.Tracker.Temporary"}}</span><input data-resource-field="soulTemp" type="number" min="0" value="{{system.resources.soulTemp}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+          </div>
+        </div>
+
+        <div class="hkrpg-header-resource hkrpg-header-resource--stamina">
+          <svg class="hkrpg-header-resource__icon hkrpg-header-resource__icon--stamina" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 1 15.2 8.8 23 12l-7.8 3.2L12 23l-3.2-7.8L1 12l7.8-3.2L12 1Z"/></svg>
+          <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Stamina"}}</span>
+          <strong class="hkrpg-header-resource__value">{{system.resources.stamina}} / {{system.resources.staminaMax}}</strong>
+          <div class="hkrpg-resource-pips">
+            <div class="hkrpg-resource-pips__base">
+              {{#each resourcePips.stamina.base as |pip|}}
+                <button type="button" class="hkrpg-pip hkrpg-pip--stamina {{#if pip.filled}}is-filled{{else}}is-empty{{/if}}" data-resource-pip="stamina" data-resource-target="{{pip.clickValue}}" title="{{pip.value}}" aria-label="{{localize "HKRPG.Resource.Stamina"}} {{pip.value}}" {{#unless isEditable}}disabled{{/unless}}><span class="hkrpg-pip__shape"></span></button>
+              {{/each}}
+              {{#if resourcePips.stamina.baseOverflow}}<span class="hkrpg-pip-overflow">+{{resourcePips.stamina.baseOverflow}}</span>{{/if}}
+            </div>
+            <div class="hkrpg-resource-pips__temporary">
+              {{#each resourcePips.stamina.temporary as |pip|}}
+                <button type="button" class="hkrpg-pip hkrpg-pip--stamina hkrpg-pip--temporary" data-resource-pip="staminaTemp" data-resource-target="{{pip.clickValue}}" title="{{localize "HKRPG.Tracker.SpendTemporary"}}" aria-label="{{localize "HKRPG.Tracker.SpendTemporary"}}" {{#unless isEditable}}disabled{{/unless}}><span class="hkrpg-pip__shape"></span></button>
+              {{/each}}
+              {{#if resourcePips.stamina.temporaryOverflow}}<span class="hkrpg-pip-overflow hkrpg-pip-overflow--temporary">+{{resourcePips.stamina.temporaryOverflow}}</span>{{/if}}
+            </div>
+          </div>
+          <div class="hkrpg-header-resource__fields">
+            <label><span>{{localize "HKRPG.Tracker.Maximum"}}</span><input data-resource-field="staminaMax" type="number" min="0" value="{{system.resources.staminaMax}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+            <label><span>{{localize "HKRPG.Tracker.Temporary"}}</span><input data-resource-field="staminaTemp" type="number" min="0" value="{{system.resources.staminaTemp}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+          </div>
         </div>
       </div>
-    </div>
-
     <section class="hkrpg-satiety-summary">
       <h2>{{localize "HKRPG.Resource.Satiety"}}</h2>
       <div class="hkrpg-satiety-values">
@@ -209,63 +239,17 @@
         </div>
 
         <aside class="hkrpg-overview-side">
-          <section class="hkrpg-overview-section hkrpg-resource-column">
-            <h2 class="hkrpg-resource-column__heading">{{localize "HKRPG.ResourceColumn"}}</h2>
-            <div class="hkrpg-resource-trackers">
-              <div class="hkrpg-resource-tracker">
-                <h3>{{localize "HKRPG.Resource.Heart"}}</h3>
-                <div class="hkrpg-tracker-fields">
-                  <label>
-                    <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
-                    <input name="system.resources.heartMax" type="number" min="0" value="{{system.resources.heartMax}}" />
-                  </label>
-                  <label class="hkrpg-tracker-fields__current">
-                    <span>{{localize "HKRPG.Tracker.Current"}}</span>
-                    <input data-resource-field="heart" type="number" min="0" value="{{system.resources.heart}}" />
-                  </label>
-                  <label>
-                    <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
-                    <input data-resource-field="heartTemp" type="number" min="0" value="{{system.resources.heartTemp}}" />
-                  </label>
-                </div>
-              </div>
-
-              <div class="hkrpg-resource-tracker">
-                <h3>{{localize "HKRPG.Resource.Soul"}}</h3>
-                <div class="hkrpg-tracker-fields">
-                  <label>
-                    <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
-                    <input name="system.resources.soulMax" type="number" min="0" value="{{system.resources.soulMax}}" />
-                  </label>
-                  <label class="hkrpg-tracker-fields__current">
-                    <span>{{localize "HKRPG.Tracker.Current"}}</span>
-                    <input data-resource-field="soul" type="number" min="0" value="{{system.resources.soul}}" />
-                  </label>
-                  <label>
-                    <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
-                    <input data-resource-field="soulTemp" type="number" min="0" value="{{system.resources.soulTemp}}" />
-                  </label>
-                </div>
-              </div>
-
-              <div class="hkrpg-resource-tracker">
-                <h3>{{localize "HKRPG.Resource.Stamina"}}</h3>
-                <div class="hkrpg-tracker-fields">
-                  <label>
-                    <span>{{localize "HKRPG.Tracker.Maximum"}}</span>
-                    <input name="system.resources.staminaMax" type="number" min="0" value="{{system.resources.staminaMax}}" />
-                  </label>
-                  <label class="hkrpg-tracker-fields__current">
-                    <span>{{localize "HKRPG.Tracker.Current"}}</span>
-                    <input name="system.resources.stamina" type="number" min="0" value="{{system.resources.stamina}}" />
-                  </label>
-                  <label>
-                    <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
-                    <input name="system.resources.staminaTemp" type="number" min="0" value="{{system.resources.staminaTemp}}" />
-                  </label>
-                </div>
-              </div>
-            </div>
+          <section class="hkrpg-overview-section hkrpg-skills-column">
+            <h2>{{localize "HKRPG.Development.Proficiencies"}}</h2>
+            {{#if itemGroups.proficiencies.length}}
+              <ul class="hkrpg-item-list hkrpg-skill-list">
+                {{#each itemGroups.proficiencies as |item|}}
+                  <li class="hkrpg-skill-row"><span>{{item.name}}</span></li>
+                {{/each}}
+              </ul>
+            {{else}}
+              <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoProficiencies"}}</p>
+            {{/if}}
           </section>
 
           <section class="hkrpg-overview-section">
@@ -309,14 +293,7 @@
             <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoPaths"}}</p>
           {{/if}}
         </section>
-        <section class="hkrpg-panel">
-          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Proficiencies"}}</h2><span>{{itemGroups.proficiencies.length}}</span></div>
-          {{#if itemGroups.proficiencies.length}}
-            <ul class="hkrpg-item-list">{{#each itemGroups.proficiencies as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
-          {{else}}
-            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoProficiencies"}}</p>
-          {{/if}}
-        </section>
+
         <section class="hkrpg-panel">
           <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Techniques"}}</h2><span>{{itemGroups.techniques.length}}</span></div>
           <div class="hkrpg-derived-strip"><div><span>{{localize "HKRPG.Derived.TechniqueSlots"}}</span><strong>{{system.derived.techniqueSlots}}</strong></div></div>

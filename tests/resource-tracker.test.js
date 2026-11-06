@@ -98,3 +98,16 @@ test("Временные иконки формируют новое число �
   const pips = buildResourcePips(10, 10, 3).temporary;
   assert.deepEqual(pips.map((pip) => pip.clickValue), [2,2,2]);
 });
+
+
+test("Выносливость использует ту же шкалу и генерирует пункты по максимуму", () => {
+  const stamina = buildResourcePips(5, 3, 2);
+  assert.equal(stamina.base.length, 5);
+  assert.equal(stamina.base.filter((pip) => pip.filled).length, 3);
+  assert.equal(stamina.temporary.length, 2);
+});
+
+test("Каждая временная иконка Выносливости уменьшает отдельный временный запас на один", () => {
+  const stamina = buildResourcePips(5, 3, 3);
+  assert.deepEqual(stamina.temporary.map((pip) => pip.clickValue), [2,2,2]);
+});
