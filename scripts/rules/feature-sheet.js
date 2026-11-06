@@ -39,6 +39,7 @@ export function buildSkillGroups(savedGroups = {}) {
 
     return {
       id,
+      name: String(savedGroup.name ?? ""),
       rank: toRank(savedGroup.rank),
       skills: Array.from({ length: 4 }, (_, skillIndex) => {
         const skillId = `skill${skillIndex + 1}`;

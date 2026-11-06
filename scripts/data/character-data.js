@@ -88,6 +88,7 @@ function proficiencySkillGroupField() {
   }
 
   return new fields.SchemaField({
+    name: textField(),
     rank: valueField({ max: 3 }),
     skills: new fields.SchemaField(skills)
   });

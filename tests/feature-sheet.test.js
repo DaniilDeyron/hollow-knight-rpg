@@ -79,3 +79,34 @@ test("Ограничивает ранги и мастерство диапазо
   assert.equal(groups[0].rank, 3);
   assert.equal(groups[0].skills[0].mastery, 0);
 });
+
+test("Сохраняет отдельное название каждого умения", () => {
+  const groups = buildSkillGroups({
+    group1: {
+      name: "Боевая подготовка",
+      rank: 2,
+      skills: {
+        skill1: { name: "Мечи", mastery: 3 },
+        skill2: { name: "Копья", mastery: 1 }
+      }
+    },
+    group2: {
+      name: "Исследование",
+      rank: 1,
+      skills: {
+        skill1: { name: "Поиск", mastery: 2 }
+      }
+    }
+  });
+
+  assert.equal(groups[0].name, "Боевая подготовка");
+  assert.equal(groups[0].skills[0].name, "Мечи");
+  assert.equal(groups[0].skills[1].name, "Копья");
+  assert.equal(groups[1].name, "Исследование");
+});
+
+test("Пустое название умения не ломает отображение группы", () => {
+  const groups = buildSkillGroups({ group3: { name: "", rank: 0 } });
+  assert.equal(groups[2].name, "");
+  assert.equal(groups[2].skills.length, 4);
+});

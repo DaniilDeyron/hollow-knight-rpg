@@ -263,18 +263,21 @@
         <aside class="hkrpg-overview-side">
           <section class="hkrpg-overview-section hkrpg-skills-column">
             <h2>{{localize "HKRPG.Development.Proficiencies"}}</h2>
-            <div class="hkrpg-skill-column-headings">
-              <span>{{localize "HKRPG.Features.Mastery"}}</span>
-            </div>
             <div class="hkrpg-skill-groups">
               {{#each skillGroups as |group|}}
                 <section class="hkrpg-skill-group">
-                  <div class="hkrpg-skill-group__rank">
-                    <label>
+                  <div class="hkrpg-skill-group__header">
+                    <input class="hkrpg-skill-group__name" name="system.skillGroups.{{group.id}}.name" type="text" value="{{group.name}}" placeholder="{{localize "HKRPG.Features.SkillGroupNamePlaceholder"}}" aria-label="{{localize "HKRPG.Features.SkillGroupNamePlaceholder"}} {{group.id}}" {{#unless ../isEditable}}disabled{{/unless}} />
+                    <label class="hkrpg-skill-group__rank">
                       <span>{{localize "HKRPG.Features.Rank"}}</span>
                       <input name="system.skillGroups.{{group.id}}.rank" type="number" min="0" max="3" step="1" value="{{group.rank}}" {{#unless ../isEditable}}disabled{{/unless}} />
                     </label>
                   </div>
+
+                  <div class="hkrpg-skill-group__mastery-heading">
+                    <span>{{localize "HKRPG.Features.Mastery"}}</span>
+                  </div>
+
                   <div class="hkrpg-skill-group__rows">
                     {{#each group.skills as |skill|}}
                       <div class="hkrpg-skill-entry">
