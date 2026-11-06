@@ -13,10 +13,6 @@ Hooks.once("init", () => {
     label: "HKRPG.Sheets.Character"
   });
 
-  game.hkrpg = {
-    version: game.system.version,
-    initialized: true
-  };
 });
 
 Hooks.once("ready", () => {

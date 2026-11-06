@@ -98,12 +98,3 @@ test("Отрицательный временный бонус не уменьш
   });
 });
 
-test("Ручной максимум Сытости переопределяет автоматическое значение", async () => {
-  const { calculateDerivedStats } = await import("../scripts/rules/derived.js");
-  assert.equal(calculateDerivedStats({}, { hunger: 4 }, { satietyMax: 14 }).satietyMax, 14);
-});
-
-test("Пустое ручное значение максимума Сытости возвращает автоматический расчёт", async () => {
-  const { calculateDerivedStats } = await import("../scripts/rules/derived.js");
-  assert.equal(calculateDerivedStats({}, { hunger: 4 }, { satietyMax: null }).satietyMax, 10);
-});

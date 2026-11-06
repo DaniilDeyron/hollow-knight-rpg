@@ -41,3 +41,11 @@ test("Ручное значение Манёвренности переопре�
 test("Пустое ручное значение Манёвренности возвращает автоматический расчёт", () => {
   assert.equal(calculateDerivedStats({ grace: 5 }, {}, { maneuverability: null }).maneuverability, 3);
 });
+
+test("Ручной максимум Сытости переопределяет автоматическое значение", () => {
+  assert.equal(calculateDerivedStats({}, { hunger: 4 }, { satietyMax: 14 }).satietyMax, 14);
+});
+
+test("Пустое ручное значение максимума Сытости возвращает автоматический расчёт", () => {
+  assert.equal(calculateDerivedStats({}, { hunger: 4 }, { satietyMax: null }).satietyMax, 10);
+});

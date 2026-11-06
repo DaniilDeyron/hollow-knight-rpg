@@ -5,7 +5,6 @@
     },
     "Profile": {
       "Name": "Имя",
-      "Player": "Игрок",
       "Milestone": "Веха",
       "Description": "Описание",
       "MinorAdvancements": "Малое продвижение"
@@ -37,7 +36,6 @@
       "Spook": "Жуть",
       "Speed": "Скорость"
     },
-    "Resources": "Запасы",
     "Resource": {
       "Heart": "Сердце",
       "Stamina": "Выносливость",
@@ -49,8 +47,6 @@
       "Maximum": "Макс.",
       "Current": "Текущий",
       "Temporary": "Врем.",
-      "AddTemporary": "Добавить временный пункт",
-      "RemoveTemporary": "Убрать временный пункт",
       "SpendTemporary": "Потратить временный пункт"
     },
     "CustomReserves": "Запасы",
@@ -64,8 +60,7 @@
       "ResetAutomatic": "Вернуть автоматический расчёт"
     },
     "Roll": {
-      "ClickToRoll": "Нажмите, чтобы бросить",
-      "AttributeValue": "Значение"
+      "ClickToRoll": "Нажмите, чтобы бросить"
     },
     "Development": {
       "Traits": "Черты",

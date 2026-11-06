@@ -750,14 +750,12 @@
   transform: scale(1.12);
 }
 
-.hkrpg-pip:focus-visible,
-.hkrpg-temp-adjust:focus-visible {
+.hkrpg-pip:focus-visible {
   outline: 1px solid #91c8dc;
   outline-offset: 2px;
 }
 
-.hkrpg-pip:disabled,
-.hkrpg-temp-adjust:disabled {
+.hkrpg-pip:disabled {
   cursor: default;
   opacity: 0.7;
 }
@@ -808,28 +806,9 @@
   border-left: 1px solid var(--color-border-light-primary);
 }
 
-.hkrpg-temp-adjust {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 18px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #8bd6ef;
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-}
 
-.hkrpg-temp-adjust:hover {
-  background: transparent;
-  color: #b5edff;
-  text-shadow: 0 0 5px rgb(91 190 224 / 70%);
-}
+
+
 
 .hkrpg-pip-overflow {
   color: var(--color-text-secondary);
