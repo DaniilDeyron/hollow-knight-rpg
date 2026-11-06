@@ -16,12 +16,17 @@ export function buildResourcePips(maximum = 0, current = 0, temporary = 0, visib
   const tempVisible = Math.min(temp, limit);
 
   return {
-    base: Array.from({ length: baseVisible }, (_, index) => ({
-      value: index + 1,
-      filled: index < value
-    })),
+    base: Array.from({ length: baseVisible }, (_, index) => {
+      const pipValue = index + 1;
+      return {
+        value: pipValue,
+        clickValue: getNextResourceValue(value, pipValue, max),
+        filled: index < value
+      };
+    }),
     temporary: Array.from({ length: tempVisible }, (_, index) => ({
       value: index + 1,
+      clickValue: Math.max(0, temp - 1),
       filled: true
     })),
     baseOverflow: Math.max(0, max - baseVisible),

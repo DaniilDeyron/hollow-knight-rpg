@@ -1,5 +1,5 @@
 import { rollAttributeCheck } from "../rolls/pool.js";
-import { buildResourcePips, getNextResourceValue } from "../rules/resource-tracker.js";
+import { buildResourcePips } from "../rules/resource-tracker.js";
 
 export class HKCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -9,6 +9,7 @@ export class HKCharacterSheet extends ActorSheet {
       width: 1100,
       height: 900,
       resizable: true,
+      submitOnChange: true,
       tabs: [
         {
           navSelector: ".hkrpg-tabs",
@@ -77,8 +78,9 @@ export class HKCharacterSheet extends ActorSheet {
       });
     };
 
-    bind("[data-resource-current]", "click", this._onResourcePipClick);
-    bind("[data-resource-temp-consume]", "click", this._onTemporaryResourcePipClick);
+    // Heart and Soul pips are native form radios with unique numeric values.
+    // Foundry's submitOnChange writes the selected value directly to Actor data.
+    bind("[data-resource-field]", "change", this._onResourceFieldChange);
     bind("[data-attribute-roll]", "click", this._onRollAttribute);
     bind("[data-reset-derived]", "click", this._onResetDerived);
     bind("[data-derived-input]", "change", this._onDerivedInputChange);
@@ -133,35 +135,21 @@ export class HKCharacterSheet extends ActorSheet {
     }
   }
 
-  async _onResourcePipClick(event) {
-    event.preventDefault();
+  async _onResourceFieldChange(event) {
     if (!this.isEditable) return;
 
-    const button = event.currentTarget;
-    const key = button.dataset.resourceCurrent;
-    if (!["heart", "soul"].includes(key)) return;
+    const input = event.currentTarget;
+    const key = input.dataset.resourceField;
+    const allowedKeys = ["heart", "soul", "heartTemp", "soulTemp"];
+    if (!allowedKeys.includes(key)) return;
 
-    const value = Number(button.dataset.resourceValue);
-    const current = Number(this.actor.system.resources[key] ?? 0);
-    const maximum = Number(this.actor.system.resources[key + "Max"] ?? 0);
-    if (!Number.isInteger(value) || value < 1) return;
+    const parsed = Number(input.value);
+    if (!Number.isFinite(parsed) || parsed < 0) {
+      input.value = String(this.actor.system.resources[key] ?? 0);
+      return;
+    }
 
-    const next = getNextResourceValue(current, value, maximum);
-    await this._updateTrackedResource(key, next);
-  }
-
-  async _onTemporaryResourcePipClick(event) {
-    event.preventDefault();
-    if (!this.isEditable) return;
-
-    const key = event.currentTarget.dataset.resourceTempConsume;
-    if (!["heart", "soul"].includes(key)) return;
-
-    const current = Number(this.actor.system.resources[key + "Temp"] ?? 0);
-    if (!Number.isFinite(current) || current <= 0) return;
-
-    // Each blue pip represents one temporary point; clicking it consumes one.
-    await this._updateTrackedResource(key + "Temp", Math.max(0, Math.floor(current) - 1));
+    await this._updateTrackedResource(key, Math.floor(parsed));
   }
 
   async _updateTrackedResource(key, value) {

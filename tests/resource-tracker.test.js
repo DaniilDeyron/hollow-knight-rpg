@@ -66,3 +66,19 @@ test("Нажатие на первый пункт обнуляет ресурс"
 test("Нельзя увеличить ресурс выше максимума", () => {
   assert.equal(getNextResourceValue(5, 9, 7), 7);
 });
+
+
+test("Каждая обычная иконка хранит целевое числовое значение для формы", () => {
+  const result = buildResourcePips(10, 10, 3);
+  assert.deepEqual(result.base.map((pip) => pip.clickValue), [0,1,2,3,4,5,6,7,8,9]);
+});
+
+test("При текущем значении 1 седьмая иконка задаёт значение 7", () => {
+  const result = buildResourcePips(10, 1, 0);
+  assert.equal(result.base[6].clickValue, 7);
+});
+
+test("Любая временная иконка отправляет новое количество минус один", () => {
+  const result = buildResourcePips(10, 10, 3);
+  assert.deepEqual(result.temporary.map((pip) => pip.clickValue), [2,2,2]);
+});

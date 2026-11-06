@@ -2138,3 +2138,101 @@
     gap: 8px;
   }
 }
+
+
+/* Resource pips are real radio inputs bound to the Actor's resource numbers. */
+.hkrpg.sheet.actor .hkrpg-pip {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 19px;
+  align-items: center;
+  justify-content: center;
+  width: 19px;
+  height: 21px;
+  min-width: 19px;
+  min-height: 21px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.hkrpg.sheet.actor .hkrpg-pip:hover {
+  background: transparent;
+  filter: brightness(1.3);
+  transform: scale(1.1);
+}
+
+.hkrpg.sheet.actor .hkrpg-pip__control {
+  position: absolute;
+  width: 1px !important;
+  height: 1px !important;
+  min-width: 1px !important;
+  min-height: 1px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  opacity: 0;
+  clip-path: inset(50%);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hkrpg.sheet.actor .hkrpg-pip__control:focus-visible + .hkrpg-pip__svg,
+.hkrpg.sheet.actor .hkrpg-pip__control:focus-visible + .hkrpg-pip__shape {
+  outline: 1px solid #91c8dc;
+  outline-offset: 2px;
+}
+
+.hkrpg.sheet.actor .hkrpg-pip.is-disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.hkrpg.sheet.actor .hkrpg-pip--heart .hkrpg-pip__svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  overflow: visible;
+  fill: #aab8ca;
+  opacity: 0.32;
+  transition: fill 120ms ease, opacity 120ms ease, filter 120ms ease;
+}
+
+.hkrpg.sheet.actor .hkrpg-pip--heart.is-filled .hkrpg-pip__svg {
+  fill: #f5f2ff;
+  opacity: 1;
+  filter: drop-shadow(0 0 2px rgb(237 241 255 / 60%));
+}
+
+.hkrpg.sheet.actor .hkrpg-pip--heart.hkrpg-pip--temporary .hkrpg-pip__svg {
+  fill: #83d9ff;
+  opacity: 1;
+  filter: drop-shadow(0 0 4px rgb(93 196 240 / 72%));
+}
+
+.hkrpg.sheet.actor .hkrpg-pip--soul .hkrpg-pip__shape {
+  width: 12px;
+  height: 15px;
+  border-radius: 75% 75% 75% 0;
+  background: #9aa9bd;
+  opacity: 0.38;
+  transform: rotate(-45deg);
+  transition: background 120ms ease, opacity 120ms ease, filter 120ms ease;
+}
+
+.hkrpg.sheet.actor .hkrpg-pip--soul.is-filled .hkrpg-pip__shape {
+  background: #f3f0fa !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 2px rgb(237 241 255 / 55%));
+}
+
+.hkrpg.sheet.actor .hkrpg-pip--soul.hkrpg-pip--temporary .hkrpg-pip__shape {
+  background: #83d9ff !important;
+  opacity: 1 !important;
+  filter: drop-shadow(0 0 4px rgb(93 196 240 / 72%));
+}
