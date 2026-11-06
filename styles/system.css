@@ -1962,3 +1962,179 @@
 .hkrpg-resource-pips__temporary .hkrpg-pip:disabled {
   cursor: default;
 }
+
+
+/* Compact overview spacing: keep the first page within the normal sheet height. */
+.hkrpg.sheet.actor .hkrpg-sheet {
+  gap: 6px;
+  padding: 7px 9px 5px;
+}
+
+.hkrpg.sheet.actor .hkrpg-sheet-header {
+  padding-bottom: 7px;
+}
+
+.hkrpg.sheet.actor .hkrpg-tabs {
+  min-height: 36px;
+  padding: 3px 3px 5px;
+  gap: 5px;
+}
+
+.hkrpg.sheet.actor .hkrpg-tabs .item {
+  min-height: 30px;
+  padding: 5px 4px 7px;
+}
+
+.hkrpg.sheet.actor .hkrpg-tab-content {
+  padding: 6px 2px 5px;
+}
+
+.hkrpg.sheet.actor .hkrpg-overview-grid {
+  gap: 10px;
+}
+
+.hkrpg.sheet.actor .hkrpg-overview-main,
+.hkrpg.sheet.actor .hkrpg-overview-side {
+  gap: 8px;
+}
+
+.hkrpg.sheet.actor .hkrpg-overview-section > h2,
+.hkrpg.sheet.actor .hkrpg-custom-reserves-section > h2,
+.hkrpg.sheet.actor .hkrpg-resource-column__heading {
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  line-height: 1.2;
+}
+
+.hkrpg.sheet.actor .hkrpg-attributes-grid,
+.hkrpg.sheet.actor .hkrpg-secondary-grid {
+  gap: 7px;
+}
+
+.hkrpg.sheet.actor .hkrpg-attribute {
+  gap: 6px;
+  padding: 6px 8px;
+}
+
+.hkrpg.sheet.actor .hkrpg-attribute-score input {
+  height: 38px;
+  font-size: 1.75rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-attribute-temporary input {
+  height: 29px;
+}
+
+.hkrpg.sheet.actor .hkrpg-attribute-roll {
+  width: 32px;
+  height: 32px;
+}
+
+.hkrpg.sheet.actor .hkrpg-secondary-stat {
+  gap: 4px;
+  padding: 7px;
+}
+
+.hkrpg.sheet.actor .hkrpg-secondary-stat input,
+.hkrpg.sheet.actor .hkrpg-secondary-stat strong {
+  min-height: 35px;
+}
+
+.hkrpg.sheet.actor .hkrpg-secondary-stat--rollable .hkrpg-attribute-roll {
+  width: 32px;
+  height: 32px;
+}
+
+.hkrpg.sheet.actor .hkrpg-custom-reserves-section {
+  margin-top: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-custom-reserves {
+  gap: 7px;
+}
+
+.hkrpg.sheet.actor .hkrpg-custom-reserve {
+  gap: 5px;
+  padding: 5px 6px 6px;
+}
+
+.hkrpg.sheet.actor .hkrpg-custom-reserve__name {
+  margin: 0 2px;
+  padding-bottom: 2px;
+}
+
+.hkrpg.sheet.actor .hkrpg-custom-reserve__name input {
+  height: 22px;
+  font-size: 0.9rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-custom-reserve__fields {
+  gap: 4px;
+}
+
+.hkrpg.sheet.actor .hkrpg-custom-reserve__fields input {
+  height: 38px;
+}
+
+.hkrpg.sheet.actor .hkrpg-custom-reserve__current input {
+  height: 48px;
+}
+
+.hkrpg.sheet.actor .hkrpg-resource-trackers {
+  gap: 5px;
+}
+
+.hkrpg.sheet.actor .hkrpg-resource-tracker {
+  padding: 6px 8px;
+}
+
+.hkrpg.sheet.actor .hkrpg-resource-tracker h3 {
+  margin-bottom: 4px;
+  padding-bottom: 3px;
+  line-height: 1.15;
+}
+
+.hkrpg.sheet.actor .hkrpg-tracker-fields {
+  gap: 4px;
+}
+
+.hkrpg.sheet.actor .hkrpg-tracker-fields label {
+  gap: 2px;
+}
+
+.hkrpg.sheet.actor .hkrpg-tracker-fields input {
+  height: 34px;
+}
+
+.hkrpg.sheet.actor .hkrpg-tracker-fields__current input {
+  height: 40px;
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-stats {
+  gap: 6px;
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-stats .hkrpg-secondary-stat {
+  padding: 6px;
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-stats .hkrpg-secondary-stat input,
+.hkrpg.sheet.actor .hkrpg-movement-stats .hkrpg-derived-stat__input {
+  min-height: 35px;
+  height: 35px;
+}
+
+@media (max-width: 760px) {
+  .hkrpg.sheet.actor .hkrpg-sheet {
+    padding: 6px;
+    gap: 5px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-tab-content {
+    padding-top: 5px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-overview-grid {
+    gap: 8px;
+  }
+}
