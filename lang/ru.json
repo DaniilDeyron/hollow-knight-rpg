@@ -54,7 +54,7 @@
     "Movement": "Передвижение",
     "Derived": {
       "CarryingCapacity": "Нагрузка",
-      "Maneuverability": "Манёвренность",
+      "Maneuverability": "Манёвр",
       "TechniqueSlots": "Ячейки Техник",
       "BeltSize": "Размер Пояса",
       "ResetAutomatic": "Вернуть автоматический расчёт"

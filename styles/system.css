@@ -3118,3 +3118,62 @@
     width: 38px;
   }
 }
+
+
+/* Keep the long Mastery label inside the skill column at narrow sheet widths. */
+.hkrpg.sheet.actor .hkrpg-skills-column {
+  box-sizing: border-box;
+  padding-right: 9px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__mastery-heading,
+.hkrpg.sheet.actor .hkrpg-skill-entry {
+  grid-template-columns: minmax(0, 1fr) 56px;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__mastery-heading span {
+  grid-column: 2;
+  justify-self: end;
+  width: max-content;
+  max-width: none;
+  padding-right: 2px;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-entry__mastery {
+  width: 42px;
+  justify-self: end;
+}
+
+@media (max-width: 900px) {
+  .hkrpg.sheet.actor .hkrpg-skills-column {
+    padding-right: 7px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-skill-group__mastery-heading,
+  .hkrpg.sheet.actor .hkrpg-skill-entry {
+    grid-template-columns: minmax(0, 1fr) 52px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-skill-entry__mastery {
+    width: 40px;
+  }
+}
+
+@media (max-width: 760px) {
+  .hkrpg.sheet.actor .hkrpg-skills-column {
+    padding-right: 5px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-skill-group__mastery-heading,
+  .hkrpg.sheet.actor .hkrpg-skill-entry {
+    grid-template-columns: minmax(0, 1fr) 49px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-skill-entry__mastery {
+    width: 38px;
+  }
+}
