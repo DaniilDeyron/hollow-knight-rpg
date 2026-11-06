@@ -2267,7 +2267,7 @@
 
 .hkrpg.sheet.actor .hkrpg-header-resource {
   display: grid;
-  grid-template-columns: 17px 74px 52px minmax(70px, 1fr) 112px;
+  grid-template-columns: 17px 96px 52px minmax(70px, 1fr) 112px;
   align-items: center;
   gap: 6px;
   min-width: 0;
@@ -2361,23 +2361,24 @@
 }
 
 .hkrpg.sheet.actor .hkrpg-header-resource .hkrpg-pip--stamina .hkrpg-pip__shape {
-  width: 10px;
-  height: 10px;
+  width: 14px;
+  height: 14px;
   background: #aab8ca;
-  opacity: 0.32;
-  clip-path: polygon(50% 0, 62% 34%, 100% 50%, 62% 66%, 50% 100%, 38% 66%, 0 50%, 38% 34%);
+  opacity: 0.36;
+  clip-path: polygon(50% 0, 63% 31%, 100% 50%, 63% 69%, 50% 100%, 37% 69%, 0 50%, 37% 31%);
+  filter: drop-shadow(0 0 1px rgb(218 229 248 / 24%));
 }
 
 .hkrpg.sheet.actor .hkrpg-header-resource .hkrpg-pip--stamina.is-filled .hkrpg-pip__shape {
   background: #f4f2ff;
   opacity: 1;
-  filter: drop-shadow(0 0 2px rgb(237 241 255 / 55%));
+  filter: drop-shadow(0 0 3px rgb(237 241 255 / 58%));
 }
 
 .hkrpg.sheet.actor .hkrpg-header-resource .hkrpg-pip--stamina.hkrpg-pip--temporary .hkrpg-pip__shape {
   background: #83d9ff;
   opacity: 1;
-  filter: drop-shadow(0 0 3px rgb(93 196 240 / 65%));
+  filter: drop-shadow(0 0 3px rgb(93 196 240 / 70%));
 }
 
 .hkrpg.sheet.actor .hkrpg-header-resource__fields {
@@ -2879,10 +2880,17 @@
 }
 
 .hkrpg.sheet.actor .hkrpg-movement-summary__values > label > span {
-  color: #aebfd5 !important;
-  font-size: 0.59rem;
-  line-height: 1.15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding-inline: 1px;
+  color: #d2deef !important;
+  font-size: 0.69rem;
+  font-weight: 650;
+  line-height: 1.12;
   text-align: center;
+  overflow-wrap: anywhere;
 }
 
 .hkrpg.sheet.actor .hkrpg-movement-summary__values input {
@@ -2906,10 +2914,10 @@
   position: absolute;
   top: 2px;
   right: 2px;
-  width: 15px;
-  height: 15px;
-  min-width: 15px;
-  min-height: 15px;
+  width: 17px;
+  height: 17px;
+  min-width: 17px;
+  min-height: 17px;
   padding: 0;
   font-size: 0.62rem;
 }
