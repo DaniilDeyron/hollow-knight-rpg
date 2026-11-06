@@ -22,8 +22,10 @@ jobs:
         with:
           ref: main
 
-      - name: Increment patch version
+      - name: Increment patch version and pin download URL
         id: version
+        env:
+          REPOSITORY: ${{ github.repository }}
         run: |
           node --input-type=module <<'NODE'
           import fs from "node:fs";
@@ -34,8 +36,10 @@ jobs:
           }
           parts[2] += 1;
           manifest.version = parts.join(".");
+          manifest.download = `https://github.com/${process.env.REPOSITORY}/releases/download/v${manifest.version}/hollow-knight-rpg.zip`;
           fs.writeFileSync("system.json", JSON.stringify(manifest, null, 2) + "\n");
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${manifest.version}\n`);
+          console.log(`Pinned manifest download URL: ${manifest.download}`);
           NODE
 
       - name: Commit manifest version
