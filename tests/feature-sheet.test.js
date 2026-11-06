@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildFeatureRows, countFeatureMarks } from "../scripts/rules/feature-sheet.js";
+import { buildFeatureRows, buildSkillGroups, countFeatureMarks } from "../scripts/rules/feature-sheet.js";
 
 test("Формирует заданное число пустых строк черт", () => {
   const rows = buildFeatureRows({}, [], 10, ["attraction", "spook", "hunger"]);
@@ -37,4 +37,45 @@ test("Считает итоги по трём отметкам черт", () => 
     spook: 2,
     hunger: 2
   });
+});
+
+test("Создаёт три группы умений по четыре строки", () => {
+  const groups = buildSkillGroups({});
+  assert.equal(groups.length, 3);
+  assert.equal(groups[0].skills.length, 4);
+  assert.equal(groups[2].skills[3].name, "");
+  assert.equal(groups[2].rank, 0);
+});
+
+test("Сохраняет названия навыков, ранги групп и значения мастерства", () => {
+  const groups = buildSkillGroups({
+    group1: {
+      rank: 2,
+      skills: {
+        skill1: { name: "Сражение", mastery: 3 },
+        skill4: { name: "Скрытность", mastery: 1 }
+      }
+    },
+    group3: {
+      rank: 1,
+      skills: {
+        skill2: { name: "Исследование", mastery: 2 }
+      }
+    }
+  });
+
+  assert.equal(groups[0].rank, 2);
+  assert.equal(groups[0].skills[0].name, "Сражение");
+  assert.equal(groups[0].skills[0].mastery, 3);
+  assert.equal(groups[0].skills[3].mastery, 1);
+  assert.equal(groups[2].rank, 1);
+  assert.equal(groups[2].skills[1].name, "Исследование");
+});
+
+test("Ограничивает ранги и мастерство диапазоном от 0 до 3", () => {
+  const groups = buildSkillGroups({
+    group1: { rank: 9, skills: { skill1: { name: "Навык", mastery: -2 } } }
+  });
+  assert.equal(groups[0].rank, 3);
+  assert.equal(groups[0].skills[0].mastery, 0);
 });

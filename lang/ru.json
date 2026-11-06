@@ -99,7 +99,10 @@
       "SpellModifications": "Модификации Заклинаний",
       "SpellModificationsHint": "Способы, которые могут быть использованы для быстрого улучшения заклинания",
       "DropEffects": "Перетащить возможные эффекты в это окно",
-      "TechniqueSlots": "Ячейки Техник: всего"
+      "TechniqueSlots": "Ячейки Техник: всего",
+      "Rank": "Ранг",
+      "Mastery": "Мастерство",
+      "SkillNamePlaceholder": "Название умения"
     }
   }
 }

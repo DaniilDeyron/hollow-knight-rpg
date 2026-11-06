@@ -49,6 +49,7 @@
             </div>
           </div>
           <div class="hkrpg-header-resource__fields">
+            <label><span>{{localize "HKRPG.Tracker.Current"}}</span><input data-resource-field="heart" type="number" min="0" max="999" value="{{system.resources.heart}}" {{#unless isEditable}}disabled{{/unless}} /></label>
             <label><span>{{localize "HKRPG.Tracker.Maximum"}}</span><input data-resource-field="heartMax" type="number" min="0" value="{{system.resources.heartMax}}" {{#unless isEditable}}disabled{{/unless}} /></label>
             <label><span>{{localize "HKRPG.Tracker.Temporary"}}</span><input data-resource-field="heartTemp" type="number" min="0" value="{{system.resources.heartTemp}}" {{#unless isEditable}}disabled{{/unless}} /></label>
           </div>
@@ -73,6 +74,7 @@
             </div>
           </div>
           <div class="hkrpg-header-resource__fields">
+            <label><span>{{localize "HKRPG.Tracker.Current"}}</span><input data-resource-field="soul" type="number" min="0" max="999" value="{{system.resources.soul}}" {{#unless isEditable}}disabled{{/unless}} /></label>
             <label><span>{{localize "HKRPG.Tracker.Maximum"}}</span><input data-resource-field="soulMax" type="number" min="0" value="{{system.resources.soulMax}}" {{#unless isEditable}}disabled{{/unless}} /></label>
             <label><span>{{localize "HKRPG.Tracker.Temporary"}}</span><input data-resource-field="soulTemp" type="number" min="0" value="{{system.resources.soulTemp}}" {{#unless isEditable}}disabled{{/unless}} /></label>
           </div>
@@ -97,6 +99,7 @@
             </div>
           </div>
           <div class="hkrpg-header-resource__fields">
+            <label><span>{{localize "HKRPG.Tracker.Current"}}</span><input data-resource-field="stamina" type="number" min="0" max="999" value="{{system.resources.stamina}}" {{#unless isEditable}}disabled{{/unless}} /></label>
             <label><span>{{localize "HKRPG.Tracker.Maximum"}}</span><input data-resource-field="staminaMax" type="number" min="0" value="{{system.resources.staminaMax}}" {{#unless isEditable}}disabled{{/unless}} /></label>
             <label><span>{{localize "HKRPG.Tracker.Temporary"}}</span><input data-resource-field="staminaTemp" type="number" min="0" value="{{system.resources.staminaTemp}}" {{#unless isEditable}}disabled{{/unless}} /></label>
           </div>
@@ -123,6 +126,23 @@
         <span>{{localize "HKRPG.Resource.Hunger"}}</span>
         <input name="system.resources.hunger" type="number" min="0" value="{{system.resources.hunger}}" />
       </label>
+
+      <section class="hkrpg-movement-summary">
+        <h2>{{localize "HKRPG.Movement"}}</h2>
+        <div class="hkrpg-movement-summary__values">
+          <label>
+            <span>{{localize "HKRPG.Secondary.Speed"}}</span>
+            <input name="system.social.speed" type="number" min="0" value="{{system.social.speed}}" {{#unless isEditable}}disabled{{/unless}} />
+          </label>
+          <label>
+            <span>{{localize "HKRPG.Derived.Maneuverability"}}</span>
+            <div class="hkrpg-movement-summary__maneuverability">
+              <input class="hkrpg-derived-stat__input" data-derived-input="maneuverability" type="number" min="0" max="999" step="1" value="{{system.derived.maneuverability}}" {{#unless isEditable}}disabled{{/unless}} />
+              <button type="button" class="hkrpg-derived-stat__reset" data-reset-derived="maneuverability" title="{{localize "HKRPG.Derived.ResetAutomatic"}}" aria-label="{{localize "HKRPG.Derived.ResetAutomatic"}}" {{#unless isEditable}}disabled{{/unless}}>↺</button>
+            </div>
+          </label>
+        </div>
+      </section>
     </section>
   </header>
 
@@ -243,31 +263,28 @@
         <aside class="hkrpg-overview-side">
           <section class="hkrpg-overview-section hkrpg-skills-column">
             <h2>{{localize "HKRPG.Development.Proficiencies"}}</h2>
-            {{#if itemGroups.proficiencies.length}}
-              <ul class="hkrpg-item-list hkrpg-skill-list">
-                {{#each itemGroups.proficiencies as |item|}}
-                  <li class="hkrpg-skill-row"><span>{{item.name}}</span></li>
-                {{/each}}
-              </ul>
-            {{else}}
-              <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoProficiencies"}}</p>
-            {{/if}}
-          </section>
-
-          <section class="hkrpg-overview-section">
-            <h2>{{localize "HKRPG.Movement"}}</h2>
-            <div class="hkrpg-movement-stats">
-              <label class="hkrpg-secondary-stat">
-                <span>{{localize "HKRPG.Secondary.Speed"}}</span>
-                <input name="system.social.speed" type="number" min="0" value="{{system.social.speed}}" />
-              </label>
-              <div class="hkrpg-secondary-stat hkrpg-derived-stat">
-                <div class="hkrpg-derived-stat__heading">
-                  <span>{{localize "HKRPG.Derived.Maneuverability"}}</span>
-                  <button type="button" class="hkrpg-derived-stat__reset" data-reset-derived="maneuverability" title="{{localize "HKRPG.Derived.ResetAutomatic"}}" aria-label="{{localize "HKRPG.Derived.ResetAutomatic"}}" {{#unless isEditable}}disabled{{/unless}}>↺</button>
-                </div>
-                <input class="hkrpg-derived-stat__input" data-derived-input="maneuverability" type="number" min="0" max="999" step="1" value="{{system.derived.maneuverability}}" {{#unless isEditable}}disabled{{/unless}} />
-              </div>
+            <div class="hkrpg-skill-column-headings">
+              <span>{{localize "HKRPG.Features.Mastery"}}</span>
+            </div>
+            <div class="hkrpg-skill-groups">
+              {{#each skillGroups as |group|}}
+                <section class="hkrpg-skill-group">
+                  <div class="hkrpg-skill-group__rank">
+                    <label>
+                      <span>{{localize "HKRPG.Features.Rank"}}</span>
+                      <input name="system.skillGroups.{{group.id}}.rank" type="number" min="0" max="3" step="1" value="{{group.rank}}" {{#unless ../isEditable}}disabled{{/unless}} />
+                    </label>
+                  </div>
+                  <div class="hkrpg-skill-group__rows">
+                    {{#each group.skills as |skill|}}
+                      <div class="hkrpg-skill-entry">
+                        <input class="hkrpg-skill-entry__name" name="system.skillGroups.{{../group.id}}.skills.{{skill.id}}.name" type="text" value="{{skill.name}}" placeholder="{{localize "HKRPG.Features.SkillNamePlaceholder"}}" aria-label="{{localize "HKRPG.Features.SkillNamePlaceholder"}} {{skill.id}}" {{#unless ../../isEditable}}disabled{{/unless}} />
+                        <input class="hkrpg-skill-entry__mastery" name="system.skillGroups.{{../group.id}}.skills.{{skill.id}}.mastery" type="number" min="0" max="3" step="1" value="{{skill.mastery}}" aria-label="{{localize "HKRPG.Features.Mastery"}}" {{#unless ../../isEditable}}disabled{{/unless}} />
+                      </div>
+                    {{/each}}
+                  </div>
+                </section>
+              {{/each}}
             </div>
           </section>
         </aside>

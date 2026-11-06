@@ -2795,3 +2795,241 @@
     display: contents;
   }
 }
+
+
+/* Current resource values are editable alongside Maximum and Temporary. */
+.hkrpg.sheet.actor .hkrpg-header-resource {
+  grid-template-columns: 16px 66px 48px minmax(35px, 1fr) 132px;
+}
+
+.hkrpg.sheet.actor .hkrpg-header-resource__fields {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.hkrpg.sheet.actor .hkrpg-header-resource__fields label > span {
+  font-size: 0.57rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-header-resource__fields input {
+  height: 21px;
+  min-height: 21px;
+  padding-inline: 1px;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+  .hkrpg.sheet.actor .hkrpg-header-resource {
+    grid-template-columns: 14px 56px 42px minmax(25px, 1fr) 120px;
+    gap: 3px;
+    padding-inline: 4px;
+  }
+}
+
+@media (max-width: 760px) {
+  .hkrpg.sheet.actor .hkrpg-header-resource {
+    grid-template-columns: 14px 54px 40px minmax(20px, 1fr) 114px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-header-resource__fields {
+    gap: 2px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-header-resource__fields label > span {
+    font-size: 0.52rem;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-header-resource__fields input {
+    font-size: 0.66rem;
+  }
+}
+
+/* Movement is nested below Satiety in the existing narrow header column. */
+.hkrpg.sheet.actor .hkrpg-movement-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px solid #506783;
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-summary h2 {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #e8effa !important;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-summary__values {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-summary__values > label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-summary__values > label > span {
+  color: #aebfd5 !important;
+  font-size: 0.59rem;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-summary__values input {
+  width: 100%;
+  min-width: 0;
+  height: 25px;
+  min-height: 25px;
+  padding: 0 2px;
+  color: #ffffff !important;
+  font-size: 0.83rem;
+  font-weight: 750;
+  text-align: center;
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-summary__maneuverability {
+  position: relative;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-summary__maneuverability .hkrpg-derived-stat__reset {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
+  min-height: 15px;
+  padding: 0;
+  font-size: 0.62rem;
+}
+
+/* Three proficiency groups, each with four named skills and editable mastery values. */
+.hkrpg.sheet.actor .hkrpg-skills-column {
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-column-headings {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 7px 3px 0;
+  color: #aebfd5;
+  font-size: 0.66rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group {
+  min-width: 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #405673;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__rank {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2px;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__rank label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #b9c9de;
+  font-size: 0.68rem;
+  font-weight: 650;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__rank input {
+  width: 35px;
+  height: 24px;
+  min-height: 24px;
+  padding: 0 2px;
+  color: #ffffff !important;
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__rows {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 35px;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  min-height: 29px;
+  padding: 2px 3px;
+  border-bottom: 1px solid #405673;
+  background: rgb(18 30 49 / 58%);
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-entry:last-child {
+  border-bottom-color: #506783;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-entry__name {
+  width: 100%;
+  min-width: 0;
+  height: 23px;
+  min-height: 23px;
+  padding: 1px 4px;
+  border: 0 !important;
+  border-radius: 0;
+  border-bottom: 1px solid rgb(130 157 190 / 48%) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #eaf1fb !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 0.79rem;
+  font-weight: 600;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-entry__name::placeholder {
+  color: #7588a2;
+  opacity: 0.9;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-entry__name:focus {
+  border-bottom-color: #a9c7e8 !important;
+  outline: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-entry__mastery {
+  width: 35px;
+  height: 24px;
+  min-height: 24px;
+  padding: 0 2px;
+  color: #ffffff !important;
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}

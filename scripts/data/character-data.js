@@ -74,6 +74,25 @@ function techniqueSheetRowField() {
   });
 }
 
+function masterySkillField() {
+  return new fields.SchemaField({
+    name: textField(),
+    mastery: valueField({ max: 3 })
+  });
+}
+
+function proficiencySkillGroupField() {
+  const skills = {};
+  for (let index = 1; index <= 4; index += 1) {
+    skills[`skill${index}`] = masterySkillField();
+  }
+
+  return new fields.SchemaField({
+    rank: valueField({ max: 3 }),
+    skills: new fields.SchemaField(skills)
+  });
+}
+
 function fixedRowSlots(factory, count) {
   const schema = {};
   for (let index = 1; index <= count; index += 1) {
@@ -167,6 +186,11 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         traits: fixedRowSlots(traitSheetRowField, 10),
         paths: fixedRowSlots(pathSheetRowField, 6),
         techniques: fixedRowSlots(techniqueSheetRowField, 9)
+      }),
+      skillGroups: new fields.SchemaField({
+        group1: proficiencySkillGroupField(),
+        group2: proficiencySkillGroupField(),
+        group3: proficiencySkillGroupField()
       }),
       notes: textField()
     };

@@ -1,6 +1,6 @@
 import { rollAttributeCheck } from "../rolls/pool.js";
 import { buildResourcePips } from "../rules/resource-tracker.js";
-import { buildFeatureRows, countFeatureMarks } from "../rules/feature-sheet.js";
+import { buildFeatureRows, buildSkillGroups, countFeatureMarks } from "../rules/feature-sheet.js";
 
 export class HKCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -54,6 +54,7 @@ export class HKCharacterSheet extends ActorSheet {
       techniques: buildFeatureRows(featureSheet.techniques, context.itemGroups.techniques, 9, ["marked"])
     };
     context.featureTotals = countFeatureMarks(context.featureRows.traits, ["attraction", "spook", "hunger"]);
+    context.skillGroups = buildSkillGroups(this.actor.system.skillGroups);
 
     return context;
   }
@@ -180,6 +181,7 @@ export class HKCharacterSheet extends ActorSheet {
     const input = event.currentTarget;
     const key = input.dataset.resourceField;
     const allowedKeys = [
+      "heart", "soul", "stamina",
       "heartMax", "soulMax", "staminaMax",
       "heartTemp", "soulTemp", "staminaTemp"
     ];

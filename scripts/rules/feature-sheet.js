@@ -22,3 +22,33 @@ export function countFeatureMarks(rows = [], fields = []) {
     rows.reduce((total, row) => total + (row[field] ? 1 : 0), 0)
   ]));
 }
+
+/**
+ * Build the three proficiency groups shown in the Overview skill column.
+ * Every group has a rank and four skills; each skill has a mastery value.
+ */
+export function buildSkillGroups(savedGroups = {}) {
+  const toRank = (value) => {
+    const number = Number(value);
+    return Number.isFinite(number) ? Math.min(3, Math.max(0, Math.floor(number))) : 0;
+  };
+
+  return Array.from({ length: 3 }, (_, groupIndex) => {
+    const id = `group${groupIndex + 1}`;
+    const savedGroup = savedGroups?.[id] ?? {};
+
+    return {
+      id,
+      rank: toRank(savedGroup.rank),
+      skills: Array.from({ length: 4 }, (_, skillIndex) => {
+        const skillId = `skill${skillIndex + 1}`;
+        const savedSkill = savedGroup.skills?.[skillId] ?? {};
+        return {
+          id: skillId,
+          name: String(savedSkill.name ?? ""),
+          mastery: toRank(savedSkill.mastery)
+        };
+      })
+    };
+  });
+}
