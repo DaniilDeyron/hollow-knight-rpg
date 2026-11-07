@@ -323,7 +323,7 @@
                     <div class="hkrpg-trait-node__row">
                       <div class="hkrpg-trait-node__name">
                         <strong>{{trait.name}}</strong>
-                        <span>{{localize "HKRPG.Features.TraitMain"}}</span>
+                        <span class="hkrpg-trait-node__meta">{{localize "HKRPG.Features.TraitMain"}} · {{trait.categoryLabel}}</span>
                       </div>
                       <div class="hkrpg-trait-modifiers">
                         <span title="{{localize "HKRPG.Resource.Hunger"}}">Г {{trait.hungerLabel}}</span>
@@ -340,7 +340,7 @@
                       <div class="hkrpg-trait-node hkrpg-trait-node--sub">
                         <div class="hkrpg-trait-node__row">
                           <div class="hkrpg-trait-node__name">
-                            <strong>{{subtrait.name}}</strong>
+                            <strong><i class="hkrpg-trait-marker hkrpg-trait-marker--sub" aria-hidden="true"></i>{{subtrait.name}}</strong>
                             <span>{{localize "HKRPG.Features.TraitSub"}}</span>
                           </div>
                           <div class="hkrpg-trait-modifiers">
@@ -388,7 +388,7 @@
                 <span>Прив. <strong>{{traitTotals.cuteLabel}}</strong></span>
                 <span>Жуть <strong>{{traitTotals.spookLabel}}</strong></span>
               </div>
-              <button type="button" class="hkrpg-feature-add" data-create-trait {{#unless isEditable}}disabled{{/unless}}>＋ {{localize "HKRPG.Features.AddTrait"}}</button>
+              <button type="button" class="hkrpg-feature-add" data-create-trait {{#unless isEditable}}disabled{{/unless}} {{#unless canAddTrait}}disabled title="{{localize "HKRPG.Features.MainTraitLimitReached"}}"{{/unless}}>＋ {{localize "HKRPG.Features.AddTrait"}}</button>
             </footer>
           </section>
 
@@ -474,7 +474,7 @@
                 <h2>{{localize "HKRPG.Development.Techniques"}}</h2>
                 <p>{{localize "HKRPG.Features.PreparedArtsArcana"}}</p>
               </div>
-              <strong>{{techniqueRows.length}} / {{system.derived.techniqueSlots}}</strong>
+              <strong>{{preparedTechniqueCount}} / {{system.derived.techniqueSlots}}</strong>
             </div>
             {{#if techniqueRows.length}}
               <div class="hkrpg-technique-slots-list">

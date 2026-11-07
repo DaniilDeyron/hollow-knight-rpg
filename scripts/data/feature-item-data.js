@@ -29,6 +29,24 @@ export class HKTraitData extends foundry.abstract.TypeDataModel {
         }
       }),
       parentId: textField(),
+      category: new fields.StringField({
+        required: true,
+        nullable: false,
+        initial: "unassigned",
+        choices: {
+          unassigned: "HKRPG.Features.TraitCategoryUnassigned",
+          naturalWeapon: "HKRPG.Features.TraitCategoryNaturalWeapon",
+          characteristics: "HKRPG.Features.TraitCategoryCharacteristics",
+          mind: "HKRPG.Features.TraitCategoryMind",
+          physiological: "HKRPG.Features.TraitCategoryPhysiological",
+          senses: "HKRPG.Features.TraitCategorySenses",
+          mystical: "HKRPG.Features.TraitCategoryMystical",
+          body: "HKRPG.Features.TraitCategoryBody",
+          movement: "HKRPG.Features.TraitCategoryMovement",
+          naturalDefense: "HKRPG.Features.TraitCategoryNaturalDefense",
+          custom: "HKRPG.Features.TraitCategoryCustom"
+        }
+      }),
       hunger: signedModifierField(),
       cute: signedModifierField(),
       spook: signedModifierField(),

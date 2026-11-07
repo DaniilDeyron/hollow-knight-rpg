@@ -22,6 +22,24 @@
           </select>
         </label>
         {{#if (eq system.kind "main")}}
+          <label>
+            <span>{{localize "HKRPG.Features.TraitCategory"}}</span>
+            <select name="system.category" {{#unless isEditable}}disabled{{/unless}}>
+              {{#select system.category}}
+                <option value="unassigned">{{localize "HKRPG.Features.TraitCategoryUnassigned"}}</option>
+                <option value="naturalWeapon">{{localize "HKRPG.Features.TraitCategoryNaturalWeapon"}}</option>
+                <option value="characteristics">{{localize "HKRPG.Features.TraitCategoryCharacteristics"}}</option>
+                <option value="mind">{{localize "HKRPG.Features.TraitCategoryMind"}}</option>
+                <option value="physiological">{{localize "HKRPG.Features.TraitCategoryPhysiological"}}</option>
+                <option value="senses">{{localize "HKRPG.Features.TraitCategorySenses"}}</option>
+                <option value="mystical">{{localize "HKRPG.Features.TraitCategoryMystical"}}</option>
+                <option value="body">{{localize "HKRPG.Features.TraitCategoryBody"}}</option>
+                <option value="movement">{{localize "HKRPG.Features.TraitCategoryMovement"}}</option>
+                <option value="naturalDefense">{{localize "HKRPG.Features.TraitCategoryNaturalDefense"}}</option>
+                <option value="custom">{{localize "HKRPG.Features.TraitCategoryCustom"}}</option>
+              {{/select}}
+            </select>
+          </label>
           <p class="hkrpg-feature-item-hint">{{localize "HKRPG.Features.MainTraitLimit"}}</p>
         {{else}}
           <label>

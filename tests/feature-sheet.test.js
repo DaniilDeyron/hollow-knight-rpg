@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildFeatureRows, buildSkillGroups, countFeatureMarks } from "../scripts/rules/feature-sheet.js";
+import { buildFeatureRows, buildSkillGroups, buildTraitTree, buildTechniqueSlots, countFeatureMarks } from "../scripts/rules/feature-sheet.js";
 
 test("Формирует заданное число пустых строк черт", () => {
   const rows = buildFeatureRows({}, [], 10, ["attraction", "spook", "hunger"]);
@@ -109,4 +109,28 @@ test("Пустое название умения не ломает отобра�
   const groups = buildSkillGroups({ group3: { name: "", rank: 0 } });
   assert.equal(groups[2].name, "");
   assert.equal(groups[2].skills.length, 4);
+});
+
+
+test("Считает только основные Черты в лимите семи, не включая подчерты", () => {
+  const tree = buildTraitTree([
+    { id: "main-1", name: "Крылья", system: { kind: "main", category: "movement" } },
+    { id: "sub-1", name: "Полет", system: { kind: "subtrait", parentId: "main-1" } },
+    { id: "sub-2", name: "Планирование", system: { kind: "subtrait2", parentId: "sub-1" } },
+    { id: "main-2", name: "Рог", system: { kind: "main", category: "naturalWeapon" } }
+  ]);
+  assert.equal(tree.count, 2);
+  assert.equal(tree.total, 4);
+  assert.equal(tree.roots.length, 2);
+  assert.equal(tree.roots.find((trait) => trait.id === "main-1").categoryLabel, "Движение");
+});
+
+test("Считает заполненные ячейки Техник отдельно от доступной вместимости", () => {
+  const rows = buildTechniqueSlots({
+    slot1: { name: "Удар", kind: "art" },
+    slot2: { name: "", kind: "arcana" },
+    slot3: { name: "Огненный шар", kind: "arcana" }
+  }, 3);
+  assert.equal(rows.length, 3);
+  assert.equal(rows.filter((slot) => slot.name.trim()).length, 2);
 });

@@ -77,6 +77,7 @@ export class HKCharacterSheet extends ActorSheet {
 
     context.traitTree = buildTraitTree(traitItems);
     context.traitCount = context.traitTree.count;
+    context.canAddTrait = context.traitCount < 7;
     context.traitTotals = context.traitTree.totals;
     context.legacyTraits = traitItems.length ? [] : legacyTraits;
     context.pathSummary = pathSummary;
@@ -85,6 +86,7 @@ export class HKCharacterSheet extends ActorSheet {
       featureSheet.techniques,
       Math.floor(Number(this.actor.system.attributes.insight ?? 0))
     );
+    context.preparedTechniqueCount = context.techniqueRows.filter((slot) => slot.name.trim()).length;
     context.skillGroups = buildSkillGroups(this.actor.system.skillGroups);
 
     return context;
@@ -292,6 +294,13 @@ export class HKCharacterSheet extends ActorSheet {
   async _onCreateTrait(event) {
     event.preventDefault();
     if (!this.isEditable) return;
+    const mainTraitCount = this.actor.items.filter((item) =>
+      item.type === "trait" && item.system.kind === "main"
+    ).length;
+    if (mainTraitCount >= 7) {
+      ui.notifications.warn(game.i18n.localize("HKRPG.Features.MainTraitLimitReached"));
+      return;
+    }
     await this._createTrait("main", "");
   }
 
@@ -316,7 +325,7 @@ export class HKCharacterSheet extends ActorSheet {
         name: labels[kind] ?? "Новая черта",
         type: "trait",
         img: "icons/svg/upgrade.svg",
-        system: { kind, parentId, hunger: 0, cute: 0, spook: 0 }
+        system: { kind, parentId, category: "unassigned", hunger: 0, cute: 0, spook: 0 }
       }]);
       item?.sheet?.render(true);
       this.render(true);

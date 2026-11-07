@@ -75,6 +75,19 @@ export function buildTraitTree(items = []) {
     id: item.id,
     name: String(item.name ?? ""),
     kind: item.system?.kind ?? "main",
+    category: item.system?.category ?? "unassigned",
+    categoryLabel: ({
+      naturalWeapon: "Природное оружие",
+      characteristics: "Характеристики",
+      mind: "Разум",
+      physiological: "Физиология",
+      senses: "Чувства",
+      mystical: "Мистика",
+      body: "Тело",
+      movement: "Движение",
+      naturalDefense: "Природная защита",
+      unassigned: "Категория не выбрана"
+    })[item.system?.category ?? "unassigned"] ?? "Собственная черта",
     parentId: String(item.system?.parentId ?? ""),
     hunger: numeric(item.system?.hunger),
     cute: numeric(item.system?.cute),
@@ -116,7 +129,7 @@ export function buildTraitTree(items = []) {
 
   return {
     roots,
-    count: roots.filter((trait) => trait.kind === "main").length,
+    count: nodes.filter((trait) => trait.kind === "main").length,
     total: all.length,
     totals: {
       ...totals,
