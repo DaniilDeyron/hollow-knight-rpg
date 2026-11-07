@@ -49,6 +49,7 @@ export function buildSkillGroups(savedGroups = {}) {
         return {
           id: skillId,
           name: String(savedSkill.name ?? ""),
+          mastery: toRank(savedSkill.mastery),
           isMastered: savedGroup.masterySkill
             ? savedGroup.masterySkill === skillId
             : toRank(savedSkill.mastery) >= 3 && toRank(savedGroup.rank) === 3
