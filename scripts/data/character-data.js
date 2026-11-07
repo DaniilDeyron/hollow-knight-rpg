@@ -1,4 +1,5 @@
 import { calculateDerivedStats } from "../rules/derived.js";
+import { countPathRanks } from "../rules/charm-tracker.js";
 
 const fields = foundry.data.fields;
 
@@ -200,9 +201,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
   }
 
   prepareDerivedData() {
-    const pathRanks = Object.values(this.featureSheet.paths ?? {}).reduce((total, path) => {
-      return total + ["rank1", "rank2", "rank3"].filter((key) => Boolean(path?.[key])).length;
-    }, 0);
+    const pathRanks = countPathRanks(this.featureSheet.paths);
 
     const derived = calculateDerivedStats(this.attributes, this.resources, {
       maneuverability: this.social.maneuverabilityOverride,

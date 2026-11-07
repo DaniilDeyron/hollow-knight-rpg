@@ -34,15 +34,16 @@ export function evaluateCharmEquip(maximum = 3, equippedCharms = [], candidate =
   const state = buildCharmNotchState(maximum, equippedCharms);
   const candidateName = charmName(candidate);
   const candidateId = candidate?.id ?? candidate?._id ?? null;
-  const duplicate = (equippedCharms ?? []).some((item) =>
-    (item?.id ?? item?._id ?? null) !== candidateId && charmName(item) === candidateName
-  );
+  const duplicate = Boolean(candidateName) && (equippedCharms ?? []).some((item) => {
+    const itemId = item?.id ?? item?._id ?? null;
+    const isSameDocument = candidateId != null && itemId != null &&
+      String(itemId) === String(candidateId);
+    return !isSameDocument && charmName(item) === candidateName;
+  });
   if (duplicate) return { allowed: false, reason: "duplicate", overcharmed: false };
+  if (state.overcharmed) return { allowed: false, reason: "already-overcharmed", overcharmed: false };
   if (state.free < 1) return { allowed: false, reason: "no-free-notch", overcharmed: false };
   const cost = charmNotches(candidate);
   const overcharmed = cost > state.free;
-  if (overcharmed && state.overcharmed) {
-    return { allowed: false, reason: "already-overcharmed", overcharmed: false };
-  }
   return { allowed: true, reason: null, cost, remaining: state.free - cost, overcharmed };
 }

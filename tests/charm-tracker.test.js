@@ -43,3 +43,18 @@ test("Не разрешает надевать несколько копий о�
   const r=evaluateCharmEquip(8,[{name:"Rusted Blades",system:{notches:2,equipped:true}}],{name:"Rusted Blades",system:{notches:2}});
   assert.equal(r.allowed,false);assert.equal(r.reason,"duplicate");
 });
+
+test("Блокирует дальнейшее надевание, если персонаж уже Переочарован", () => {
+  const equipped = [{ name: "Heavy", system: { notches: 4, equipped: true } }];
+  const result = evaluateCharmEquip(3, equipped, { name: "Another", system: { notches: 1 } });
+  assert.equal(result.allowed, false);
+  assert.equal(result.reason, "already-overcharmed");
+});
+
+test("Сравнивает амулеты по названию, если в тестовых данных нет ID", () => {
+  const result = evaluateCharmEquip(8, [
+    { name: "Rusted Blades", system: { notches: 2, equipped: true } }
+  ], { name: "rusted blades", system: { notches: 2 } });
+  assert.equal(result.allowed, false);
+  assert.equal(result.reason, "duplicate");
+});
