@@ -11,13 +11,20 @@
     </label>
   </header>
 
-  <section class="hkrpg-charm-item-section hkrpg-charm-item-description">
-    <h2>{{localize "HKRPG.Charms.Description"}}</h2>
-    <textarea name="system.description" rows="6" placeholder="{{localize "HKRPG.Charms.DescriptionPlaceholder"}}" {{#unless isEditable}}disabled{{/unless}}>{{system.description}}</textarea>
-  </section>
+  <nav class="hkrpg-charm-tabs tabs" data-group="primary">
+    <a class="item" data-tab="description">{{localize "HKRPG.Charms.Description"}}</a>
+    <a class="item" data-tab="effect">{{localize "HKRPG.Charms.Effect"}}</a>
+  </nav>
 
-  <section class="hkrpg-charm-item-section hkrpg-charm-item-effects">
-    <h2>{{localize "HKRPG.Charms.Effects"}}</h2>
-    <textarea name="system.effects" rows="6" placeholder="{{localize "HKRPG.Charms.EffectsPlaceholder"}}" {{#unless isEditable}}disabled{{/unless}}>{{system.effects}}</textarea>
-  </section>
+  <div class="hkrpg-charm-tab-content">
+    <section class="tab hkrpg-charm-item-section hkrpg-charm-item-description" data-group="primary" data-tab="description">
+      <h2>{{localize "HKRPG.Charms.Description"}}</h2>
+      <textarea name="system.description" rows="9" placeholder="{{localize "HKRPG.Charms.DescriptionPlaceholder"}}" {{#unless isEditable}}disabled{{/unless}}>{{system.description}}</textarea>
+    </section>
+
+    <section class="tab hkrpg-charm-item-section hkrpg-charm-item-effects" data-group="primary" data-tab="effect">
+      <h2>{{localize "HKRPG.Charms.Effect"}}</h2>
+      <textarea name="system.effects" rows="9" placeholder="{{localize "HKRPG.Charms.EffectPlaceholder"}}" {{#unless isEditable}}disabled{{/unless}}>{{system.effects}}</textarea>
+    </section>
+  </div>
 </form>

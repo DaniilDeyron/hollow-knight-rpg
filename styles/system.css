@@ -3241,3 +3241,91 @@
 }
 
 @media(max-width:760px){.hkrpg.sheet.actor .hkrpg-charms-section-heading{align-items:flex-start}.hkrpg.sheet.actor .hkrpg-notches-heading{flex-wrap:wrap}.hkrpg.sheet.actor .hkrpg-charms-collection-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+
+/* Two-tab D&D-style content layout for Charm items. */
+.hkrpg.sheet.item.charm .window-content {
+  overflow: auto;
+}
+
+.hkrpg-charm-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 22px;
+  min-height: 38px;
+  margin: 1px 0 12px;
+  padding: 0 4px 5px;
+  border-bottom: 1px solid #647b98;
+  background: transparent;
+}
+
+.hkrpg-charm-tabs .item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 31px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #aebfd5 !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 0.87rem;
+  font-weight: 750;
+  letter-spacing: 0.035em;
+  text-decoration: none;
+  text-transform: uppercase;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.hkrpg-charm-tabs .item:hover {
+  color: #edf4fd !important;
+  background: transparent;
+  text-shadow: 0 0 7px rgb(159 195 237 / 38%);
+}
+
+.hkrpg-charm-tabs .item.active {
+  color: #f2f6fd !important;
+  background: transparent;
+  box-shadow: none;
+}
+
+.hkrpg-charm-tabs .item.active::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  bottom: -6px;
+  left: 8px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #d8c99e 18%, #e8d9ae 82%, transparent);
+  box-shadow: 0 0 6px rgb(218 201 158 / 45%);
+}
+
+.hkrpg-charm-tab-content {
+  min-width: 0;
+}
+
+.hkrpg-charm-tab-content > .tab {
+  display: none;
+  min-width: 0;
+}
+
+.hkrpg-charm-tab-content > .tab.active {
+  display: flex;
+}
+
+.hkrpg-charm-tab-content .hkrpg-charm-item-section {
+  gap: 9px;
+}
+
+.hkrpg-charm-tab-content .hkrpg-charm-item-section h2 {
+  display: none;
+}
+
+.hkrpg-charm-tab-content .hkrpg-charm-item-section textarea {
+  min-height: 270px;
+  resize: vertical;
+}
