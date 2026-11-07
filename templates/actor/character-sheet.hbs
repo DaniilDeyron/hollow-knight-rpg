@@ -275,14 +275,14 @@
                   </div>
 
                   <div class="hkrpg-skill-group__mastery-heading">
-                    <span>{{localize "HKRPG.Features.Mastery"}}</span>
+                    <span>{{localize "HKRPG.Features.MasteryAtRank3"}}</span>
                   </div>
 
                   <div class="hkrpg-skill-group__rows">
                     {{#each group.skills as |skill|}}
                       <div class="hkrpg-skill-entry">
                         <input class="hkrpg-skill-entry__name" name="system.skillGroups.{{../group.id}}.skills.{{skill.id}}.name" type="text" value="{{skill.name}}" placeholder="{{localize "HKRPG.Features.SkillNamePlaceholder"}}" aria-label="{{localize "HKRPG.Features.SkillNamePlaceholder"}} {{skill.id}}" {{#unless ../../isEditable}}disabled{{/unless}} />
-                        <input class="hkrpg-skill-entry__mastery" name="system.skillGroups.{{../group.id}}.skills.{{skill.id}}.mastery" type="number" min="0" max="3" step="1" value="{{skill.mastery}}" aria-label="{{localize "HKRPG.Features.Mastery"}}" {{#unless ../../isEditable}}disabled{{/unless}} />
+                        <input class="hkrpg-skill-entry__mastery" type="radio" name="system.skillGroups.{{../group.id}}.masterySkill" value="{{skill.id}}" {{#if skill.isMastered}}checked{{/if}} aria-label="{{localize "HKRPG.Features.Mastery"}}: {{skill.name}}" {{#unless ../../isEditable}}disabled{{/unless}} {{#unless ../group.canMaster}}disabled{{/unless}} />
                       </div>
                     {{/each}}
                   </div>
@@ -300,85 +300,200 @@
             <section class="tab hkrpg-features-tab" data-group="primary" data-tab="features">
       <div class="hkrpg-features-layout">
         <div class="hkrpg-features-column hkrpg-features-column--left">
-          <section class="hkrpg-paper-panel hkrpg-traits-panel">
-            <div class="hkrpg-paper-heading hkrpg-traits-heading">
-              <h2>{{localize "HKRPG.Development.Traits"}}</h2>
-              <div class="hkrpg-trait-mark-headings">
-                <span>{{localize "HKRPG.Features.AttractionShort"}}</span>
-                <span>{{localize "HKRPG.Secondary.Spook"}}</span>
-                <span>{{localize "HKRPG.Resource.Hunger"}}</span>
+          <section class="hkrpg-panel hkrpg-feature-panel hkrpg-traits-panel">
+            <div class="hkrpg-panel-heading">
+              <div>
+                <h2>{{localize "HKRPG.Development.Traits"}}</h2>
+                <p>{{localize "HKRPG.Features.TraitLimitNote"}}</p>
               </div>
+              <strong class="hkrpg-feature-counter {{#if (gt traitCount 7)}}is-over-limit{{/if}}">{{traitCount}} / 7</strong>
             </div>
 
-            <div class="hkrpg-trait-rows">
-              {{#each featureRows.traits as |row|}}
-                <div class="hkrpg-trait-row">
-                  <input class="hkrpg-paper-line-input" name="system.featureSheet.traits.{{row.slot}}.name" type="text" value="{{row.name}}" aria-label="{{localize "HKRPG.Development.Traits"}} {{row.slot}}" {{#unless ../isEditable}}disabled{{/unless}} />
-                  <label class="hkrpg-paper-check"><input name="system.featureSheet.traits.{{row.slot}}.attraction" type="checkbox" {{#if row.attraction}}checked{{/if}} {{#unless ../isEditable}}disabled{{/unless}} /></label>
-                  <label class="hkrpg-paper-check"><input name="system.featureSheet.traits.{{row.slot}}.spook" type="checkbox" {{#if row.spook}}checked{{/if}} {{#unless ../isEditable}}disabled{{/unless}} /></label>
-                  <label class="hkrpg-paper-check"><input name="system.featureSheet.traits.{{row.slot}}.hunger" type="checkbox" {{#if row.hunger}}checked{{/if}} {{#unless ../isEditable}}disabled{{/unless}} /></label>
-                </div>
-              {{/each}}
-            </div>
+            {{#if legacyTraits.length}}
+              <div class="hkrpg-feature-legacy-warning">
+                <strong>{{localize "HKRPG.Features.LegacyEntries"}}</strong>
+                <span>{{localize "HKRPG.Features.LegacyTraitHint"}}</span>
+              </div>
+            {{/if}}
 
-            <div class="hkrpg-trait-totals">
-              <strong>{{localize "HKRPG.Features.Total"}}</strong>
-              <output>{{featureTotals.attraction}}</output>
-              <output>{{featureTotals.spook}}</output>
-              <output>{{featureTotals.hunger}}</output>
-            </div>
+            {{#if traitTree.roots.length}}
+              <div class="hkrpg-trait-tree">
+                {{#each traitTree.roots as |trait|}}
+                  <article class="hkrpg-trait-node hkrpg-trait-node--main">
+                    <div class="hkrpg-trait-node__row">
+                      <div class="hkrpg-trait-node__name">
+                        <strong>{{trait.name}}</strong>
+                        <span>{{localize "HKRPG.Features.TraitMain"}}</span>
+                      </div>
+                      <div class="hkrpg-trait-modifiers">
+                        <span title="{{localize "HKRPG.Resource.Hunger"}}">Г {{trait.hungerLabel}}</span>
+                        <span title="{{localize "HKRPG.Secondary.Cute"}}">П {{trait.cuteLabel}}</span>
+                        <span title="{{localize "HKRPG.Secondary.Spook"}}">Ж {{trait.spookLabel}}</span>
+                      </div>
+                      <div class="hkrpg-feature-actions">
+                        <button type="button" data-edit-feature-item="{{trait.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
+                        <button type="button" data-create-subtrait="{{trait.id}}" title="{{localize "HKRPG.Features.AddSubtrait"}}">＋</button>
+                        <button type="button" data-delete-feature-item="{{trait.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
+                      </div>
+                    </div>
+                    {{#each trait.children as |subtrait|}}
+                      <div class="hkrpg-trait-node hkrpg-trait-node--sub">
+                        <div class="hkrpg-trait-node__row">
+                          <div class="hkrpg-trait-node__name">
+                            <strong>{{subtrait.name}}</strong>
+                            <span>{{localize "HKRPG.Features.TraitSub"}}</span>
+                          </div>
+                          <div class="hkrpg-trait-modifiers">
+                            <span>Г {{subtrait.hungerLabel}}</span>
+                            <span>П {{subtrait.cuteLabel}}</span>
+                            <span>Ж {{subtrait.spookLabel}}</span>
+                          </div>
+                          <div class="hkrpg-feature-actions">
+                            <button type="button" data-edit-feature-item="{{subtrait.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
+                            <button type="button" data-create-subtrait="{{subtrait.id}}" title="{{localize "HKRPG.Features.AddSubtrait"}}">＋</button>
+                            <button type="button" data-delete-feature-item="{{subtrait.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
+                          </div>
+                        </div>
+                        {{#each subtrait.children as |nested|}}
+                          <div class="hkrpg-trait-node hkrpg-trait-node--nested">
+                            <div class="hkrpg-trait-node__row">
+                              <div class="hkrpg-trait-node__name">
+                                <strong>{{nested.name}}</strong>
+                                <span>{{localize "HKRPG.Features.TraitSub2"}}</span>
+                              </div>
+                              <div class="hkrpg-trait-modifiers">
+                                <span>Г {{nested.hungerLabel}}</span>
+                                <span>П {{nested.cuteLabel}}</span>
+                                <span>Ж {{nested.spookLabel}}</span>
+                              </div>
+                              <div class="hkrpg-feature-actions">
+                                <button type="button" data-edit-feature-item="{{nested.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
+                                <button type="button" data-delete-feature-item="{{nested.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
+                              </div>
+                            </div>
+                          </div>
+                        {{/each}}
+                      </div>
+                    {{/each}}
+                  </article>
+                {{/each}}
+              </div>
+            {{else}}
+              <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoTraits"}}</p>
+            {{/if}}
+
+            <footer class="hkrpg-feature-panel__footer">
+              <div class="hkrpg-trait-totals">
+                <span>Голод <strong>{{traitTotals.hungerLabel}}</strong></span>
+                <span>Прив. <strong>{{traitTotals.cuteLabel}}</strong></span>
+                <span>Жуть <strong>{{traitTotals.spookLabel}}</strong></span>
+              </div>
+              <button type="button" class="hkrpg-feature-add" data-create-trait {{#unless isEditable}}disabled{{/unless}}>＋ {{localize "HKRPG.Features.AddTrait"}}</button>
+            </footer>
           </section>
 
-          <section class="hkrpg-spell-modifications">
-            <div class="hkrpg-paper-heading hkrpg-spell-modifications__heading">
-              <h2>{{localize "HKRPG.Features.SpellModifications"}}</h2>
-              <p>{{localize "HKRPG.Features.SpellModificationsHint"}}</p>
-            </div>
-            <div class="hkrpg-spell-dropzone" data-spell-modification-dropzone>
-              <span>{{localize "HKRPG.Features.DropEffects"}}</span>
-            </div>
-          </section>
+          {{#if legacyTraits.length}}
+            <section class="hkrpg-feature-legacy-list hkrpg-panel">
+              <p>{{localize "HKRPG.Features.LegacyTraitList"}}</p>
+              <ul>
+                {{#each legacyTraits as |trait|}}<li>{{trait.name}}</li>{{/each}}
+              </ul>
+            </section>
+          {{/if}}
+
+          <details class="hkrpg-panel hkrpg-spell-reference">
+            <summary>{{localize "HKRPG.Features.SpellModifications"}}</summary>
+            <p>{{localize "HKRPG.Features.SpellRangeSummary"}}</p>
+            <p>{{localize "HKRPG.Features.SpellDurationSummary"}}</p>
+            <p>{{localize "HKRPG.Features.SpellDamageSummary"}}</p>
+            <ul>
+              <li>{{localize "HKRPG.Features.SpellSplitSummary"}}</li>
+              <li>{{localize "HKRPG.Features.SpellExpandSummary"}}</li>
+              <li>{{localize "HKRPG.Features.SpellAccelerateSummary"}}</li>
+              <li>{{localize "HKRPG.Features.SpellConjureSummary"}}</li>
+            </ul>
+            <small>{{localize "HKRPG.Features.SpellReferenceSource"}}</small>
+          </details>
         </div>
 
         <div class="hkrpg-features-column hkrpg-features-column--right">
-          <section class="hkrpg-paper-panel hkrpg-paths-panel">
-            <div class="hkrpg-paper-heading hkrpg-paths-heading">
-              <h2>{{localize "HKRPG.Development.Paths"}}</h2>
-              <div class="hkrpg-path-rank-heading">
-                <span>{{localize "HKRPG.Features.PathRank"}}</span>
-                <div><span>Ⅰ</span><span>Ⅱ</span><span>Ⅲ</span></div>
+          <section class="hkrpg-panel hkrpg-feature-panel hkrpg-paths-panel">
+            <div class="hkrpg-panel-heading">
+              <div>
+                <h2>{{localize "HKRPG.Development.Paths"}}</h2>
+                <p>{{localize "HKRPG.Features.PathLimitNote"}}</p>
               </div>
+              <strong>{{pathSummary.totalRanks}} {{localize "HKRPG.Features.TotalRanks"}}</strong>
             </div>
 
-            <div class="hkrpg-path-rows">
-              {{#each featureRows.paths as |row|}}
-                <div class="hkrpg-path-row">
-                  <input class="hkrpg-paper-line-input" name="system.featureSheet.paths.{{row.slot}}.name" type="text" value="{{row.name}}" aria-label="{{localize "HKRPG.Development.Paths"}} {{row.slot}}" {{#unless ../isEditable}}disabled{{/unless}} />
-                  <label class="hkrpg-paper-check"><input name="system.featureSheet.paths.{{row.slot}}.rank1" type="checkbox" {{#if row.rank1}}checked{{/if}} {{#unless ../isEditable}}disabled{{/unless}} /></label>
-                  <label class="hkrpg-paper-check"><input name="system.featureSheet.paths.{{row.slot}}.rank2" type="checkbox" {{#if row.rank2}}checked{{/if}} {{#unless ../isEditable}}disabled{{/unless}} /></label>
-                  <label class="hkrpg-paper-check"><input name="system.featureSheet.paths.{{row.slot}}.rank3" type="checkbox" {{#if row.rank3}}checked{{/if}} {{#unless ../isEditable}}disabled{{/unless}} /></label>
-                </div>
-              {{/each}}
+            {{#if legacyPaths.length}}
+              <div class="hkrpg-feature-legacy-warning">
+                <strong>{{localize "HKRPG.Features.LegacyEntries"}}</strong>
+                <span>{{localize "HKRPG.Features.LegacyPathHint"}}</span>
+              </div>
+            {{/if}}
+
+            {{#if pathSummary.paths.length}}
+              <div class="hkrpg-path-list">
+                {{#each pathSummary.paths as |path|}}
+                  <article class="hkrpg-path-card">
+                    <div class="hkrpg-path-card__identity">
+                      <strong>{{path.name}}</strong>
+                      <span class="hkrpg-path-type hkrpg-path-type--{{path.kind}}">{{path.kindLabel}}</span>
+                    </div>
+                    <label class="hkrpg-path-card__rank">
+                      <span>{{localize "HKRPG.Features.Rank"}}</span>
+                      <input type="number" min="1" max="3" step="1" value="{{path.rank}}" data-path-rank="{{path.id}}" {{#unless ../isEditable}}disabled{{/unless}} />
+                    </label>
+                    <div class="hkrpg-feature-actions">
+                      <button type="button" data-edit-feature-item="{{path.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
+                      <button type="button" data-delete-feature-item="{{path.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
+                    </div>
+                  </article>
+                {{/each}}
+              </div>
+            {{else}}
+              <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoPaths"}}</p>
+            {{/if}}
+
+            <div class="hkrpg-path-bonuses">
+              <span>⊚ <strong>+{{pathSummary.totalRanks}}</strong> {{localize "HKRPG.Features.NotchesFromPaths"}}</span>
+              <span><strong>+{{pathSummary.mysticRanks}}</strong> {{localize "HKRPG.Features.SoulFromMysticPaths"}}</span>
+              <span><strong>+{{pathSummary.martialRanks}}</strong> {{localize "HKRPG.Features.StaminaFromMartialPaths"}}</span>
             </div>
+
+            {{#if legacyPaths.length}}
+              <button type="button" class="hkrpg-feature-add hkrpg-feature-add--secondary" data-migrate-legacy-features {{#unless isEditable}}disabled{{/unless}}>{{localize "HKRPG.Features.MigrateLegacy"}}</button>
+            {{/if}}
+            <button type="button" class="hkrpg-feature-add" data-create-path {{#unless isEditable}}disabled{{/unless}}>＋ {{localize "HKRPG.Features.AddPath"}}</button>
           </section>
 
-          <section class="hkrpg-paper-panel hkrpg-techniques-panel">
-            <div class="hkrpg-paper-heading hkrpg-techniques-heading">
-              <h2>{{localize "HKRPG.Development.Techniques"}}</h2>
-              <div class="hkrpg-technique-slots">
-                <span>{{localize "HKRPG.Features.TechniqueSlots"}}</span>
-                <output>{{system.derived.techniqueSlots}}</output>
+          <section class="hkrpg-panel hkrpg-feature-panel hkrpg-techniques-panel">
+            <div class="hkrpg-panel-heading">
+              <div>
+                <h2>{{localize "HKRPG.Development.Techniques"}}</h2>
+                <p>{{localize "HKRPG.Features.PreparedArtsArcana"}}</p>
               </div>
+              <strong>{{techniqueRows.length}} / {{system.derived.techniqueSlots}}</strong>
             </div>
-
-            <div class="hkrpg-technique-rows">
-              {{#each featureRows.techniques as |row|}}
-                <div class="hkrpg-technique-row">
-                  <input class="hkrpg-paper-line-input" name="system.featureSheet.techniques.{{row.slot}}.name" type="text" value="{{row.name}}" aria-label="{{localize "HKRPG.Development.Techniques"}} {{row.slot}}" {{#unless ../isEditable}}disabled{{/unless}} />
-                  <label class="hkrpg-paper-check"><input name="system.featureSheet.techniques.{{row.slot}}.marked" type="checkbox" {{#if row.marked}}checked{{/if}} {{#unless ../isEditable}}disabled{{/unless}} /></label>
-                </div>
-              {{/each}}
-            </div>
+            {{#if techniqueRows.length}}
+              <div class="hkrpg-technique-slots-list">
+                {{#each techniqueRows as |slot|}}
+                  <div class="hkrpg-technique-slot-row">
+                    <span class="hkrpg-technique-slot-index">{{slot.number}}</span>
+                    <input name="system.featureSheet.techniques.{{slot.slot}}.name" type="text" value="{{slot.name}}" placeholder="{{localize "HKRPG.Features.PreparedTechniquePlaceholder"}}" {{#unless ../isEditable}}disabled{{/unless}} />
+                    <select name="system.featureSheet.techniques.{{slot.slot}}.kind" aria-label="{{localize "HKRPG.Features.TechniqueKind"}}" {{#unless ../isEditable}}disabled{{/unless}}>
+                      {{#select slot.type}}
+                        <option value="art">{{localize "HKRPG.Features.TechniqueArt"}}</option>
+                        <option value="arcana">{{localize "HKRPG.Features.TechniqueArcana"}}</option>
+                      {{/select}}
+                    </select>
+                  </div>
+                {{/each}}
+              </div>
+            {{else}}
+              <p class="hkrpg-empty">{{localize "HKRPG.Features.NoTechniqueSlots"}}</p>
+            {{/if}}
           </section>
         </div>
       </div>

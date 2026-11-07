@@ -71,6 +71,12 @@ function pathSheetRowField() {
 function techniqueSheetRowField() {
   return new fields.SchemaField({
     name: textField(),
+    kind: new fields.StringField({
+      required: true,
+      nullable: false,
+      initial: "art",
+      choices: { art: "HKRPG.Features.TechniqueArt", arcana: "HKRPG.Features.TechniqueArcana" }
+    }),
     marked: booleanField()
   });
 }
@@ -91,6 +97,7 @@ function proficiencySkillGroupField() {
   return new fields.SchemaField({
     name: textField(),
     rank: valueField({ max: 3 }),
+    masterySkill: textField(),
     skills: new fields.SchemaField(skills)
   });
 }

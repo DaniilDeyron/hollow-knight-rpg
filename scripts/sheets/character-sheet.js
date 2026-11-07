@@ -1,6 +1,14 @@
 import { rollAttributeCheck } from "../rolls/pool.js";
 import { buildResourcePips } from "../rules/resource-tracker.js";
-import { buildFeatureRows, buildSkillGroups, countFeatureMarks } from "../rules/feature-sheet.js";
+import {
+  buildFeatureRows,
+  buildSkillGroups,
+  buildTraitTree,
+  buildLegacyTraitRows,
+  buildLegacyPathRows,
+  buildTechniqueSlots,
+  summarizePaths
+} from "../rules/feature-sheet.js";
 import { buildCharmNotchState, evaluateCharmEquip } from "../rules/charm-tracker.js";
 
 export class HKCharacterSheet extends ActorSheet {
@@ -40,10 +48,20 @@ export class HKCharacterSheet extends ActorSheet {
     };
 
     const items = this.actor.items.contents;
+    const traitItems = items.filter((item) => item.type === "trait");
+    const pathItems = items.filter((item) => item.type === "path");
     const charms = items.filter((item) => item.type === "charm");
+    const featureSheet = this.actor.system.featureSheet;
+    const legacyTraits = buildLegacyTraitRows(featureSheet.traits);
+    const legacyPaths = buildLegacyPathRows(featureSheet.paths);
+    const pathSummary = summarizePaths(pathItems);
+    const legacyPathRanks = legacyPaths.reduce((total, path) => total + path.rank, 0);
+    const activePathRanks = pathItems.length ? pathSummary.totalRanks : legacyPathRanks;
+    const notchesMaximum = 3 + activePathRanks + Number(this.actor.system.resources.notchesBonus ?? 0);
+
     context.itemGroups = {
-      traits: items.filter((item) => item.type === "trait"),
-      paths: items.filter((item) => item.type === "path"),
+      traits: traitItems,
+      paths: pathItems,
       charms,
       equippedCharms: charms.filter((item) => Boolean(item.system.equipped)),
       collectionCharms: charms.filter((item) => !item.system.equipped),
@@ -54,16 +72,19 @@ export class HKCharacterSheet extends ActorSheet {
       shields: items.filter((item) => item.type === "shield"),
       armor: items.filter((item) => item.type === "armor")
     };
-    context.charmNotches = buildCharmNotchState(this.actor.system.derived.notchesMax, charms);
+    context.charmNotches = buildCharmNotchState(notchesMaximum, charms);
     context.notchBonus = this.actor.system.resources.notchesBonus;
 
-    const featureSheet = this.actor.system.featureSheet;
-    context.featureRows = {
-      traits: buildFeatureRows(featureSheet.traits, context.itemGroups.traits, 10, ["attraction", "spook", "hunger"]),
-      paths: buildFeatureRows(featureSheet.paths, context.itemGroups.paths, 6, ["rank1", "rank2", "rank3"]),
-      techniques: buildFeatureRows(featureSheet.techniques, context.itemGroups.techniques, 9, ["marked"])
-    };
-    context.featureTotals = countFeatureMarks(context.featureRows.traits, ["attraction", "spook", "hunger"]);
+    context.traitTree = buildTraitTree(traitItems);
+    context.traitCount = context.traitTree.count;
+    context.traitTotals = context.traitTree.totals;
+    context.legacyTraits = traitItems.length ? [] : legacyTraits;
+    context.pathSummary = pathSummary;
+    context.legacyPaths = pathItems.length ? [] : legacyPaths;
+    context.techniqueRows = buildTechniqueSlots(
+      featureSheet.techniques,
+      Math.floor(Number(this.actor.system.attributes.insight ?? 0))
+    );
     context.skillGroups = buildSkillGroups(this.actor.system.skillGroups);
 
     return context;
@@ -131,6 +152,13 @@ export class HKCharacterSheet extends ActorSheet {
     }
 
     bind("[data-resource-field]", "change", this._onResourceFieldChange);
+    bind("[data-create-trait]", "click", this._onCreateTrait);
+    bind("[data-create-subtrait]", "click", this._onCreateSubtrait);
+    bind("[data-create-path]", "click", this._onCreatePath);
+    bind("[data-edit-feature-item]", "click", this._onEditFeatureItem);
+    bind("[data-delete-feature-item]", "click", this._onDeleteFeatureItem);
+    bind("[data-path-rank]", "change", this._onPathRankChange);
+    bind("[data-migrate-legacy-features]", "click", this._onMigrateLegacyFeatures);
     bind("[data-create-charm]", "click", this._onCreateCharm);
     bind("[data-edit-charm]", "click", this._onEditCharm);
     bind("[data-unequip-charm]", "click", this._onUnequipCharm);
@@ -261,6 +289,148 @@ export class HKCharacterSheet extends ActorSheet {
     }
   }
 
+  async _onCreateTrait(event) {
+    event.preventDefault();
+    if (!this.isEditable) return;
+    await this._createTrait("main", "");
+  }
+
+  async _onCreateSubtrait(event) {
+    event.preventDefault();
+    if (!this.isEditable) return;
+    const parentId = event.currentTarget.dataset.createSubtrait;
+    const parent = this.actor.items.get(parentId);
+    if (parent?.type !== "trait") return;
+    const kind = parent.system.kind === "main" ? "subtrait" : "subtrait2";
+    await this._createTrait(kind, parent.id);
+  }
+
+  async _createTrait(kind, parentId) {
+    try {
+      const labels = {
+        main: "Новая черта",
+        subtrait: "Новая подчерта",
+        subtrait2: "Новая подчерта II"
+      };
+      const [item] = await this.actor.createEmbeddedDocuments("Item", [{
+        name: labels[kind] ?? "Новая черта",
+        type: "trait",
+        img: "icons/svg/upgrade.svg",
+        system: { kind, parentId, hunger: 0, cute: 0, spook: 0 }
+      }]);
+      item?.sheet?.render(true);
+      this.render(true);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to create Trait", error);
+      ui.notifications.error("Не удалось создать черту. Подробности — в консоли (F12).");
+    }
+  }
+
+  async _onCreatePath(event) {
+    event.preventDefault();
+    if (!this.isEditable) return;
+    try {
+      const [item] = await this.actor.createEmbeddedDocuments("Item", [{
+        name: "Новый Путь",
+        type: "path",
+        img: "icons/svg/wing.svg",
+        system: { pathType: "unassigned", rank: 1 }
+      }]);
+      item?.sheet?.render(true);
+      this.render(true);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to create Path", error);
+      ui.notifications.error("Не удалось создать Путь. Подробности — в консоли (F12).");
+    }
+  }
+
+  async _onEditFeatureItem(event) {
+    event.preventDefault();
+    const item = this.actor.items.get(event.currentTarget.dataset.editFeatureItem);
+    if (item && ["trait", "path"].includes(item.type)) item.sheet.render(true);
+  }
+
+  async _onDeleteFeatureItem(event) {
+    event.preventDefault();
+    if (!this.isEditable) return;
+    const item = this.actor.items.get(event.currentTarget.dataset.deleteFeatureItem);
+    if (!item || !["trait", "path"].includes(item.type)) return;
+
+    const confirmed = await Dialog.confirm({
+      title: "Удалить запись?",
+      content: `<p>Удалить «${foundry.utils.escapeHTML(item.name)}»?</p>`
+    });
+    if (!confirmed) return;
+
+    try {
+      await item.delete();
+      this.render(true);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to delete Feature item", error);
+      ui.notifications.error("Не удалось удалить запись. Подробности — в консоли (F12).");
+    }
+  }
+
+  async _onPathRankChange(event) {
+    if (!this.isEditable) return;
+    const input = event.currentTarget;
+    const item = this.actor.items.get(input.dataset.pathRank);
+    if (item?.type !== "path") return;
+    const rank = Number(input.value);
+    if (!Number.isInteger(rank) || rank < 1 || rank > 3) {
+      input.value = String(item.system.rank);
+      return;
+    }
+    try {
+      await item.update({ "system.rank": rank });
+      this.render(true);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to update Path rank", error);
+      ui.notifications.error("Не удалось изменить Ранг Пути.");
+    }
+  }
+
+  async _onMigrateLegacyFeatures(event) {
+    event.preventDefault();
+    if (!this.isEditable) return;
+    const featureSheet = this.actor.system.featureSheet;
+    const oldTraits = buildLegacyTraitRows(featureSheet.traits);
+    const oldPaths = buildLegacyPathRows(featureSheet.paths);
+    if (!oldTraits.length && !oldPaths.length) return;
+
+    const confirmed = await Dialog.confirm({
+      title: "Перенести старые записи?",
+      content: "<p>Старые названия и Ранги будут перенесены. Старые галочки Черты нельзя достоверно преобразовать в числовые модификаторы — для них будут установлены нули, чтобы ты мог сверить их с книгой.</p>"
+    });
+    if (!confirmed) return;
+
+    try {
+      const createData = [
+        ...oldTraits.map((trait) => ({
+          name: trait.name,
+          type: "trait",
+          img: "icons/svg/upgrade.svg",
+          system: {
+            kind: "main", parentId: "", hunger: 0, cute: 0, spook: 0,
+            description: `Перенесено из старого листа. Старые отметки: Привлекательность ${trait.attraction ? "✓" : "—"}, Жуть ${trait.spook ? "✓" : "—"}, Голод ${trait.hunger ? "✓" : "—"}. Проверь числовые значения по книге правил.`
+          }
+        })),
+        ...oldPaths.map((path) => ({
+          name: path.name,
+          type: "path",
+          img: "icons/svg/wing.svg",
+          system: { pathType: "unassigned", rank: Math.max(1, Math.min(3, path.rank || 1)) }
+        }))
+      ];
+      if (createData.length) await this.actor.createEmbeddedDocuments("Item", createData);
+      this.render(true);
+      ui.notifications.info("Старые записи перенесены. Проверь тип каждого Пути и числовые модификаторы Черты.");
+    } catch (error) {
+      console.error("Hollow Knight RPG | Legacy Features migration failed", error);
+      ui.notifications.error("Не удалось перенести старые записи.");
+    }
+  }
+
   async _onCreateCharm(event) {
     event.preventDefault();
     if (!this.isEditable) return;
@@ -345,7 +515,13 @@ export class HKCharacterSheet extends ActorSheet {
     const equipped = this.actor.items.filter((item) =>
       item.type === "charm" && item.system.equipped && item.id !== sourceItem.id
     );
-    const result = evaluateCharmEquip(this.actor.system.derived.notchesMax, equipped, sourceItem);
+    const pathItems = this.actor.items.filter((item) => item.type === "path");
+    const legacyRanks = buildLegacyPathRows(this.actor.system.featureSheet.paths).reduce((total, path) => total + path.rank, 0);
+    const pathRanks = pathItems.length
+      ? summarizePaths(pathItems).totalRanks
+      : legacyRanks;
+    const maximumNotches = 3 + pathRanks + Number(this.actor.system.resources.notchesBonus ?? 0);
+    const result = evaluateCharmEquip(maximumNotches, equipped, sourceItem);
     if (!result.allowed) {
       const messages = {
         duplicate: "HKRPG.Charms.ErrorDuplicate",
