@@ -41,15 +41,162 @@ export function buildSkillGroups(savedGroups = {}) {
       id,
       name: String(savedGroup.name ?? ""),
       rank: toRank(savedGroup.rank),
+      masterySkill: String(savedGroup.masterySkill ?? ""),
+      canMaster: toRank(savedGroup.rank) === 3,
       skills: Array.from({ length: 4 }, (_, skillIndex) => {
         const skillId = `skill${skillIndex + 1}`;
         const savedSkill = savedGroup.skills?.[skillId] ?? {};
         return {
           id: skillId,
           name: String(savedSkill.name ?? ""),
-          mastery: toRank(savedSkill.mastery)
+          isMastered: savedGroup.masterySkill
+            ? savedGroup.masterySkill === skillId
+            : toRank(savedSkill.mastery) >= 3 && toRank(savedGroup.rank) === 3
         };
       })
     };
   });
+}
+
+function numeric(value) {
+  const number = Number(value ?? 0);
+  return Number.isFinite(number) ? number : 0;
+}
+
+function formatSigned(value) {
+  const number = numeric(value);
+  if (number === 0) return "0";
+  const rounded = Math.round(number * 2) / 2;
+  return rounded > 0 ? `+${rounded}` : String(rounded);
+}
+
+export function buildTraitTree(items = []) {
+  const nodes = (items ?? []).map((item) => ({
+    id: item.id,
+    name: String(item.name ?? ""),
+    kind: item.system?.kind ?? "main",
+    parentId: String(item.system?.parentId ?? ""),
+    hunger: numeric(item.system?.hunger),
+    cute: numeric(item.system?.cute),
+    spook: numeric(item.system?.spook),
+    hungerLabel: formatSigned(item.system?.hunger),
+    cuteLabel: formatSigned(item.system?.cute),
+    spookLabel: formatSigned(item.system?.spook),
+    children: []
+  }));
+  const byId = new Map(nodes.map((node) => [node.id, node]));
+  const roots = [];
+
+  for (const node of nodes) {
+    const parent = node.parentId ? byId.get(node.parentId) : null;
+    if (parent && parent !== node) parent.children.push(node);
+    else roots.push(node);
+  }
+
+  const sortTree = (entries) => {
+    entries.sort((a, b) => a.name.localeCompare(b.name, "ru"));
+    for (const entry of entries) sortTree(entry.children);
+  };
+  sortTree(roots);
+
+  const all = [];
+  const flatten = (entries) => {
+    for (const entry of entries) {
+      all.push(entry);
+      flatten(entry.children);
+    }
+  };
+  flatten(roots);
+
+  const totals = all.reduce((sum, trait) => ({
+    hunger: sum.hunger + trait.hunger,
+    cute: sum.cute + trait.cute,
+    spook: sum.spook + trait.spook
+  }), { hunger: 0, cute: 0, spook: 0 });
+
+  return {
+    roots,
+    count: roots.filter((trait) => trait.kind === "main").length,
+    total: all.length,
+    totals: {
+      ...totals,
+      hungerLabel: formatSigned(totals.hunger),
+      cuteLabel: formatSigned(totals.cute),
+      spookLabel: formatSigned(totals.spook)
+    }
+  };
+}
+
+export function summarizePaths(items = []) {
+  const paths = (items ?? []).map((item) => {
+    const rank = Math.min(3, Math.max(1, Math.floor(numeric(item.system?.rank) || 1)));
+    const kind = item.system?.pathType ?? "unassigned";
+    return {
+      id: item.id,
+      name: String(item.name ?? ""),
+      rank,
+      kind,
+      kindLabel: kind === "martial" ? "Военный" : kind === "mystic" ? "Мистический" : "Тип не выбран",
+      rankLabel: `Ранг ${rank}`
+    };
+  });
+  const totals = paths.reduce((sum, path) => {
+    sum.totalRanks += path.rank;
+    if (path.kind === "martial") sum.martialRanks += path.rank;
+    if (path.kind === "mystic") sum.mysticRanks += path.rank;
+    return sum;
+  }, { totalRanks: 0, martialRanks: 0, mysticRanks: 0 });
+
+  return {
+    paths,
+    ...totals,
+    count: paths.length,
+    soulBonus: totals.mysticRanks,
+    staminaBonus: totals.martialRanks
+  };
+}
+
+export function buildLegacyTraitRows(savedRows = {}) {
+  return Object.entries(savedRows ?? {}).map(([slot, row]) => ({
+    slot,
+    name: String(row?.name ?? "").trim(),
+    attraction: Boolean(row?.attraction),
+    spook: Boolean(row?.spook),
+    hunger: Boolean(row?.hunger)
+  })).filter((row) => row.name);
+}
+
+export function buildLegacyPathRows(savedRows = {}) {
+  return Object.entries(savedRows ?? {}).map(([slot, row]) => {
+    const rank = ["rank1", "rank2", "rank3"].filter((key) => Boolean(row?.[key])).length;
+    return { slot, name: String(row?.name ?? "").trim(), rank };
+  }).filter((row) => row.name);
+}
+
+export function buildTechniqueSlots(savedRows = {}, slotCount = 0) {
+  const count = Math.max(0, Math.min(9, Math.floor(numeric(slotCount))));
+  return Array.from({ length: count }, (_, index) => {
+    const slot = `slot${index + 1}`;
+    const saved = savedRows?.[slot] ?? {};
+    return {
+      slot,
+      number: index + 1,
+      name: String(saved.name ?? ""),
+      type: saved.kind === "arcana" ? "arcana" : "art",
+      typeLabel: saved.kind === "arcana" ? "Тайна" : "Искусство"
+    };
+  });
+}
+
+export function summarizeProficiencySkillDice(groups = []) {
+  const dice = {};
+  for (const group of groups ?? []) {
+    const rank = Math.min(3, Math.max(0, Math.floor(numeric(group.rank))));
+    for (const skill of group.skills ?? []) {
+      const name = String(skill.name ?? "").trim().toLocaleLowerCase("ru");
+      if (!name || rank === 0) continue;
+      dice[name] = Math.min(3, (dice[name] ?? 0) + rank);
+    }
+  }
+  return dice;
 }

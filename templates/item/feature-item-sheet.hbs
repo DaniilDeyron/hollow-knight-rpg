@@ -1,0 +1,91 @@
+<form class="{{cssClass}} hkrpg-feature-item-form" autocomplete="off">
+  <header class="hkrpg-feature-item-header">
+    <img class="hkrpg-feature-item-image" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+    <label class="hkrpg-feature-item-title">
+      <span>{{localize "HKRPG.Profile.Name"}}</span>
+      <input name="name" type="text" value="{{item.name}}" placeholder="{{localize "HKRPG.Features.ItemNamePlaceholder"}}" {{#unless isEditable}}disabled{{/unless}} />
+    </label>
+  </header>
+
+  {{#if isTrait}}
+    <section class="hkrpg-feature-item-config">
+      <div class="hkrpg-feature-item-config__heading">{{localize "HKRPG.Development.Traits"}}</div>
+      <div class="hkrpg-feature-item-config__row">
+        <label>
+          <span>{{localize "HKRPG.Features.TraitKind"}}</span>
+          <select name="system.kind" {{#unless isEditable}}disabled{{/unless}}>
+            {{#select system.kind}}
+              <option value="main">{{localize "HKRPG.Features.TraitMain"}}</option>
+              <option value="subtrait">{{localize "HKRPG.Features.TraitSub"}}</option>
+              <option value="subtrait2">{{localize "HKRPG.Features.TraitSub2"}}</option>
+            {{/select}}
+          </select>
+        </label>
+        {{#if (eq system.kind "main")}}
+          <p class="hkrpg-feature-item-hint">{{localize "HKRPG.Features.MainTraitLimit"}}</p>
+        {{else}}
+          <label>
+            <span>{{localize "HKRPG.Features.ParentTrait"}}</span>
+            <select name="system.parentId" {{#unless isEditable}}disabled{{/unless}}>
+              <option value="">{{localize "HKRPG.Features.ChooseParent"}}</option>
+              {{#select system.parentId}}
+                {{#each ../parentOptions as |option|}}
+                  <option value="{{option.id}}">{{option.name}}</option>
+                {{/each}}
+              {{/select}}
+            </select>
+          </label>
+        {{/if}}
+      </div>
+      <div class="hkrpg-feature-item-modifiers">
+        <label>
+          <span>{{localize "HKRPG.Resource.Hunger"}}</span>
+          <input name="system.hunger" type="number" step="0.5" value="{{system.hunger}}" {{#unless isEditable}}disabled{{/unless}} />
+        </label>
+        <label>
+          <span>{{localize "HKRPG.Secondary.Cute"}}</span>
+          <input name="system.cute" type="number" step="0.5" value="{{system.cute}}" {{#unless isEditable}}disabled{{/unless}} />
+        </label>
+        <label>
+          <span>{{localize "HKRPG.Secondary.Spook"}}</span>
+          <input name="system.spook" type="number" step="0.5" value="{{system.spook}}" {{#unless isEditable}}disabled{{/unless}} />
+        </label>
+      </div>
+    </section>
+  {{/if}}
+
+  {{#if isPath}}
+    <section class="hkrpg-feature-item-config">
+      <div class="hkrpg-feature-item-config__heading">{{localize "HKRPG.Development.Paths"}}</div>
+      <div class="hkrpg-feature-item-config__row hkrpg-feature-item-config__row--path">
+        <label>
+          <span>{{localize "HKRPG.Features.PathType"}}</span>
+          <select name="system.pathType" {{#unless isEditable}}disabled{{/unless}}>
+            {{#select system.pathType}}
+              <option value="unassigned">{{localize "HKRPG.Features.PathTypeUnassigned"}}</option>
+              <option value="martial">{{localize "HKRPG.Features.PathTypeMartial"}}</option>
+              <option value="mystic">{{localize "HKRPG.Features.PathTypeMystic"}}</option>
+            {{/select}}
+          </select>
+        </label>
+        <label class="hkrpg-feature-item-rank">
+          <span>{{localize "HKRPG.Features.Rank"}}</span>
+          <input name="system.rank" type="number" min="1" max="3" step="1" value="{{system.rank}}" {{#unless isEditable}}disabled{{/unless}} />
+        </label>
+      </div>
+    </section>
+  {{/if}}
+
+  <nav class="hkrpg-feature-item-tabs tabs" data-group="primary">
+    <a class="item" data-tab="description">{{localize "HKRPG.Charms.Description"}}</a>
+    <a class="item" data-tab="effect">{{localize "HKRPG.Charms.Effect"}}</a>
+  </nav>
+  <div class="hkrpg-feature-item-tab-content">
+    <section class="tab hkrpg-feature-item-panel" data-group="primary" data-tab="description">
+      <textarea class="hkrpg-feature-item-editor" name="system.description" rows="8" placeholder="{{localize "HKRPG.Features.ItemDescriptionPlaceholder"}}" {{#unless isEditable}}disabled{{/unless}}>{{system.description}}</textarea>
+    </section>
+    <section class="tab hkrpg-feature-item-panel" data-group="primary" data-tab="effect">
+      <textarea class="hkrpg-feature-item-editor" name="system.effects" rows="8" placeholder="{{localize "HKRPG.Features.ItemEffectsPlaceholder"}}" {{#unless isEditable}}disabled{{/unless}}>{{system.effects}}</textarea>
+    </section>
+  </div>
+</form>
