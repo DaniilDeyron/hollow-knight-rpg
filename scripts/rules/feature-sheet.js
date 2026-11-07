@@ -107,11 +107,29 @@ export function buildTraitTree(items = []) {
     else roots.push(node);
   }
 
-  const sortTree = (entries) => {
+  const categoryOrder = [
+    "naturalWeapon",
+    "characteristics",
+    "mind",
+    "physiological",
+    "senses",
+    "mystical",
+    "body",
+    "movement",
+    "naturalDefense",
+    "custom",
+    "unassigned"
+  ];
+  const categoryIndex = new Map(categoryOrder.map((category, index) => [category, index]));
+  roots.sort((a, b) =>
+    (categoryIndex.get(a.category) ?? 99) - (categoryIndex.get(b.category) ?? 99) ||
+    a.name.localeCompare(b.name, "ru")
+  );
+  const sortChildren = (entries) => {
     entries.sort((a, b) => a.name.localeCompare(b.name, "ru"));
-    for (const entry of entries) sortTree(entry.children);
+    for (const entry of entries) sortChildren(entry.children);
   };
-  sortTree(roots);
+  for (const root of roots) sortChildren(root.children);
 
   const all = [];
   const flatten = (entries) => {
@@ -145,17 +163,20 @@ export function summarizePaths(items = []) {
   const paths = (items ?? []).map((item) => {
     const rank = Math.min(3, Math.max(1, Math.floor(numeric(item.system?.rank) || 1)));
     const kind = item.system?.pathType ?? "unassigned";
+    const assigned = kind === "martial" || kind === "mystic";
     return {
       id: item.id,
       name: String(item.name ?? ""),
       rank,
       kind,
+      assigned,
       kindLabel: kind === "martial" ? "Военный" : kind === "mystic" ? "Мистический" : "Тип не выбран",
       rankLabel: `Ранг ${rank}`
     };
   });
   const totals = paths.reduce((sum, path) => {
-    sum.totalRanks += path.rank;
+    // A Path only grants benefits after its type is selected.
+    if (path.assigned) sum.totalRanks += path.rank;
     if (path.kind === "martial") sum.martialRanks += path.rank;
     if (path.kind === "mystic") sum.mysticRanks += path.rank;
     return sum;
@@ -165,26 +186,39 @@ export function summarizePaths(items = []) {
     paths,
     ...totals,
     count: paths.length,
+    assignedCount: paths.filter((path) => path.assigned).length,
+    unassignedCount: paths.filter((path) => !path.assigned).length,
     soulBonus: totals.mysticRanks,
     staminaBonus: totals.martialRanks
   };
 }
 
-export function buildLegacyTraitRows(savedRows = {}) {
-  return Object.entries(savedRows ?? {}).map(([slot, row]) => ({
+function normalizedItemName(value) {
+  return String(value ?? "").trim().normalize("NFC").toLocaleLowerCase("ru");
+}
+
+function excludeExistingItemNames(rows, existingItems = []) {
+  const names = new Set((existingItems ?? []).map((item) => normalizedItemName(item?.name)));
+  return rows.filter((row) => !names.has(normalizedItemName(row.name)));
+}
+
+export function buildLegacyTraitRows(savedRows = {}, existingItems = []) {
+  const rows = Object.entries(savedRows ?? {}).map(([slot, row]) => ({
     slot,
     name: String(row?.name ?? "").trim(),
     attraction: Boolean(row?.attraction),
     spook: Boolean(row?.spook),
     hunger: Boolean(row?.hunger)
   })).filter((row) => row.name);
+  return excludeExistingItemNames(rows, existingItems);
 }
 
-export function buildLegacyPathRows(savedRows = {}) {
-  return Object.entries(savedRows ?? {}).map(([slot, row]) => {
+export function buildLegacyPathRows(savedRows = {}, existingItems = []) {
+  const rows = Object.entries(savedRows ?? {}).map(([slot, row]) => {
     const rank = ["rank1", "rank2", "rank3"].filter((key) => Boolean(row?.[key])).length;
     return { slot, name: String(row?.name ?? "").trim(), rank };
   }).filter((row) => row.name);
+  return excludeExistingItemNames(rows, existingItems);
 }
 
 export function buildTechniqueSlots(savedRows = {}, slotCount = 0) {

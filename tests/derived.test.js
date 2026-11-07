@@ -58,3 +58,8 @@ test("Максимум Меток равен трём базовым плюс р
 test("Дополнительные Метки прибавляются поверх рангов Путей", () => {
   assert.equal(calculateDerivedStats({}, { notchesBonus: 1 }, { pathRanks: 3 }).notchesMax, 7);
 });
+
+test("Дополнительные Ячейки Техник от Малого Продвижения прибавляются к Проницательности", () => {
+  assert.equal(calculateDerivedStats({ insight: 3.5 }, { techniqueSlotsBonus: 1 }).techniqueSlots, 4);
+  assert.equal(calculateDerivedStats({ insight: 3 }, { techniqueSlotsBonus: 0 }).techniqueSlots, 3);
+});

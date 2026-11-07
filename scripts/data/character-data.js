@@ -157,6 +157,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
       }),
       resources: new fields.SchemaField({
         notchesBonus: valueField({ max: 99 }),
+        techniqueSlotsBonus: valueField({ max: 99 }),
         heart: valueField(),
         heartMax: valueField(),
         heartTemp: valueField(),

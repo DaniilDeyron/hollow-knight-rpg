@@ -6,6 +6,7 @@ export function calculateDerivedStats(attributes = {}, resources = {}, overrides
   const might = Number(attributes.might ?? 0);
   const insight = Number(attributes.insight ?? 0);
   const shell = Number(attributes.shell ?? 0);
+  const techniqueSlotsBonus = Number(overrides.techniqueSlotsBonus ?? resources.techniqueSlotsBonus ?? 0);
   const grace = Number(attributes.grace ?? 0);
   const hunger = Number(resources.hunger ?? 0);
   const pathRanks = Number(overrides.pathRanks ?? 0);
@@ -18,7 +19,7 @@ export function calculateDerivedStats(attributes = {}, resources = {}, overrides
     maneuverability: overrides.maneuverability == null
       ? Math.ceil(safe(grace) / 2)
       : Math.floor(Math.max(0, safe(Number(overrides.maneuverability)))),
-    techniqueSlots: Math.floor(safe(insight)),
+    techniqueSlots: Math.max(0, Math.floor(safe(insight)) + Math.floor(Math.max(0, safe(techniqueSlotsBonus)))),
     beltSize: Math.floor(safe(shell)),
     satietyMax: overrides.satietyMax == null
       ? Math.max(safe(hunger), 10)

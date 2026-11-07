@@ -426,6 +426,13 @@
               <strong>{{pathSummary.totalRanks}} {{localize "HKRPG.Features.TotalRanks"}}</strong>
             </div>
 
+            {{#if pathSummary.unassignedCount}}
+              <div class="hkrpg-feature-legacy-warning hkrpg-feature-unassigned-warning">
+                <strong>{{localize "HKRPG.Features.UnassignedPathsTitle"}}</strong>
+                <span>{{localize "HKRPG.Features.UnassignedPathsHint"}}</span>
+              </div>
+            {{/if}}
+
             {{#if legacyPaths.length}}
               <div class="hkrpg-feature-legacy-warning">
                 <strong>{{localize "HKRPG.Features.LegacyEntries"}}</strong>
@@ -474,7 +481,13 @@
                 <h2>{{localize "HKRPG.Development.Techniques"}}</h2>
                 <p>{{localize "HKRPG.Features.PreparedArtsArcana"}}</p>
               </div>
-              <strong>{{preparedTechniqueCount}} / {{system.derived.techniqueSlots}}</strong>
+              <div class="hkrpg-technique-slots-meta">
+                <strong>{{preparedTechniqueCount}} / {{system.derived.techniqueSlots}}</strong>
+                <label class="hkrpg-technique-slot-bonus">
+                  <span>{{localize "HKRPG.Features.ExtraTechniqueSlots"}}</span>
+                  <input name="system.resources.techniqueSlotsBonus" type="number" min="0" max="99" value="{{techniqueSlotBonus}}" {{#unless isEditable}}disabled{{/unless}} />
+                </label>
+              </div>
             </div>
             {{#if techniqueRows.length}}
               <div class="hkrpg-technique-slots-list">

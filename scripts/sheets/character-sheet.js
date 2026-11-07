@@ -52,12 +52,16 @@ export class HKCharacterSheet extends ActorSheet {
     const pathItems = items.filter((item) => item.type === "path");
     const charms = items.filter((item) => item.type === "charm");
     const featureSheet = this.actor.system.featureSheet;
-    const legacyTraits = buildLegacyTraitRows(featureSheet.traits);
-    const legacyPaths = buildLegacyPathRows(featureSheet.paths);
+    const legacyTraits = buildLegacyTraitRows(
+      featureSheet.traits,
+      traitItems.filter((item) => item.system.kind === "main")
+    );
+    const legacyPaths = buildLegacyPathRows(featureSheet.paths, pathItems);
     const pathSummary = summarizePaths(pathItems);
     const legacyPathRanks = legacyPaths.reduce((total, path) => total + path.rank, 0);
-    const activePathRanks = pathItems.length ? pathSummary.totalRanks : legacyPathRanks;
-    const notchesMaximum = 3 + activePathRanks + Number(this.actor.system.resources.notchesBonus ?? 0);
+    pathSummary.legacyRanks = legacyPathRanks;
+    pathSummary.totalRanks += legacyPathRanks;
+    const notchesMaximum = this._getNotchesMaximum();
 
     context.itemGroups = {
       traits: traitItems,
@@ -76,15 +80,16 @@ export class HKCharacterSheet extends ActorSheet {
     context.notchBonus = this.actor.system.resources.notchesBonus;
 
     context.traitTree = buildTraitTree(traitItems);
-    context.traitCount = context.traitTree.count;
+    context.traitCount = context.traitTree.count + legacyTraits.length;
     context.canAddTrait = context.traitCount < 7;
     context.traitTotals = context.traitTree.totals;
-    context.legacyTraits = traitItems.length ? [] : legacyTraits;
+    context.legacyTraits = legacyTraits;
     context.pathSummary = pathSummary;
-    context.legacyPaths = pathItems.length ? [] : legacyPaths;
+    context.legacyPaths = legacyPaths;
+    context.techniqueSlotBonus = resources.techniqueSlotsBonus;
     context.techniqueRows = buildTechniqueSlots(
       featureSheet.techniques,
-      Math.floor(Number(this.actor.system.attributes.insight ?? 0))
+      this.actor.system.derived.techniqueSlots
     );
     context.preparedTechniqueCount = context.techniqueRows.filter((slot) => slot.name.trim()).length;
     context.skillGroups = buildSkillGroups(this.actor.system.skillGroups);
@@ -294,9 +299,11 @@ export class HKCharacterSheet extends ActorSheet {
   async _onCreateTrait(event) {
     event.preventDefault();
     if (!this.isEditable) return;
-    const mainTraitCount = this.actor.items.filter((item) =>
+    const mainTraits = this.actor.items.filter((item) =>
       item.type === "trait" && item.system.kind === "main"
-    ).length;
+    );
+    const legacyTraits = buildLegacyTraitRows(this.actor.system.featureSheet.traits, mainTraits);
+    const mainTraitCount = mainTraits.length + legacyTraits.length;
     if (mainTraitCount >= 7) {
       ui.notifications.warn(game.i18n.localize("HKRPG.Features.MainTraitLimitReached"));
       return;
@@ -414,26 +421,57 @@ export class HKCharacterSheet extends ActorSheet {
     if (!confirmed) return;
 
     try {
+      const existingTraitNames = new Set(this.actor.items
+        .filter((item) => item.type === "trait" && item.system.kind === "main")
+        .map((item) => String(item.name ?? "").trim().normalize("NFC").toLocaleLowerCase("ru")));
+      const existingPathNames = new Set(this.actor.items
+        .filter((item) => item.type === "path")
+        .map((item) => String(item.name ?? "").trim().normalize("NFC").toLocaleLowerCase("ru")));
+
       const createData = [
-        ...oldTraits.map((trait) => ({
-          name: trait.name,
-          type: "trait",
-          img: "icons/svg/upgrade.svg",
-          system: {
-            kind: "main", parentId: "", hunger: 0, cute: 0, spook: 0,
-            description: `Перенесено из старого листа. Старые отметки: Привлекательность ${trait.attraction ? "✓" : "—"}, Жуть ${trait.spook ? "✓" : "—"}, Голод ${trait.hunger ? "✓" : "—"}. Проверь числовые значения по книге правил.`
-          }
-        })),
-        ...oldPaths.map((path) => ({
-          name: path.name,
-          type: "path",
-          img: "icons/svg/wing.svg",
-          system: { pathType: "unassigned", rank: Math.max(1, Math.min(3, path.rank || 1)) }
-        }))
+        ...oldTraits
+          .filter((trait) => !existingTraitNames.has(trait.name.normalize("NFC").toLocaleLowerCase("ru")))
+          .map((trait) => ({
+            name: trait.name,
+            type: "trait",
+            img: "icons/svg/upgrade.svg",
+            system: {
+              kind: "main", parentId: "", hunger: 0, cute: 0, spook: 0,
+              description: `Перенесено из старого листа. Старые отметки: Привлекательность ${trait.attraction ? "✓" : "—"}, Жуть ${trait.spook ? "✓" : "—"}, Голод ${trait.hunger ? "✓" : "—"}. Проверь числовые значения по книге правил.`
+            }
+          })),
+        ...oldPaths
+          .filter((path) => !existingPathNames.has(path.name.normalize("NFC").toLocaleLowerCase("ru")))
+          .map((path) => ({
+            name: path.name,
+            type: "path",
+            img: "icons/svg/wing.svg",
+            system: { pathType: "unassigned", rank: Math.max(1, Math.min(3, path.rank || 1)) }
+          }))
       ];
+
       if (createData.length) await this.actor.createEmbeddedDocuments("Item", createData);
+
+      // Clear the legacy rows only after Item creation succeeds; a retry will not duplicate Items.
+      const clearLegacy = {};
+      for (let index = 1; index <= 10; index += 1) {
+        const base = `system.featureSheet.traits.slot${index}`;
+        clearLegacy[`${base}.name`] = "";
+        clearLegacy[`${base}.attraction`] = false;
+        clearLegacy[`${base}.spook`] = false;
+        clearLegacy[`${base}.hunger`] = false;
+      }
+      for (let index = 1; index <= 6; index += 1) {
+        const base = `system.featureSheet.paths.slot${index}`;
+        clearLegacy[`${base}.name`] = "";
+        clearLegacy[`${base}.rank1`] = false;
+        clearLegacy[`${base}.rank2`] = false;
+        clearLegacy[`${base}.rank3`] = false;
+      }
+      await this.actor.update(clearLegacy);
+
       this.render(true);
-      ui.notifications.info("Старые записи перенесены. Проверь тип каждого Пути и числовые модификаторы Черты.");
+      ui.notifications.info("Старые записи перенесены. Для Черты проверь числовые модификаторы; для каждого Пути выбери тип.");
     } catch (error) {
       console.error("Hollow Knight RPG | Legacy Features migration failed", error);
       ui.notifications.error("Не удалось перенести старые записи.");
@@ -519,18 +557,21 @@ export class HKCharacterSheet extends ActorSheet {
       : this._moveDroppedCharmToCollection(item);
   }
 
+  _getNotchesMaximum() {
+    const pathItems = this.actor.items.filter((item) => item.type === "path");
+    const legacyPaths = buildLegacyPathRows(this.actor.system.featureSheet.paths, pathItems);
+    const assignedRanks = summarizePaths(pathItems).totalRanks;
+    const legacyRanks = legacyPaths.reduce((total, path) => total + path.rank, 0);
+    const extra = Number(this.actor.system.resources.notchesBonus ?? 0);
+    return Math.max(0, 3 + assignedRanks + legacyRanks + (Number.isFinite(extra) ? Math.floor(extra) : 0));
+  }
+
   async _equipDroppedCharm(sourceItem) {
     if (sourceItem.parent === this.actor && sourceItem.system.equipped) return true;
     const equipped = this.actor.items.filter((item) =>
       item.type === "charm" && item.system.equipped && item.id !== sourceItem.id
     );
-    const pathItems = this.actor.items.filter((item) => item.type === "path");
-    const legacyRanks = buildLegacyPathRows(this.actor.system.featureSheet.paths).reduce((total, path) => total + path.rank, 0);
-    const pathRanks = pathItems.length
-      ? summarizePaths(pathItems).totalRanks
-      : legacyRanks;
-    const maximumNotches = 3 + pathRanks + Number(this.actor.system.resources.notchesBonus ?? 0);
-    const result = evaluateCharmEquip(maximumNotches, equipped, sourceItem);
+    const result = evaluateCharmEquip(this._getNotchesMaximum(), equipped, sourceItem);
     if (!result.allowed) {
       const messages = {
         duplicate: "HKRPG.Charms.ErrorDuplicate",

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { buildFeatureRows, buildSkillGroups, buildTraitTree, buildTechniqueSlots, countFeatureMarks } from "../scripts/rules/feature-sheet.js";
+import { buildFeatureRows, buildSkillGroups, buildTraitTree, buildTechniqueSlots, buildLegacyTraitRows, buildLegacyPathRows, summarizePaths, countFeatureMarks } from "../scripts/rules/feature-sheet.js";
 
 test("Формирует заданное число пустых строк черт", () => {
   const rows = buildFeatureRows({}, [], 10, ["attraction", "spook", "hunger"]);
@@ -133,4 +133,43 @@ test("Считает заполненные ячейки Техник отдел
   }, 3);
   assert.equal(rows.length, 3);
   assert.equal(rows.filter((slot) => slot.name.trim()).length, 2);
+});
+
+test("Только Военные и Мистические Пути дают Метки и профильные бонусы", () => {
+  const summary = summarizePaths([
+    { id: "martial", name: "Гвоздь", system: { rank: 2, pathType: "martial" } },
+    { id: "mystic", name: "Шпиль", system: { rank: 1, pathType: "mystic" } },
+    { id: "unassigned", name: "Новый Путь", system: { rank: 3, pathType: "unassigned" } }
+  ]);
+  assert.equal(summary.totalRanks, 3);
+  assert.equal(summary.martialRanks, 2);
+  assert.equal(summary.mysticRanks, 1);
+  assert.equal(summary.unassignedCount, 1);
+  assert.equal(summary.assignedCount, 2);
+});
+
+test("Сортирует основные Черты в порядке категорий из книги", () => {
+  const tree = buildTraitTree([
+    { id: "mind", name: "Интуиция", system: { kind: "main", category: "mind" } },
+    { id: "natural", name: "Рог", system: { kind: "main", category: "naturalWeapon" } },
+    { id: "body", name: "Крепкий панцирь", system: { kind: "main", category: "body" } }
+  ]);
+  assert.deepEqual(tree.roots.map((trait) => trait.category), ["naturalWeapon", "mind", "body"]);
+});
+
+test("Фильтрует старые Черты, уже перенесённые в новые предметы", () => {
+  const legacy = buildLegacyTraitRows(
+    { slot1: { name: "Рог", hunger: true }, slot2: { name: "Крылья" } },
+    [{ name: "Рог", system: { kind: "main" } }]
+  );
+  assert.deepEqual(legacy.map((trait) => trait.name), ["Крылья"]);
+});
+
+test("Фильтрует старые Пути, уже перенесённые в новые предметы", () => {
+  const legacy = buildLegacyPathRows(
+    { slot1: { name: "Гвоздь", rank1: true, rank2: true }, slot2: { name: "Шпиль", rank1: true } },
+    [{ name: "Гвоздь", system: { rank: 2 } }]
+  );
+  assert.deepEqual(legacy.map((path) => path.name), ["Шпиль"]);
+  assert.equal(legacy[0].rank, 1);
 });
