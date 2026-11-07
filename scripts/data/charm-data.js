@@ -7,6 +7,12 @@ export class HKCharmData extends foundry.abstract.TypeDataModel {
         required: true, nullable: false, initial: 1,
         min: 1, max: 99, integer: true
       }),
+      description: new fields.StringField({
+        required: true, nullable: false, initial: ""
+      }),
+      effects: new fields.StringField({
+        required: true, nullable: false, initial: ""
+      }),
       equipped: new fields.BooleanField({
         required: true, nullable: false, initial: false
       }),

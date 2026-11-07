@@ -1,16 +1,23 @@
-<form class="{{cssClass}}" autocomplete="off">
+<form class="{{cssClass}} hkrpg-charm-item-form" autocomplete="off">
   <header class="hkrpg-charm-item-header">
     <img class="hkrpg-charm-item-image" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
     <label class="hkrpg-charm-item-title">
       <span>{{localize "HKRPG.Profile.Name"}}</span>
       <input name="name" type="text" value="{{item.name}}" placeholder="{{localize "HKRPG.Charms.NamePlaceholder"}}" {{#unless isEditable}}disabled{{/unless}} />
     </label>
-  </header>
-  <section class="hkrpg-charm-item-cost">
-    <div class="hkrpg-charm-item-cost__symbol">⊚</div>
-    <label>
-      <span>{{localize "HKRPG.Charms.NotchCost"}}</span>
-      <input name="system.notches" type="number" min="1" max="99" step="1" value="{{system.notches}}" {{#unless isEditable}}disabled{{/unless}} />
+    <label class="hkrpg-charm-item-notch" title="{{localize "HKRPG.Charms.NotchCost"}}">
+      <span aria-hidden="true">⊚</span>
+      <input name="system.notches" type="number" min="1" max="99" step="1" value="{{system.notches}}" aria-label="{{localize "HKRPG.Charms.NotchCost"}}" {{#unless isEditable}}disabled{{/unless}} />
     </label>
+  </header>
+
+  <section class="hkrpg-charm-item-section hkrpg-charm-item-description">
+    <h2>{{localize "HKRPG.Charms.Description"}}</h2>
+    <textarea name="system.description" rows="6" placeholder="{{localize "HKRPG.Charms.DescriptionPlaceholder"}}" {{#unless isEditable}}disabled{{/unless}}>{{system.description}}</textarea>
+  </section>
+
+  <section class="hkrpg-charm-item-section hkrpg-charm-item-effects">
+    <h2>{{localize "HKRPG.Charms.Effects"}}</h2>
+    <textarea name="system.effects" rows="6" placeholder="{{localize "HKRPG.Charms.EffectsPlaceholder"}}" {{#unless isEditable}}disabled{{/unless}}>{{system.effects}}</textarea>
   </section>
 </form>

@@ -3,7 +3,7 @@ export class HKCharmSheet extends ItemSheet {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["hkrpg", "sheet", "item", "charm"],
       template: "systems/hollow-knight-rpg/templates/item/charm-sheet.hbs",
-      width: 440, height: 360, resizable: true, submitOnChange: true
+      width: 560, height: 620, resizable: true, submitOnChange: true
     });
   }
 
