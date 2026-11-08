@@ -1,0 +1,50 @@
+name: Validate Foundry system
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pull request
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate JSON
+        run: |
+          node -e "JSON.parse(require('node:fs').readFileSync('system.json', 'utf8'))"
+          node -e "JSON.parse(require('node:fs').readFileSync('lang/ru.json', 'utf8'))"
+
+      - name: Run tests
+        run: npm test
+
+      - name: Check JavaScript syntax
+        run: |
+          for file in scripts/main.js scripts/data/*.js scripts/rules/*.js scripts/rolls/*.js scripts/sheets/*.js; do
+            node --check "$file"
+          done
+
+      - name: Verify character sheet theme is registered
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+          const manifest = JSON.parse(fs.readFileSync("system.json", "utf8"));
+          if (!manifest.styles.includes("styles/character-sheet-theme.css")) {
+            throw new Error("Unified character sheet theme is not registered in system.json");
+          }
+          if (!fs.existsSync("styles/character-sheet-theme.css")) {
+            throw new Error("Unified character sheet theme file is missing");
+          }
+          console.log("Unified character sheet theme is registered and present.");
+          NODE
