@@ -22,7 +22,10 @@ test("Тема содержит общий визуальный язык для 
     ".hkrpg.sheet.actor .hkrpg-charms-page",
     ".hkrpg.sheet.actor .hkrpg-equipment-layout",
     ".hkrpg.sheet.actor .hkrpg-notes-layout",
-    ".hkrpg.sheet.item .hkrpg-feature-item-form"
+    ".hkrpg.sheet.item .hkrpg-feature-item-form",
+    ".hkrpg.sheet.actor .hkrpg-overview-section > h2::after",
+    ".hkrpg.sheet.actor .hkrpg-trait-slot-card",
+    ".hkrpg.sheet.actor .hkrpg-equipment-layout"
   ]) {
     assert.ok(theme.includes(selector), `Theme is missing selector: ${selector}`);
   }
