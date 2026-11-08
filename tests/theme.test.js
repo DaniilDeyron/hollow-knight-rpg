@@ -35,6 +35,19 @@ test("Общая тема не переопределяет компоновку
   );
 });
 
+test("Каждая кнопка навигации явно привязана к той же группе, что и панели вкладок", () => {
+  const nav = template.match(/<nav class="hkrpg-tabs"[^>]*>([\\s\\S]*?)<\\/nav>/)?.[1] ?? "";
+  const links = [...nav.matchAll(/<a class="item"[^>]*data-tab="([^"]+)"[^>]*>/g)];
+  assert.equal(links.length, 6);
+  for (const link of links) {
+    assert.match(link[0], /data-group="primary"/);
+    assert.ok(
+      template.includes(`data-group="primary" data-tab="${link[1]}"`),
+      `Missing content pane for ${link[1]}`
+    );
+  }
+});
+
 test("Сохраняется исходная структура шести вкладок v0.1.61", () => {
   const tabs = [...template.matchAll(/data-tab="([^"]+)"/g)]
     .map((match) => match[1])
