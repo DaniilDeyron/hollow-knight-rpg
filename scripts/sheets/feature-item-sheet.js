@@ -28,6 +28,7 @@ export class HKFeatureItemSheet extends ItemSheet {
     context.isEditable = this.isEditable;
     context.isTrait = this.item.type === "trait";
     context.isPath = this.item.type === "path";
+    context.isTechnique = this.item.type === "technique";
     context.parentOptions = traits
       .filter((item) => {
         if (system.kind === "subtrait") return item.system.kind === "main";

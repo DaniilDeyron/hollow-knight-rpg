@@ -90,6 +90,8 @@ export function buildTraitTree(items = []) {
       unassigned: "Категория не выбрана"
     })[item.system?.category ?? "unassigned"] ?? "Собственная черта",
     parentId: String(item.system?.parentId ?? ""),
+    slot: Math.max(0, Math.min(7, Math.floor(numeric(item.system?.slot)))),
+    img: String(item.img ?? ""),
     hunger: numeric(item.system?.hunger),
     cute: numeric(item.system?.cute),
     spook: numeric(item.system?.spook),
@@ -167,6 +169,7 @@ export function summarizePaths(items = []) {
     return {
       id: item.id,
       name: String(item.name ?? ""),
+      img: String(item.img ?? ""),
       rank,
       kind,
       assigned,
@@ -247,4 +250,75 @@ export function summarizeProficiencySkillDice(groups = []) {
     }
   }
   return dice;
+}
+
+
+/**
+ * Prepare the fixed technique grid. A prepared Item occupies its saved slot;
+ * legacy text entries remain visible until they are migrated to Item documents.
+ */
+export function buildTechniqueSlotCards(maximum = 0, items = [], legacySlots = []) {
+  const count = Math.max(0, Math.min(9, Math.floor(numeric(maximum))));
+  const techniques = (items ?? []).filter((item) => item?.type === "technique");
+  return Array.from({ length: count }, (_, index) => {
+    const slotNumber = index + 1;
+    const item = techniques.find((candidate) =>
+      Math.floor(numeric(candidate.system?.preparedSlot)) === slotNumber
+    ) ?? null;
+    const legacy = item ? null : (legacySlots ?? []).find((entry) =>
+      Number(entry.number) === slotNumber && String(entry.name ?? "").trim()
+    ) ?? null;
+    return {
+      number: slotNumber,
+      item,
+      legacy,
+      isEmpty: !item && !legacy
+    };
+  });
+}
+
+
+/**
+ * Build seven fixed Trait drop targets. Existing Items without an explicit slot
+ * keep their current visibility and are assigned to the first available target.
+ * Legacy text-only traits remain visible until converted into Item documents.
+ */
+export function buildTraitCardSlots(maximum = 7, traitTree = {}, legacyTraits = []) {
+  const count = Math.max(0, Math.min(7, Math.floor(numeric(maximum))));
+  const slots = Array.from({ length: count }, (_, index) => ({
+    number: index + 1,
+    trait: null,
+    legacy: null,
+    isEmpty: true
+  }));
+  const roots = Array.isArray(traitTree?.roots)
+    ? traitTree.roots.filter((trait) => trait?.kind === "main")
+    : [];
+  const assigned = new Set();
+
+  for (const trait of roots) {
+    const slot = Math.floor(numeric(trait.slot));
+    if (slot < 1 || slot > count || slots[slot - 1].trait) continue;
+    slots[slot - 1].trait = trait;
+    slots[slot - 1].isEmpty = false;
+    assigned.add(trait.id);
+  }
+
+  for (const trait of roots) {
+    if (assigned.has(trait.id)) continue;
+    const target = slots.find((entry) => entry.isEmpty);
+    if (!target) break;
+    target.trait = trait;
+    target.isEmpty = false;
+    assigned.add(trait.id);
+  }
+
+  for (const legacy of legacyTraits ?? []) {
+    const target = slots.find((entry) => entry.isEmpty);
+    if (!target) break;
+    target.legacy = legacy;
+    target.isEmpty = false;
+  }
+
+  return slots;
 }
