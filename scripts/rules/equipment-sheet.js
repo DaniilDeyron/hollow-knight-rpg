@@ -3,9 +3,16 @@
  * Existing Item documents are kept in order; empty rows are presentation slots only.
  */
 function readItemValue(item, key) {
-  const value = item?.system?.[key];
-  if (value === null || value === undefined || value === "") return "";
-  return value;
+  const aliases = {
+    bulk: ["bulk", "weight"],
+    protection: ["protection", "damageReduction", "dr"]
+  };
+  const candidates = aliases[key] ?? [key];
+  for (const candidate of candidates) {
+    const value = item?.system?.[candidate];
+    if (value !== null && value !== undefined && value !== "") return value;
+  }
+  return "";
 }
 
 export function buildEquipmentRows(items = [], minimumRows = 1, fields = []) {
