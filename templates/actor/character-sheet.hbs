@@ -619,44 +619,97 @@
       </div>
     </section>
 
-<section class="tab" data-group="primary" data-tab="equipment">
-      <div class="hkrpg-section-grid">
-        <section class="hkrpg-panel">
-          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Equipment.Inventory"}}</h2><span>{{itemGroups.equipment.length}}</span></div>
+<section class="tab hkrpg-equipment-tab" data-group="primary" data-tab="equipment">
+      <div class="hkrpg-equipment-layout">
+        <section class="hkrpg-panel hkrpg-equipment-panel hkrpg-equipment-panel--inventory">
+          <header class="hkrpg-equipment-heading">
+            <div>
+              <h2>{{localize "HKRPG.Equipment.Inventory"}}</h2>
+              <span class="hkrpg-equipment-count">{{itemGroups.equipment.length}}</span>
+            </div>
+            <span class="hkrpg-equipment-column-title">{{localize "HKRPG.Equipment.Weight"}}</span>
+          </header>
+          <div class="hkrpg-equipment-rows">
+            {{#each equipmentRows as |row|}}
+              <article class="hkrpg-equipment-row {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" title="{{row.name}}"{{/if}}>
+                <span class="hkrpg-equipment-row__name">{{#if row.item}}{{row.name}}{{else}}&nbsp;{{/if}}</span>
+                <span class="hkrpg-equipment-value">{{row.values.weight}}</span>
+              </article>
+            {{/each}}
+          </div>
           {{#if itemGroups.equipment.length}}
-            <ul class="hkrpg-item-list">{{#each itemGroups.equipment as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
+            <p class="hkrpg-equipment-hint">{{localize "HKRPG.Equipment.DragHint"}}</p>
           {{else}}
-            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoEquipment"}}</p>
+            <p class="hkrpg-equipment-hint">{{localize "HKRPG.Empty.NoEquipment"}}</p>
           {{/if}}
         </section>
-        <section class="hkrpg-panel">
-          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Equipment.Weapons"}}</h2><span>{{itemGroups.weapons.length}}</span></div>
-          {{#if itemGroups.weapons.length}}
-            <ul class="hkrpg-item-list">{{#each itemGroups.weapons as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
-          {{else}}
-            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoWeapons"}}</p>
-          {{/if}}
-        </section>
-        <section class="hkrpg-panel">
-          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Equipment.Shields"}}</h2><span>{{itemGroups.shields.length}}</span></div>
-          {{#if itemGroups.shields.length}}
-            <ul class="hkrpg-item-list">{{#each itemGroups.shields as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
-          {{else}}
-            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoShields"}}</p>
-          {{/if}}
-        </section>
-        <section class="hkrpg-panel">
-          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Equipment.Armor"}}</h2><span>{{itemGroups.armor.length}}</span></div>
-          {{#if itemGroups.armor.length}}
-            <ul class="hkrpg-item-list">{{#each itemGroups.armor as |item|}}<li>{{item.name}}</li>{{/each}}</ul>
-          {{else}}
-            <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoArmor"}}</p>
-          {{/if}}
+
+        <section class="hkrpg-panel hkrpg-equipment-panel hkrpg-equipment-panel--combat">
+          <section class="hkrpg-equipment-subsection hkrpg-equipment-subsection--weapons">
+            <header class="hkrpg-equipment-heading">
+              <div>
+                <h2>{{localize "HKRPG.Equipment.WeaponsAndShields"}}</h2>
+                <span class="hkrpg-equipment-count">{{itemGroups.weapons.length}} + {{itemGroups.shields.length}}</span>
+              </div>
+              <div class="hkrpg-equipment-column-head hkrpg-equipment-column-head--combat">
+                <span>{{localize "HKRPG.Equipment.Weight"}}</span>
+                <span>{{localize "HKRPG.Equipment.Damage"}}</span>
+                <span>{{localize "HKRPG.Equipment.Range"}}</span>
+                <span>{{localize "HKRPG.Equipment.Quantity"}}</span>
+              </div>
+            </header>
+            <div class="hkrpg-equipment-rows">
+              {{#each combatEquipmentRows as |row|}}
+                <article class="hkrpg-equipment-row hkrpg-equipment-row--combat {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" title="{{row.name}}"{{/if}}>
+                  <span class="hkrpg-equipment-row__name">{{#if row.item}}{{row.name}}{{else}}&nbsp;{{/if}}</span>
+                  <span class="hkrpg-equipment-value">{{row.values.weight}}</span>
+                  <span class="hkrpg-equipment-value">{{row.values.damage}}</span>
+                  <span class="hkrpg-equipment-value">{{row.values.range}}</span>
+                  <span class="hkrpg-equipment-value">{{row.values.quantity}}</span>
+                </article>
+              {{/each}}
+            </div>
+          </section>
+
+          <section class="hkrpg-equipment-subsection hkrpg-equipment-subsection--armor">
+            <header class="hkrpg-equipment-heading">
+              <div>
+                <h2>{{localize "HKRPG.Equipment.Armor"}}</h2>
+                <span class="hkrpg-equipment-count">{{itemGroups.armor.length}}</span>
+              </div>
+              <div class="hkrpg-equipment-column-head hkrpg-equipment-column-head--armor">
+                <span>{{localize "HKRPG.Equipment.Weight"}}</span>
+                <span>{{localize "HKRPG.Equipment.Protection"}}</span>
+                <span>{{localize "HKRPG.Equipment.Durability"}}</span>
+              </div>
+            </header>
+            <div class="hkrpg-equipment-rows">
+              {{#each armorRows as |row|}}
+                <article class="hkrpg-equipment-row hkrpg-equipment-row--armor {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" title="{{row.name}}"{{/if}}>
+                  <span class="hkrpg-equipment-row__name">{{#if row.item}}{{row.name}}{{else}}&nbsp;{{/if}}</span>
+                  <span class="hkrpg-equipment-value">{{row.values.weight}}</span>
+                  <span class="hkrpg-equipment-value">{{row.values.protection}}</span>
+                  <span class="hkrpg-equipment-value">{{row.values.durability}}</span>
+                </article>
+              {{/each}}
+            </div>
+          </section>
         </section>
       </div>
+
       <section class="hkrpg-panel hkrpg-equipment-footer">
-        <label><span>{{localize "HKRPG.Equipment.Currency"}}</span><input name="system.inventory.currency" type="number" min="0" value="{{system.inventory.currency}}" /></label>
-        <div class="hkrpg-derived-strip"><div><span>{{localize "HKRPG.Derived.CarryingCapacity"}}</span><strong>{{system.derived.carryingCapacity}}</strong></div><div><span>{{localize "HKRPG.Derived.BeltSize"}}</span><strong>{{system.derived.beltSize}}</strong></div></div>
+        <label class="hkrpg-equipment-currency">
+          <span>{{localize "HKRPG.Equipment.Currency"}}</span>
+          <input name="system.inventory.currency" type="number" min="0" value="{{system.inventory.currency}}" {{#unless isEditable}}disabled{{/unless}} />
+        </label>
+        <div class="hkrpg-equipment-total">
+          <span>{{localize "HKRPG.Derived.CarryingCapacity"}}</span>
+          <strong>{{system.derived.carryingCapacity}}</strong>
+        </div>
+        <div class="hkrpg-equipment-total">
+          <span>{{localize "HKRPG.Derived.BeltSize"}}</span>
+          <strong>{{system.derived.beltSize}}</strong>
+        </div>
         <p class="hkrpg-empty">{{localize "HKRPG.Empty.WeightLater"}}</p>
       </section>
     </section>
