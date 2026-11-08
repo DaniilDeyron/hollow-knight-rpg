@@ -6,46 +6,49 @@ const manifest = JSON.parse(readFileSync(new URL("../system.json", import.meta.u
 const theme = readFileSync(new URL("../styles/character-sheet-theme.css", import.meta.url), "utf8");
 const template = readFileSync(new URL("../templates/actor/character-sheet.hbs", import.meta.url), "utf8");
 
-test("Единая тема подключена после базовой таблицы стилей", () => {
+test("Общая тема подключена после базовых стилей", () => {
   assert.deepEqual(
     manifest.styles,
     ["styles/system.css", "styles/character-sheet-theme.css"]
   );
 });
 
-test("Тема содержит общий визуальный язык для всех вкладок и листов предметов", () => {
+test("Общая тема оформляет панели, карточки и окна предметов", () => {
   for (const selector of [
     ".hkrpg.sheet.actor .hkrpg-sheet-header",
-    ".hkrpg.sheet.actor .hkrpg-tabs",
-    ".hkrpg.sheet.actor .hkrpg-overview-grid",
-    ".hkrpg.sheet.actor .hkrpg-features-layout",
-    ".hkrpg.sheet.actor .hkrpg-charms-page",
-    ".hkrpg.sheet.actor .hkrpg-equipment-layout",
-    ".hkrpg.sheet.actor .hkrpg-notes-layout",
-    ".hkrpg.sheet.item .hkrpg-feature-item-form",
-    ".hkrpg.sheet.actor .hkrpg-overview-section > h2::after",
-    ".hkrpg.sheet.actor .hkrpg-trait-slot-card",
-    ".hkrpg.sheet.actor .hkrpg-equipment-layout"
+    ".hkrpg.sheet.actor .hkrpg-tabs .item",
+    ".hkrpg.sheet.actor .hkrpg-overview-section",
+    ".hkrpg.sheet.actor .hkrpg-panel",
+    ".hkrpg.sheet.actor .hkrpg-feature-panel",
+    ".hkrpg.sheet.actor .hkrpg-charms-equipped-panel",
+    ".hkrpg.sheet.actor .hkrpg-equipment-panel",
+    ".hkrpg.sheet.item .window-content"
   ]) {
     assert.ok(theme.includes(selector), `Theme is missing selector: ${selector}`);
   }
 });
 
-test("Основные поля персонажа и игрока остаются связаны с моделью данных", () => {
-  assert.match(template, /name="system\.profile\.player"/);
-  assert.match(template, /name="system\.attributes\.might"/);
-  assert.match(template, /name="system\.attributes\.insight"/);
-  assert.match(template, /name="system\.attributes\.shell"/);
-  assert.match(template, /name="system\.attributes\.grace"/);
-  assert.match(template, /data-resource-field="heart"/);
-  assert.match(template, /data-resource-field="soul"/);
-  assert.match(template, /data-resource-field="stamina"/);
-  assert.match(template, /name="system\.resources\.hunger"/);
-  assert.match(template, /name="system\.resources\.satiety"/);
+test("Общая тема не переопределяет компоновку базового листа", () => {
+  assert.doesNotMatch(
+    theme,
+    /\b(display|position|grid-template|height|min-height|max-height|width|min-width|max-width|padding|margin|gap|overflow)\s*:/
+  );
 });
 
-test("Визуальная тема остаётся адаптивной для окон меньшей ширины", () => {
-  assert.match(theme, /@media\s*\(max-width:\s*920px\)/);
-  assert.match(theme, /@media\s*\(max-width:\s*760px\)/);
-  assert.match(theme, /@media\s*\(max-width:\s*560px\)/);
+test("Сохраняется исходная структура шести вкладок v0.1.61", () => {
+  const tabs = [...template.matchAll(/data-tab="([^"]+)"/g)]
+    .map((match) => match[1])
+    .filter((value, index, values) => values.indexOf(value) === index);
+  assert.deepEqual(tabs, ["overview", "features", "charms", "equipment", "effects", "journal"]);
+});
+
+test("Основные поля персонажа остаются привязаны к прежней модели данных", () => {
+  for (const attribute of ["might", "insight", "shell", "grace"]) {
+    assert.ok(template.includes(`name="system.attributes.${attribute}"`));
+  }
+  for (const resource of ["heart", "soul", "stamina"]) {
+    assert.ok(template.includes(`data-resource-field="${resource}"`));
+  }
+  assert.ok(template.includes('name="system.resources.hunger"'));
+  assert.ok(template.includes('name="system.resources.satiety"'));
 });
