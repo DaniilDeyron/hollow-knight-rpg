@@ -57,7 +57,7 @@ jobs:
           node -e "JSON.parse(require('node:fs').readFileSync('system.json', 'utf8'))"
           node -e "JSON.parse(require('node:fs').readFileSync('lang/ru.json', 'utf8'))"
           npm test
-          for file in scripts/main.js scripts/data/character-data.js scripts/data/charm-data.js scripts/data/feature-item-data.js scripts/rules/derived.js scripts/rules/charm-tracker.js scripts/rules/feature-sheet.js scripts/sheets/character-sheet.js scripts/sheets/charm-sheet.js scripts/sheets/feature-item-sheet.js; do
+          for file in scripts/main.js scripts/data/character-data.js scripts/data/charm-data.js scripts/data/feature-item-data.js scripts/data/technique-data.js scripts/rules/derived.js scripts/rules/charm-tracker.js scripts/rules/feature-sheet.js scripts/sheets/character-sheet.js scripts/sheets/charm-sheet.js scripts/sheets/feature-item-sheet.js; do
             node --check "$file"
           done
 
