@@ -4624,3 +4624,52 @@
     grid-column: 1 / -1;
   }
 }
+
+
+/* Keep the equipment rows spacious and align Armor at the lower edge of the right panel. */
+.hkrpg.sheet.actor .hkrpg-equipment-row {
+  min-height: 40px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-panel--combat {
+  justify-content: space-between;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-subsection--armor {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-head--combat {
+  grid-template-columns: repeat(4, 50px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--combat {
+  grid-template-columns: minmax(0, 1fr) repeat(4, 50px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--combat .hkrpg-equipment-value {
+  width: 50px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-head--armor {
+  grid-template-columns: repeat(3, 50px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--armor {
+  grid-template-columns: minmax(0, 1fr) repeat(3, 50px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--armor .hkrpg-equipment-value {
+  width: 50px;
+}
+
+@media (max-width: 560px) {
+  .hkrpg.sheet.actor .hkrpg-equipment-column-head--combat {
+    grid-template-columns: repeat(4, 34px);
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-column-head--armor {
+    grid-template-columns: repeat(3, 34px);
+  }
+}
