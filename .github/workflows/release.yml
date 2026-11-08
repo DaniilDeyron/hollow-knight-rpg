@@ -99,7 +99,7 @@ jobs:
         run: |
           mkdir -p "dist/v${VERSION}"
           cp hollow-knight-rpg.zip "dist/v${VERSION}/hollow-knight-rpg.zip"
-          git add "dist/v${VERSION}/hollow-knight-rpg.zip"
+          git add -f "dist/v${VERSION}/hollow-knight-rpg.zip"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Publish raw package archive v${VERSION}"
