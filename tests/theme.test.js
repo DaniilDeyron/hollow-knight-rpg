@@ -51,11 +51,11 @@ test("Каждая кнопка навигации явно привязана �
 test("Вкладка снаряжения не переопределяет скрытие неактивных вкладок", () => {
   assert.match(
     readFileSync(new URL("../styles/system.css", import.meta.url), "utf8"),
-    /\.hkrpg\\.sheet\\.actor \.hkrpg-equipment-tab\\.active\\s*\\{\\s*display:\\s*flex;/
+    /\.hkrpg\.sheet\.actor \.hkrpg-equipment-tab\.active\s*\{\s*display:\s*flex;/
   );
   assert.doesNotMatch(
     readFileSync(new URL("../styles/system.css", import.meta.url), "utf8"),
-    /\.hkrpg\\.sheet\\.actor \.hkrpg-equipment-tab\\s*\\{\\s*display:\\s*flex;/
+    /\.hkrpg\.sheet\.actor \.hkrpg-equipment-tab\s*\{\s*display:\s*flex;/
   );
 });
 
