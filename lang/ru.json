@@ -77,7 +77,15 @@
       "Weapons": "Оружие",
       "Shields": "Щиты",
       "Armor": "Броня",
-      "Currency": "Валюта"
+      "Currency": "Валюта",
+      "WeaponsAndShields": "Оружие и щиты",
+      "Weight": "Вес",
+      "Damage": "Урон",
+      "Range": "Дальность",
+      "Quantity": "Кол-во",
+      "Protection": "ПУ",
+      "Durability": "Прочность",
+      "DragHint": "Перетащите предметы из библиотеки Foundry в лист персонажа."
     },
     "Empty": {
       "NoTraits": "Черты пока не добавлены.",
