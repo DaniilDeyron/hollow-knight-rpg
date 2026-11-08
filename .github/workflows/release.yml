@@ -47,7 +47,7 @@ jobs:
           }
           parts[2] += 1;
           manifest.version = parts.join(".");
-          manifest.download = `https://github.com/${process.env.REPOSITORY}/releases/download/v${manifest.version}/hollow-knight-rpg.zip`;
+          manifest.download = `https://raw.githubusercontent.com/${process.env.REPOSITORY}/main/dist/v${manifest.version}/hollow-knight-rpg.zip`;
           fs.writeFileSync("system.json", JSON.stringify(manifest, null, 2) + "\n");
           fs.appendFileSync(process.env.GITHUB_OUTPUT, `version=${manifest.version}\n`);
           console.log(`Pinned manifest download URL: ${manifest.download}`);
@@ -91,6 +91,43 @@ jobs:
             if (!entries.includes(required)) throw new Error(`Missing package entry: ${required}`);
           }
           console.log(`Verified packaged system.json version: ${packaged.version}`);
+          NODE
+
+      - name: Publish versioned archive to raw.githubusercontent.com
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir -p "dist/v${VERSION}"
+          cp hollow-knight-rpg.zip "dist/v${VERSION}/hollow-knight-rpg.zip"
+          git add "dist/v${VERSION}/hollow-knight-rpg.zip"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Publish raw package archive v${VERSION}"
+          git push origin HEAD:main
+
+      - name: Verify public raw download endpoint
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          URL="https://raw.githubusercontent.com/${REPOSITORY}/main/dist/v${VERSION}/hollow-knight-rpg.zip"
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl --fail --location --silent --show-error "$URL" --output /tmp/hollow-knight-rpg-remote.zip; then
+              break
+            fi
+            echo "Raw CDN is not ready yet (attempt $attempt); retrying..."
+            sleep 3
+          done
+          test -s /tmp/hollow-knight-rpg-remote.zip
+          unzip -t /tmp/hollow-knight-rpg-remote.zip
+          node --input-type=module <<'NODE'
+          import { execFileSync } from "node:child_process";
+          const expected = process.env.VERSION;
+          const downloaded = JSON.parse(execFileSync("unzip", ["-p", "/tmp/hollow-knight-rpg-remote.zip", "system.json"], { encoding: "utf8" }));
+          if (downloaded.version !== expected) {
+            throw new Error(`Raw download version mismatch: expected ${expected}, got ${downloaded.version}`);
+          }
+          console.log(`Verified raw download endpoint for version ${downloaded.version}`);
           NODE
 
       - name: Archive verified package
