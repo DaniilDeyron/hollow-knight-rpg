@@ -17,7 +17,7 @@ export class HKTechniqueData extends foundry.abstract.TypeDataModel {
         nullable: false,
         initial: 0,
         min: 0,
-        max: 9,
+        max: 106,
         integer: true
       }),
       description: new fields.StringField({
