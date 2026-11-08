@@ -9,6 +9,10 @@
       </label>
 
       <div class="hkrpg-header-fields">
+        <label class="hkrpg-player-field">
+          <span>{{localize "HKRPG.Profile.Player"}}</span>
+          <input name="system.profile.player" type="text" value="{{system.profile.player}}" placeholder="{{localize "HKRPG.Profile.Player"}}" />
+        </label>
         <label>
           <span>{{localize "HKRPG.Size.Label"}}</span>
           <select name="system.size">
@@ -135,7 +139,7 @@
             <input name="system.social.speed" type="number" min="0" value="{{system.social.speed}}" {{#unless isEditable}}disabled{{/unless}} />
           </label>
           <label>
-            <span>{{localize "HKRPG.Derived.Maneuverability"}}</span>
+            <span title="{{localize "HKRPG.Derived.FootworkHint"}}">{{localize "HKRPG.Derived.Maneuverability"}}</span>
             <div class="hkrpg-movement-summary__maneuverability">
               <input class="hkrpg-derived-stat__input" data-derived-input="maneuverability" type="number" min="0" max="999" step="1" value="{{system.derived.maneuverability}}" {{#unless isEditable}}disabled{{/unless}} />
               <button type="button" class="hkrpg-derived-stat__reset" data-reset-derived="maneuverability" title="{{localize "HKRPG.Derived.ResetAutomatic"}}" aria-label="{{localize "HKRPG.Derived.ResetAutomatic"}}" {{#unless isEditable}}disabled{{/unless}}>↺</button>
@@ -160,7 +164,10 @@
       <div class="hkrpg-overview-grid">
         <div class="hkrpg-overview-main">
           <section class="hkrpg-overview-section">
-            <h2>{{localize "HKRPG.Attributes"}}</h2>
+            <div class="hkrpg-section-title">
+              <h2>{{localize "HKRPG.Attributes"}}</h2>
+              <p class="hkrpg-section-note">{{localize "HKRPG.AttributesRuleHint"}}</p>
+            </div>
             <div class="hkrpg-attributes-grid">
               <div class="hkrpg-attribute">
                 <label class="hkrpg-attribute-score">
