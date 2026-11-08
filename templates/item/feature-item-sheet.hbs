@@ -94,6 +94,23 @@
     </section>
   {{/if}}
 
+  {{#if isTechnique}}
+    <section class="hkrpg-feature-item-config">
+      <div class="hkrpg-feature-item-config__heading">{{localize "HKRPG.Development.Techniques"}}</div>
+      <label class="hkrpg-technique-item-kind">
+        <span>{{localize "HKRPG.Features.TechniqueKind"}}</span>
+        <select name="system.kind" {{#unless isEditable}}disabled{{/unless}}>
+          {{#select system.kind}}
+            <option value="art">{{localize "HKRPG.Features.TechniqueArt"}}</option>
+            <option value="arcana">{{localize "HKRPG.Features.TechniqueArcana"}}</option>
+          {{/select}}
+        </select>
+      </label>
+      <p class="hkrpg-feature-item-hint">{{localize "HKRPG.Features.TechniqueLibraryHint"}}</p>
+    </section>
+  {{/if}}
+
+
   <nav class="hkrpg-feature-item-tabs tabs" data-group="primary">
     <a class="item" data-tab="description">{{localize "HKRPG.Charms.Description"}}</a>
     <a class="item" data-tab="effect">{{localize "HKRPG.Charms.Effect"}}</a>
