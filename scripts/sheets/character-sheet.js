@@ -651,7 +651,7 @@ export class HKCharacterSheet extends ActorSheet {
 
   async _prepareDroppedTechnique(sourceItem, slotValue) {
     const slot = Number(slotValue);
-    const maximum = Math.max(0, Math.min(9, Number(this.actor.system.derived.techniqueSlots ?? 0)));
+    const maximum = Math.max(0, Math.min(106, Number(this.actor.system.derived.techniqueSlots ?? 0)));
     if (!Number.isInteger(slot) || slot < 1 || slot > maximum) return false;
 
     const occupying = this.actor.items.find((item) =>
