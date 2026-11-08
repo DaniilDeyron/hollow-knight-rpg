@@ -169,6 +169,7 @@ export function summarizePaths(items = []) {
     return {
       id: item.id,
       name: String(item.name ?? ""),
+      img: String(item.img ?? ""),
       rank,
       kind,
       assigned,
