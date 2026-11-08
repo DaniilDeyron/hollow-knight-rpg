@@ -81,13 +81,13 @@ export class HKCharacterSheet extends ActorSheet {
       shields: items.filter((item) => item.type === "shield"),
       armor: items.filter((item) => item.type === "armor")
     };
-    context.equipmentRows = buildEquipmentRows(context.itemGroups.equipment, 10, ["weight"]);
+    context.equipmentRows = buildEquipmentRows(context.itemGroups.equipment, 10, ["bulk"]);
     context.combatEquipmentRows = buildEquipmentRows(
       [...context.itemGroups.weapons, ...context.itemGroups.shields],
       5,
-      ["weight", "damage", "range", "quantity"]
+      ["bulk", "damage", "range", "quality"]
     );
-    context.armorRows = buildEquipmentRows(context.itemGroups.armor, 1, ["weight", "protection", "durability"]);
+    context.armorRows = buildEquipmentRows(context.itemGroups.armor, 1, ["bulk", "protection", "durability"]);
 
     context.charmNotches = buildCharmNotchState(notchesMaximum, charms);
     context.notchBonus = this.actor.system.resources.notchesBonus;
