@@ -7,6 +7,7 @@ import {
   buildLegacyTraitRows,
   buildLegacyPathRows,
   buildTechniqueSlots,
+  buildTechniqueSlotCards,
   summarizePaths
 } from "../rules/feature-sheet.js";
 import { buildCharmNotchState, evaluateCharmEquip } from "../rules/charm-tracker.js";
@@ -22,7 +23,8 @@ export class HKCharacterSheet extends ActorSheet {
       submitOnChange: true,
       dragDrop: [
         ...(super.defaultOptions.dragDrop ?? []),
-        { dragSelector: "[data-charm-item-id]", dropSelector: "[data-charm-dropzone]" }
+        { dragSelector: "[data-charm-item-id]", dropSelector: "[data-charm-dropzone]" },
+        { dragSelector: "[data-technique-item-id]", dropSelector: "[data-technique-dropzone]" }
       ],
       tabs: [
         {
@@ -91,7 +93,15 @@ export class HKCharacterSheet extends ActorSheet {
       featureSheet.techniques,
       this.actor.system.derived.techniqueSlots
     );
-    context.preparedTechniqueCount = context.techniqueRows.filter((slot) => slot.name.trim()).length;
+    context.techniqueSlots = buildTechniqueSlotCards(
+      this.actor.system.derived.techniqueSlots,
+      context.itemGroups.techniques,
+      context.techniqueRows
+    );
+    context.unpreparedTechniques = context.itemGroups.techniques.filter((item) =>
+      Number(item.system.preparedSlot ?? 0) === 0
+    );
+    context.preparedTechniqueCount = context.techniqueSlots.filter((slot) => slot.item || slot.legacy).length;
     context.skillGroups = buildSkillGroups(this.actor.system.skillGroups);
 
     return context;
@@ -168,6 +178,7 @@ export class HKCharacterSheet extends ActorSheet {
     bind("[data-migrate-legacy-features]", "click", this._onMigrateLegacyFeatures);
     bind("[data-create-charm]", "click", this._onCreateCharm);
     bind("[data-edit-charm]", "click", this._onEditCharm);
+    bind("[data-unprepare-technique]", "click", this._onUnprepareTechnique);
     bind("[data-unequip-charm]", "click", this._onUnequipCharm);
     bind("[data-attribute-roll]", "click", this._onRollAttribute);
     bind("[data-reset-derived]", "click", this._onResetDerived);
@@ -515,15 +526,17 @@ export class HKCharacterSheet extends ActorSheet {
   }
 
   _onDragStart(event) {
-    const itemId = event.currentTarget?.dataset?.charmItemId;
+    const itemId = event.currentTarget?.dataset?.charmItemId
+      ?? event.currentTarget?.dataset?.techniqueItemId;
     const item = itemId ? this.actor.items.get(itemId) : null;
     if (!item) return super._onDragStart(event);
     event.dataTransfer.setData("text/plain", JSON.stringify(item.toDragData()));
   }
 
   async _onDrop(event) {
-    const dropzone = event.target?.closest?.("[data-charm-dropzone]");
-    if (!dropzone) return super._onDrop(event);
+    const charmDropzone = event.target?.closest?.("[data-charm-dropzone]");
+    const techniqueDropzone = event.target?.closest?.("[data-technique-dropzone]");
+    if (!charmDropzone && !techniqueDropzone) return super._onDrop(event);
     event.preventDefault();
     event.stopPropagation();
     if (!this.isEditable) return false;
@@ -536,7 +549,7 @@ export class HKCharacterSheet extends ActorSheet {
       return false;
     }
     if (data?.type !== "Item" || !data.uuid) {
-      ui.notifications.warn("Сюда можно перетащить только предмет типа «Амулет».");
+      ui.notifications.warn("Перетащите предмет из библиотеки Foundry.");
       return false;
     }
 
@@ -547,14 +560,74 @@ export class HKCharacterSheet extends ActorSheet {
       console.error("Hollow Knight RPG | Failed to resolve dropped Item", error);
       return false;
     }
-    if (!item || item.documentName !== "Item" || item.type !== "charm") {
+    if (!item || item.documentName !== "Item") return false;
+
+    if (techniqueDropzone) {
+      if (item.type !== "technique") {
+        ui.notifications.warn("В ячейки техник можно помещать только Искусства и Тайны.");
+        return false;
+      }
+      return this._prepareDroppedTechnique(item, techniqueDropzone.dataset.techniqueDropzone);
+    }
+
+    if (item.type !== "charm") {
       ui.notifications.warn("Эта область принимает только амулеты.");
       return false;
     }
-
-    return dropzone.dataset.charmDropzone === "equipped"
+    return charmDropzone.dataset.charmDropzone === "equipped"
       ? this._equipDroppedCharm(item)
       : this._moveDroppedCharmToCollection(item);
+  }
+
+  async _prepareDroppedTechnique(sourceItem, slotValue) {
+    const slot = Number(slotValue);
+    const maximum = Math.max(0, Math.min(9, Number(this.actor.system.derived.techniqueSlots ?? 0)));
+    if (!Number.isInteger(slot) || slot < 1 || slot > maximum) return false;
+
+    const occupying = this.actor.items.find((item) =>
+      item.type === "technique" &&
+      Number(item.system.preparedSlot ?? 0) === slot &&
+      item.id !== sourceItem.id
+    );
+    if (occupying) {
+      ui.notifications.warn("Эта ячейка уже занята. Сначала освободите её.");
+      return false;
+    }
+
+    try {
+      if (sourceItem.parent === this.actor) {
+        await sourceItem.update({ "system.preparedSlot": slot });
+      } else {
+        const itemData = sourceItem.toObject();
+        delete itemData._id;
+        itemData.system = { ...itemData.system, preparedSlot: slot };
+        itemData.flags = foundry.utils.mergeObject(itemData.flags ?? {}, {
+          hkrpg: { sourceUuid: sourceItem.uuid }
+        });
+        await this.actor.createEmbeddedDocuments("Item", [itemData]);
+      }
+      this.render(true);
+      return true;
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to prepare Technique", error);
+      ui.notifications.error("Не удалось поместить технику в ячейку. Подробности — в консоли (F12).");
+      return false;
+    }
+  }
+
+  async _onUnprepareTechnique(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.isEditable) return;
+    const item = this.actor.items.get(event.currentTarget.dataset.unprepareTechnique);
+    if (item?.type !== "technique") return;
+    try {
+      await item.update({ "system.preparedSlot": 0 });
+      this.render(true);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to unprepare Technique", error);
+      ui.notifications.error("Не удалось освободить ячейку техники.");
+    }
   }
 
   _getNotchesMaximum() {
