@@ -316,65 +316,45 @@
               </div>
             {{/if}}
 
-            {{#if traitTree.roots.length}}
-              <div class="hkrpg-trait-tree">
-                {{#each traitTree.roots as |trait|}}
-                  <article class="hkrpg-trait-node hkrpg-trait-node--main">
-                    <div class="hkrpg-trait-node__row">
-                      <div class="hkrpg-trait-node__name">
-                        <strong>{{trait.name}}</strong>
-                        <span class="hkrpg-trait-node__meta">{{localize "HKRPG.Features.TraitMain"}} · {{trait.categoryLabel}}</span>
+            {{#if traitSlots.length}}
+              <div class="hkrpg-trait-slots-grid">
+                {{#each traitSlots as |slot|}}
+                  <article class="hkrpg-trait-slot-card {{#if slot.trait}}is-filled{{else if slot.legacy}}is-legacy{{else}}is-empty{{/if}}"
+                           data-trait-dropzone="{{slot.number}}"
+                           aria-label="{{localize "HKRPG.Development.Traits"}} {{slot.number}}">
+                    {{#if slot.trait}}
+                      <div class="hkrpg-trait-slot-card__heading">
+                        <img src="{{slot.trait.img}}" alt="" draggable="true"
+                             data-trait-item-id="{{slot.trait.id}}" title="{{slot.trait.name}}" />
+                        <div class="hkrpg-trait-slot-card__identity">
+                          <strong>{{slot.trait.name}}</strong>
+                          <span>{{slot.trait.categoryLabel}}</span>
+                        </div>
                       </div>
                       <div class="hkrpg-trait-modifiers">
-                        <span title="{{localize "HKRPG.Resource.Hunger"}}">Г {{trait.hungerLabel}}</span>
-                        <span title="{{localize "HKRPG.Secondary.Cute"}}">П {{trait.cuteLabel}}</span>
-                        <span title="{{localize "HKRPG.Secondary.Spook"}}">Ж {{trait.spookLabel}}</span>
+                        <span title="{{localize "HKRPG.Resource.Hunger"}}">Г {{slot.trait.hungerLabel}}</span>
+                        <span title="{{localize "HKRPG.Secondary.Cute"}}">П {{slot.trait.cuteLabel}}</span>
+                        <span title="{{localize "HKRPG.Secondary.Spook"}}">Ж {{slot.trait.spookLabel}}</span>
                       </div>
-                      <div class="hkrpg-feature-actions">
-                        <button type="button" data-edit-feature-item="{{trait.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
-                        <button type="button" data-create-subtrait="{{trait.id}}" title="{{localize "HKRPG.Features.AddSubtrait"}}">＋</button>
-                        <button type="button" data-delete-feature-item="{{trait.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
-                      </div>
-                    </div>
-                    {{#each trait.children as |subtrait|}}
-                      <div class="hkrpg-trait-node hkrpg-trait-node--sub">
-                        <div class="hkrpg-trait-node__row">
-                          <div class="hkrpg-trait-node__name">
-                            <strong><i class="hkrpg-trait-marker hkrpg-trait-marker--sub" aria-hidden="true"></i>{{subtrait.name}}</strong>
-                            <span>{{localize "HKRPG.Features.TraitSub"}}</span>
-                          </div>
-                          <div class="hkrpg-trait-modifiers">
-                            <span>Г {{subtrait.hungerLabel}}</span>
-                            <span>П {{subtrait.cuteLabel}}</span>
-                            <span>Ж {{subtrait.spookLabel}}</span>
-                          </div>
-                          <div class="hkrpg-feature-actions">
-                            <button type="button" data-edit-feature-item="{{subtrait.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
-                            <button type="button" data-create-subtrait="{{subtrait.id}}" title="{{localize "HKRPG.Features.AddSubtrait"}}">＋</button>
-                            <button type="button" data-delete-feature-item="{{subtrait.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
-                          </div>
+                      {{#if slot.trait.children.length}}
+                        <div class="hkrpg-trait-slot-card__subtraits">
+                          {{#each slot.trait.children as |subtrait|}}
+                            <span>{{subtrait.name}}</span>
+                          {{/each}}
                         </div>
-                        {{#each subtrait.children as |nested|}}
-                          <div class="hkrpg-trait-node hkrpg-trait-node--nested">
-                            <div class="hkrpg-trait-node__row">
-                              <div class="hkrpg-trait-node__name">
-                                <strong>{{nested.name}}</strong>
-                                <span>{{localize "HKRPG.Features.TraitSub2"}}</span>
-                              </div>
-                              <div class="hkrpg-trait-modifiers">
-                                <span>Г {{nested.hungerLabel}}</span>
-                                <span>П {{nested.cuteLabel}}</span>
-                                <span>Ж {{nested.spookLabel}}</span>
-                              </div>
-                              <div class="hkrpg-feature-actions">
-                                <button type="button" data-edit-feature-item="{{nested.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
-                                <button type="button" data-delete-feature-item="{{nested.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
-                              </div>
-                            </div>
-                          </div>
-                        {{/each}}
+                      {{/if}}
+                      <div class="hkrpg-feature-actions">
+                        <button type="button" data-edit-feature-item="{{slot.trait.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
+                        <button type="button" data-create-subtrait="{{slot.trait.id}}" title="{{localize "HKRPG.Features.AddSubtrait"}}">＋</button>
+                        <button type="button" data-delete-feature-item="{{slot.trait.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
                       </div>
-                    {{/each}}
+                    {{else if slot.legacy}}
+                      <strong class="hkrpg-trait-slot-card__legacy">{{slot.legacy.name}}</strong>
+                      <small>{{localize "HKRPG.Features.LegacyEntries"}}</small>
+                    {{else}}
+                      <span class="hkrpg-trait-slot-card__plus" aria-hidden="true">＋</span>
+                      <span class="hkrpg-trait-slot-card__hint">{{localize "HKRPG.Features.DropTrait"}}</span>
+                    {{/if}}
                   </article>
                 {{/each}}
               </div>
@@ -382,7 +362,7 @@
               <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoTraits"}}</p>
             {{/if}}
 
-            <footer class="hkrpg-feature-panel__footer">
+                        <footer class="hkrpg-feature-panel__footer">
               <div class="hkrpg-trait-totals">
                 <span>Голод <strong>{{traitTotals.hungerLabel}}</strong></span>
                 <span>Прив. <strong>{{traitTotals.cuteLabel}}</strong></span>
