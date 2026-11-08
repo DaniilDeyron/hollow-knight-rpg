@@ -110,6 +110,19 @@ export class HKCharacterSheet extends ActorSheet {
     return context;
   }
 
+  async _onChangeInput(event) {
+    // Keep submitOnChange writes observable so custom sheet actions can wait for them.
+    const submission = super._onChangeInput(event);
+    this._hkrpgPendingFormSubmission = submission;
+    try {
+      return await submission;
+    } finally {
+      if (this._hkrpgPendingFormSubmission === submission) {
+        this._hkrpgPendingFormSubmission = null;
+      }
+    }
+  }
+
   activateListeners(html) {
     super.activateListeners(html);
 
@@ -229,6 +242,10 @@ export class HKCharacterSheet extends ActorSheet {
     if (!path) return;
 
     try {
+      // A text field may submit on blur at the same time this reset button is clicked.
+      // Wait for that write, then flush the current form before changing only the override.
+      if (this._hkrpgPendingFormSubmission) await this._hkrpgPendingFormSubmission;
+      await this.submit({ preventClose: true });
       await this.actor.update({ [path]: null });
       this.render(false);
     } catch (error) {
