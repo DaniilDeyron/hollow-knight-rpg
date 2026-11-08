@@ -4,6 +4,7 @@ import {
   buildFeatureRows,
   buildSkillGroups,
   buildTraitTree,
+  buildTraitCardSlots,
   buildLegacyTraitRows,
   buildLegacyPathRows,
   buildTechniqueSlots,
@@ -24,7 +25,8 @@ export class HKCharacterSheet extends ActorSheet {
       dragDrop: [
         ...(super.defaultOptions.dragDrop ?? []),
         { dragSelector: "[data-charm-item-id]", dropSelector: "[data-charm-dropzone]" },
-        { dragSelector: "[data-technique-item-id]", dropSelector: "[data-technique-dropzone]" }
+        { dragSelector: "[data-technique-item-id]", dropSelector: "[data-technique-dropzone]" },
+        { dragSelector: "[data-trait-item-id]", dropSelector: "[data-trait-dropzone]" }
       ],
       tabs: [
         {
@@ -82,6 +84,7 @@ export class HKCharacterSheet extends ActorSheet {
     context.notchBonus = this.actor.system.resources.notchesBonus;
 
     context.traitTree = buildTraitTree(traitItems);
+    context.traitSlots = buildTraitCardSlots(7, context.traitTree, legacyTraits);
     context.traitCount = context.traitTree.count + legacyTraits.length;
     context.canAddTrait = context.traitCount < 7;
     context.traitTotals = context.traitTree.totals;
@@ -527,7 +530,8 @@ export class HKCharacterSheet extends ActorSheet {
 
   _onDragStart(event) {
     const itemId = event.currentTarget?.dataset?.charmItemId
-      ?? event.currentTarget?.dataset?.techniqueItemId;
+      ?? event.currentTarget?.dataset?.techniqueItemId
+      ?? event.currentTarget?.dataset?.traitItemId;
     const item = itemId ? this.actor.items.get(itemId) : null;
     if (!item) return super._onDragStart(event);
     event.dataTransfer.setData("text/plain", JSON.stringify(item.toDragData()));
@@ -536,7 +540,8 @@ export class HKCharacterSheet extends ActorSheet {
   async _onDrop(event) {
     const charmDropzone = event.target?.closest?.("[data-charm-dropzone]");
     const techniqueDropzone = event.target?.closest?.("[data-technique-dropzone]");
-    if (!charmDropzone && !techniqueDropzone) return super._onDrop(event);
+    const traitDropzone = event.target?.closest?.("[data-trait-dropzone]");
+    if (!charmDropzone && !techniqueDropzone && !traitDropzone) return super._onDrop(event);
     event.preventDefault();
     event.stopPropagation();
     if (!this.isEditable) return false;
@@ -562,6 +567,14 @@ export class HKCharacterSheet extends ActorSheet {
     }
     if (!item || item.documentName !== "Item") return false;
 
+    if (traitDropzone) {
+      if (item.type !== "trait" || item.system.kind !== "main") {
+        ui.notifications.warn("В основные ячейки можно помещать только основные Черты.");
+        return false;
+      }
+      return this._prepareDroppedTrait(item, traitDropzone.dataset.traitDropzone);
+    }
+
     if (techniqueDropzone) {
       if (item.type !== "technique") {
         ui.notifications.warn("В ячейки техник можно помещать только Искусства и Тайны.");
@@ -577,6 +590,46 @@ export class HKCharacterSheet extends ActorSheet {
     return charmDropzone.dataset.charmDropzone === "equipped"
       ? this._equipDroppedCharm(item)
       : this._moveDroppedCharmToCollection(item);
+  }
+
+  async _prepareDroppedTrait(sourceItem, slotValue) {
+    const slot = Number(slotValue);
+    if (!Number.isInteger(slot) || slot < 1 || slot > 7) return false;
+    if (sourceItem.system.kind !== "main") return false;
+
+    const mainTraits = this.actor.items.filter((item) =>
+      item.type === "trait" && item.system.kind === "main"
+    );
+    const legacyTraits = buildLegacyTraitRows(this.actor.system.featureSheet.traits, mainTraits);
+    if (sourceItem.parent !== this.actor && mainTraits.length + legacyTraits.length >= 7) {
+      ui.notifications.warn(game.i18n.localize("HKRPG.Features.MainTraitLimitReached"));
+      return false;
+    }
+
+    const occupying = mainTraits.find((item) =>
+      Number(item.system.slot ?? 0) === slot && item.id !== sourceItem.id
+    );
+    if (occupying) {
+      ui.notifications.warn("Эта ячейка уже занята. Сначала освободите её.");
+      return false;
+    }
+
+    try {
+      if (sourceItem.parent === this.actor) {
+        await sourceItem.update({ "system.slot": slot });
+      } else {
+        const itemData = sourceItem.toObject();
+        delete itemData._id;
+        itemData.system = { ...itemData.system, kind: "main", parentId: "", slot };
+        await this.actor.createEmbeddedDocuments("Item", [itemData]);
+      }
+      this.render(true);
+      return true;
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to add Trait", error);
+      ui.notifications.error("Не удалось добавить Черту. Подробности — в консоли (F12).");
+      return false;
+    }
   }
 
   async _prepareDroppedTechnique(sourceItem, slotValue) {
