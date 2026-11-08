@@ -2587,3 +2587,21 @@
     font-size: 1rem;
   }
 }
+
+
+/* Two-column identity headers: charms have a Notch control; Traits/Paths do not. */
+.hkrpg.sheet.item .hkrpg-feature-item-header {
+  grid-template-columns: 76px minmax(0, 1fr);
+}
+
+.hkrpg.sheet.item .hkrpg-charm-item-header {
+  grid-template-columns: 76px minmax(0, 1fr) 56px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-head--combat {
+  grid-template-columns: repeat(4, 46px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-head--armor {
+  grid-template-columns: repeat(3, 46px);
+}
