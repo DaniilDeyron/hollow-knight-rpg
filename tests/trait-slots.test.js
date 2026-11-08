@@ -11,8 +11,8 @@ test("Лист формирует семь ячеек основных Черт"
 test("Черта с назначенным номером сохраняет своё место", () => {
   const tree = {
     roots: [
-      { id: "trait-a", name: "Панцирь", slot: 3 },
-      { id: "trait-b", name: "Крылья", slot: 1 }
+      { id: "trait-a", name: "Панцирь", kind: "main", slot: 3 },
+      { id: "trait-b", name: "Крылья", kind: "main", slot: 1 }
     ]
   };
   const slots = buildTraitCardSlots(4, tree);
@@ -24,8 +24,8 @@ test("Черта с назначенным номером сохраняет с�
 test("Существующие Черты без номера заполняют свободные ячейки, а не исчезают", () => {
   const tree = {
     roots: [
-      { id: "old-a", name: "Рог", slot: 0 },
-      { id: "old-b", name: "Чувствительные усики", slot: 0 }
+      { id: "old-a", name: "Рог", kind: "main", slot: 0 },
+      { id: "old-b", name: "Чувствительные усики", kind: "main", slot: 0 }
     ]
   };
   const slots = buildTraitCardSlots(3, tree);
@@ -40,7 +40,7 @@ test("Старые текстовые Черты остаются видимым
 });
 
 test("Предмет Черты занимает слот вместо старой текстовой записи", () => {
-  const tree = { roots: [{ id: "new-trait", name: "Новая Черта", slot: 1 }] };
+  const tree = { roots: [{ id: "new-trait", name: "Новая Черта", kind: "main", slot: 1 }] };
   const slots = buildTraitCardSlots(1, tree, [{ name: "Старая Черта" }]);
   assert.equal(slots[0].trait.id, "new-trait");
   assert.equal(slots[0].legacy, null);
