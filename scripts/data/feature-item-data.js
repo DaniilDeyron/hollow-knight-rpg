@@ -29,6 +29,14 @@ export class HKTraitData extends foundry.abstract.TypeDataModel {
         }
       }),
       parentId: textField(),
+      slot: new fields.NumberField({
+        required: true,
+        nullable: false,
+        initial: 0,
+        min: 0,
+        max: 7,
+        integer: true
+      }),
       category: new fields.StringField({
         required: true,
         nullable: false,
