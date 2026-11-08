@@ -4265,3 +4265,36 @@
 .hkrpg.sheet.actor .hkrpg-charm-item-section textarea {
   font-size: calc(.88rem + .05rem);
 }
+
+
+/* Final readability sweep for small supporting labels outside the main development panels. */
+.hkrpg.sheet.actor .hkrpg-panel-heading > span,
+.hkrpg.sheet.actor .hkrpg-derived-strip span,
+.hkrpg.sheet.actor .hkrpg-roll__note,
+.hkrpg.sheet.actor .hkrpg-pip-overflow,
+.hkrpg.sheet.actor .hkrpg-tracker-fields label > span,
+.hkrpg.sheet.actor .hkrpg-custom-reserve__fields label > span,
+.hkrpg.sheet.actor .hkrpg-charms-rule-note,
+.hkrpg.sheet.actor .hkrpg-charm-token__cost,
+.hkrpg.sheet.actor .hkrpg-notches-heading p,
+.hkrpg.sheet.actor .hkrpg-charms-section-heading p {
+  font-size: calc(1em + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-overcharmed-warning,
+.hkrpg.sheet.actor .hkrpg-charms-drop-hint,
+.hkrpg.sheet.actor .hkrpg-charm-card__details span,
+.hkrpg.sheet.actor .hkrpg-notches-summary label {
+  font-size: calc(1em + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-tabs .item {
+  font-size: calc(1em + .05rem);
+}
+
+.hkrpg.sheet.item .hkrpg-charm-item-title,
+.hkrpg.sheet.item .hkrpg-charm-item-section h2,
+.hkrpg.sheet.item .hkrpg-charm-item-section textarea,
+.hkrpg.sheet.item .hkrpg-feature-item-config label > span {
+  font-size: calc(1em + .05rem);
+}
