@@ -2605,3 +2605,126 @@
 .hkrpg.sheet.actor .hkrpg-equipment-column-head--armor {
   grid-template-columns: repeat(3, 46px);
 }
+
+
+/* Decorative and readability refinement based on the saved HKRPG sheet references. */
+.hkrpg.sheet.actor .hkrpg-overview-section > h2,
+.hkrpg.sheet.actor .hkrpg-custom-reserves-section > h2,
+.hkrpg.sheet.actor .hkrpg-panel > h2,
+.hkrpg.sheet.actor .hkrpg-panel-heading h2,
+.hkrpg.sheet.actor .hkrpg-charms-section-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.hkrpg.sheet.actor .hkrpg-overview-section > h2::after,
+.hkrpg.sheet.actor .hkrpg-custom-reserves-section > h2::after,
+.hkrpg.sheet.actor .hkrpg-panel > h2::after,
+.hkrpg.sheet.actor .hkrpg-panel-heading h2::after,
+.hkrpg.sheet.actor .hkrpg-charms-section-heading h2::after {
+  flex: 1 1 auto;
+  min-width: 12px;
+  height: 1px;
+  background: linear-gradient(90deg, rgb(184 197 215 / 62%), rgb(105 129 157 / 24%) 72%, transparent);
+  content: "";
+  transform: translateY(2px);
+}
+
+.hkrpg.sheet.actor .hkrpg-overview-section,
+.hkrpg.sheet.actor .hkrpg-panel,
+.hkrpg.sheet.actor .hkrpg-charms-equipped-panel,
+.hkrpg.sheet.actor .hkrpg-notches-panel,
+.hkrpg.sheet.actor .hkrpg-charms-collection-panel {
+  border-color: #526b88 !important;
+  box-shadow:
+    inset 0 1px 0 rgb(237 242 250 / 5%),
+    inset 0 0 0 1px rgb(255 255 255 / 1.5%),
+    0 5px 14px rgb(0 0 0 / 18%);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card,
+.hkrpg.sheet.actor .hkrpg-technique-slot-card,
+.hkrpg.sheet.actor .hkrpg-path-card,
+.hkrpg.sheet.actor .hkrpg-charm-card {
+  border-color: #516987;
+  box-shadow: inset 0 1px 0 rgb(236 243 251 / 4%);
+}
+
+.hkrpg.sheet.actor .hkrpg-sheet-header::before,
+.hkrpg.sheet.actor .hkrpg-sheet-header::after {
+  width: 39px;
+  height: 39px;
+  border-color: rgb(213 222 235 / 72%);
+}
+
+.hkrpg.sheet.actor .hkrpg-header-resource__fields label > span {
+  font-size: .63rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-attribute-temporary > span {
+  font-size: .66rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__rank,
+.hkrpg.sheet.actor .hkrpg-skill-group__mastery-heading {
+  font-size: .68rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-custom-reserve__fields label > span {
+  font-size: .65rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__identity span,
+.hkrpg.sheet.actor .hkrpg-trait-modifiers span,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__subtrait,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__hint,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card small {
+  font-size: .69rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-path-type,
+.hkrpg.sheet.actor .hkrpg-path-card__rank {
+  font-size: .69rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-technique-slot-bonus,
+.hkrpg.sheet.actor .hkrpg-technique-slot-card__name,
+.hkrpg.sheet.actor .hkrpg-technique-slot-card__legacy,
+.hkrpg.sheet.actor .hkrpg-technique-slot-card__hint {
+  font-size: .69rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-technique-collection__title,
+.hkrpg.sheet.actor .hkrpg-technique-collection__item {
+  font-size: .72rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-charms-section-heading > span,
+.hkrpg.sheet.actor .hkrpg-notches-summary label,
+.hkrpg.sheet.actor .hkrpg-charm-card__details span,
+.hkrpg.sheet.actor .hkrpg-charms-rule-note,
+.hkrpg.sheet.actor .hkrpg-overcharmed-warning {
+  font-size: .69rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-title,
+.hkrpg.sheet.actor .hkrpg-equipment-column-head span,
+.hkrpg.sheet.actor .hkrpg-equipment-count,
+.hkrpg.sheet.actor .hkrpg-equipment-hint {
+  font-size: .7rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row__name {
+  font-size: .86rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-empty {
+  font-size: .79rem;
+}
+
+.hkrpg.sheet.item .hkrpg-feature-item-config label > span,
+.hkrpg.sheet.item .hkrpg-feature-item-modifiers label > span,
+.hkrpg.sheet.item .hkrpg-feature-item-hint {
+  font-size: .73rem;
+}
