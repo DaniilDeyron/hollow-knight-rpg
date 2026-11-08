@@ -4059,3 +4059,209 @@
   border: 1px solid #506d8d;
   background: #081525;
 }
+
+
+/* READABILITY PASS — raise supporting copy by roughly 0.5–1 pt without changing the layout hierarchy. */
+.hkrpg.sheet.actor .hkrpg-sheet-header label > span,
+.hkrpg.sheet.actor .hkrpg-overview-section label > span,
+.hkrpg.sheet.actor .hkrpg-panel label > span {
+  font-size: calc(.75rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-tabs .item {
+  font-size: calc(.78rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-header-resource__name {
+  font-size: calc(.84rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-header-resource__value {
+  font-size: calc(.82rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-header-resource__fields label > span {
+  font-size: calc(.52rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-header-resource__fields input {
+  font-size: calc(.66rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-summary h2 {
+  font-size: calc(.86rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-summary__values > label > span {
+  font-size: calc(.69rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-summary__values input {
+  font-size: calc(.83rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-movement-summary__maneuverability .hkrpg-derived-stat__reset {
+  font-size: calc(.62rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__name {
+  font-size: calc(.92rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__name::placeholder {
+  font-size: calc(.84rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__rank {
+  font-size: calc(.63rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__rank input {
+  font-size: calc(.8rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-group__mastery-heading {
+  font-size: calc(.61rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-entry__name,
+.hkrpg.sheet.actor .hkrpg-skill-entry__mastery {
+  font-size: calc(.78rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-feature-panel .hkrpg-panel-heading p {
+  font-size: calc(.72rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-feature-counter,
+.hkrpg.sheet.actor .hkrpg-feature-panel .hkrpg-panel-heading > strong {
+  font-size: calc(.82rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-feature-legacy-warning {
+  font-size: calc(.74rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-node__meta,
+.hkrpg.sheet.actor .hkrpg-trait-node__name > span {
+  font-size: calc(.65rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-modifiers span,
+.hkrpg.sheet.actor .hkrpg-trait-totals > span {
+  font-size: calc(.66rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-totals strong {
+  font-size: calc(.75rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-feature-add {
+  font-size: calc(.76rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-path-type,
+.hkrpg.sheet.actor .hkrpg-path-bonuses span {
+  font-size: calc(.65rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-path-card__rank {
+  font-size: calc(.67rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-path-card__identity strong {
+  font-size: calc(.9rem + .04rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-path-bonuses strong {
+  font-size: calc(.95rem + .04rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-technique-slot-index,
+.hkrpg.sheet.actor .hkrpg-technique-slot-card__name,
+.hkrpg.sheet.actor .hkrpg-technique-slot-card__legacy,
+.hkrpg.sheet.actor .hkrpg-technique-collection__title,
+.hkrpg.sheet.actor .hkrpg-technique-collection__item {
+  font-size: calc(.66rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-technique-slot-card__hint,
+.hkrpg.sheet.actor .hkrpg-technique-slot-card > small {
+  font-size: calc(.59rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-technique-slot-bonus {
+  font-size: calc(.62rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-technique-slot-bonus input {
+  font-size: calc(.78rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-technique-slots-meta > strong {
+  font-size: calc(.82rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__identity strong,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__legacy {
+  font-size: calc(.82rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__identity span,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__subtraits span,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__hint,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card > small {
+  font-size: calc(.62rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card .hkrpg-trait-modifiers span {
+  font-size: calc(.61rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__subtrait button {
+  font-size: calc(.58rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-feature-legacy-list p,
+.hkrpg.sheet.actor .hkrpg-feature-legacy-list li,
+.hkrpg.sheet.actor .hkrpg-spell-reference p,
+.hkrpg.sheet.actor .hkrpg-spell-reference li {
+  font-size: calc(.77rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-spell-reference small {
+  font-size: calc(.68rem + .06rem);
+}
+
+.hkrpg.sheet.item .hkrpg-feature-item-title,
+.hkrpg.sheet.item .hkrpg-feature-item-config label > span {
+  font-size: calc(.78rem + .05rem);
+}
+
+.hkrpg.sheet.item .hkrpg-feature-item-hint {
+  font-size: calc(.72rem + .05rem);
+}
+
+.hkrpg.sheet.item .hkrpg-feature-item-editor,
+.hkrpg.sheet.item .hkrpg-charm-item-section textarea {
+  font-size: calc(.88rem + .05rem);
+}
+
+.hkrpg.sheet.item .hkrpg-technique-item-kind {
+  font-size: calc(.72rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-charms-section-heading > span,
+.hkrpg.sheet.actor .hkrpg-notches-summary label,
+.hkrpg.sheet.actor .hkrpg-charm-card__details span {
+  font-size: calc(.68rem + .06rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-charm-card__details strong,
+.hkrpg.sheet.actor .hkrpg-charm-create {
+  font-size: calc(.74rem + .05rem);
+}
+
+.hkrpg.sheet.actor .hkrpg-charm-item-section textarea {
+  font-size: calc(.88rem + .05rem);
+}
