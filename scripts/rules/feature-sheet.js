@@ -258,7 +258,7 @@ export function summarizeProficiencySkillDice(groups = []) {
  * legacy text entries remain visible until they are migrated to Item documents.
  */
 export function buildTechniqueSlotCards(maximum = 0, items = [], legacySlots = []) {
-  const count = Math.max(0, Math.min(9, Math.floor(numeric(maximum))));
+  const count = Math.max(0, Math.min(106, Math.floor(numeric(maximum))));
   const techniques = (items ?? []).filter((item) => item?.type === "technique");
   return Array.from({ length: count }, (_, index) => {
     const slotNumber = index + 1;
