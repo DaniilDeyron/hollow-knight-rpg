@@ -4301,7 +4301,7 @@
 
 
 /* Equipment tab — two-column inventory sheet inspired by the supplied reference. */
-.hkrpg.sheet.actor .hkrpg-equipment-tab {
+.hkrpg.sheet.actor .hkrpg-equipment-tab.active {
   display: flex;
   flex-direction: column;
   gap: 10px;
