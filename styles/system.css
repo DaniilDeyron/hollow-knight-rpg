@@ -4298,3 +4298,378 @@
 .hkrpg.sheet.item .hkrpg-feature-item-config label > span {
   font-size: calc(1em + .05rem);
 }
+
+
+/* Equipment tab — two-column inventory sheet inspired by the supplied reference. */
+.hkrpg.sheet.actor .hkrpg-equipment-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 12px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 10px 12px 9px;
+  border: 1px solid #4b6380 !important;
+  border-radius: 4px;
+  background:
+    linear-gradient(180deg, rgb(23 39 61 / 90%), rgb(13 25 42 / 94%)) !important;
+  box-shadow: inset 0 1px 0 rgb(225 237 255 / 4%);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  min-height: 39px;
+  margin-bottom: 5px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #647d9a;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-heading > div:first-child {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-heading h2 {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: #f0f4fb !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: 1.38rem;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: .015em;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-count {
+  flex: 0 0 auto;
+  color: #91a8c4;
+  font-size: .66rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-title,
+.hkrpg.sheet.actor .hkrpg-equipment-column-head span {
+  color: #b6c6da !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: .66rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-title {
+  flex: 0 0 42px;
+  padding-bottom: 2px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-rows {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  min-height: 36px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgb(123 148 177 / 58%);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row:last-child {
+  border-bottom-color: #647d9a;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row__name {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 27px;
+  padding: 2px 5px;
+  overflow: hidden;
+  color: #edf3fc !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: .84rem;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row.is-empty .hkrpg-equipment-row__name {
+  color: transparent !important;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  min-width: 0;
+  height: 27px;
+  padding: 1px 2px;
+  border: 1px solid #607996;
+  border-radius: 2px;
+  background: #0a1728;
+  color: #eaf1fb !important;
+  font-size: .76rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row.is-empty .hkrpg-equipment-value {
+  color: transparent !important;
+  background: rgb(5 14 26 / 36%);
+  border-color: #4c6481;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-panel--combat {
+  gap: 10px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-subsection {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-subsection--armor {
+  padding-top: 3px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-head {
+  display: grid;
+  align-items: end;
+  gap: 5px;
+  min-width: 0;
+  padding-bottom: 2px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-head--combat {
+  grid-template-columns: repeat(4, 42px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-head--armor {
+  grid-template-columns: repeat(3, 42px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--combat {
+  grid-template-columns: minmax(0, 1fr) repeat(4, 42px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--armor {
+  grid-template-columns: minmax(0, 1fr) repeat(3, 42px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-hint {
+  margin: auto 0 0;
+  padding-top: 7px;
+  color: #91a8c4 !important;
+  font-size: .66rem;
+  font-style: italic;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-footer {
+  display: grid;
+  grid-template-columns: minmax(130px, .7fr) minmax(0, 1fr) minmax(0, 1fr);
+  align-items: stretch;
+  gap: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #4b6380 !important;
+  border-radius: 4px;
+  background: #122138 !important;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-currency {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-currency > span {
+  color: #bdcce0 !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: .72rem;
+  font-weight: 650;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-currency input {
+  width: 100%;
+  height: 34px;
+  min-height: 34px;
+  padding: 2px 6px;
+  color: #ffffff !important;
+  font-size: .9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  min-height: 42px;
+  padding: 8px 10px;
+  border: 1px solid rgb(82 109 143 / 42%);
+  border-radius: 4px;
+  background: rgb(73 99 135 / 25%);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-total span {
+  min-width: 0;
+  color: #bfcee1 !important;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: .86rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-total strong {
+  flex: 0 0 auto;
+  color: #f4f7fc !important;
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-footer .hkrpg-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 1px 1px 0;
+  color: #91a8c4 !important;
+  font-size: .68rem;
+}
+
+@media (max-width: 860px) {
+  .hkrpg.sheet.actor .hkrpg-equipment-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-panel--inventory .hkrpg-equipment-rows {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 14px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-panel--inventory .hkrpg-equipment-row {
+    grid-template-columns: minmax(0, 1fr) 42px;
+  }
+}
+
+@media (max-width: 560px) {
+  .hkrpg.sheet.actor .hkrpg-equipment-heading {
+    align-items: start;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-heading h2 {
+    font-size: 1.16rem;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-column-head--combat {
+    grid-template-columns: repeat(4, 34px);
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-column-head--armor {
+    grid-template-columns: repeat(3, 34px);
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-row--combat {
+    grid-template-columns: minmax(0, 1fr) repeat(4, 34px);
+    gap: 4px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-row--armor {
+    grid-template-columns: minmax(0, 1fr) repeat(3, 34px);
+    gap: 4px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-row--combat .hkrpg-equipment-value,
+  .hkrpg.sheet.actor .hkrpg-equipment-row--armor .hkrpg-equipment-value {
+    width: 34px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-footer {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-currency {
+    grid-column: 1 / -1;
+  }
+}
+
+
+/* Keep the equipment rows spacious and align Armor at the lower edge of the right panel. */
+.hkrpg.sheet.actor .hkrpg-equipment-row {
+  min-height: 40px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-panel--combat {
+  justify-content: space-between;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-subsection--armor {
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-head--combat {
+  grid-template-columns: repeat(4, 50px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--combat {
+  grid-template-columns: minmax(0, 1fr) repeat(4, 50px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--combat .hkrpg-equipment-value {
+  width: 50px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-column-head--armor {
+  grid-template-columns: repeat(3, 50px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--armor {
+  grid-template-columns: minmax(0, 1fr) repeat(3, 50px);
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--armor .hkrpg-equipment-value {
+  width: 50px;
+}
+
+@media (max-width: 560px) {
+  .hkrpg.sheet.actor .hkrpg-equipment-column-head--combat {
+    grid-template-columns: repeat(4, 34px);
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-column-head--armor {
+    grid-template-columns: repeat(3, 34px);
+  }
+}

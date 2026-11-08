@@ -12,6 +12,7 @@ import {
   summarizePaths
 } from "../rules/feature-sheet.js";
 import { buildCharmNotchState, evaluateCharmEquip } from "../rules/charm-tracker.js";
+import { buildEquipmentRows } from "../rules/equipment-sheet.js";
 
 export class HKCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -80,6 +81,14 @@ export class HKCharacterSheet extends ActorSheet {
       shields: items.filter((item) => item.type === "shield"),
       armor: items.filter((item) => item.type === "armor")
     };
+    context.equipmentRows = buildEquipmentRows(context.itemGroups.equipment, 10, ["weight"]);
+    context.combatEquipmentRows = buildEquipmentRows(
+      [...context.itemGroups.weapons, ...context.itemGroups.shields],
+      5,
+      ["weight", "damage", "range", "quantity"]
+    );
+    context.armorRows = buildEquipmentRows(context.itemGroups.armor, 1, ["weight", "protection", "durability"]);
+
     context.charmNotches = buildCharmNotchState(notchesMaximum, charms);
     context.notchBonus = this.actor.system.resources.notchesBonus;
 
