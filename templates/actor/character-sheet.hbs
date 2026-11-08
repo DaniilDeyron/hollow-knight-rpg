@@ -9,6 +9,10 @@
       </label>
 
       <div class="hkrpg-header-fields">
+        <label class="hkrpg-player-field">
+          <span>{{localize "HKRPG.Profile.Player"}}</span>
+          <input name="system.profile.player" type="text" value="{{system.profile.player}}" placeholder="{{localize "HKRPG.Profile.Player"}}" />
+        </label>
         <label>
           <span>{{localize "HKRPG.Size.Label"}}</span>
           <select name="system.size">
@@ -135,7 +139,7 @@
             <input name="system.social.speed" type="number" min="0" value="{{system.social.speed}}" {{#unless isEditable}}disabled{{/unless}} />
           </label>
           <label>
-            <span>{{localize "HKRPG.Derived.Maneuverability"}}</span>
+            <span title="{{localize "HKRPG.Derived.FootworkHint"}}">{{localize "HKRPG.Derived.Maneuverability"}}</span>
             <div class="hkrpg-movement-summary__maneuverability">
               <input class="hkrpg-derived-stat__input" data-derived-input="maneuverability" type="number" min="0" max="999" step="1" value="{{system.derived.maneuverability}}" {{#unless isEditable}}disabled{{/unless}} />
               <button type="button" class="hkrpg-derived-stat__reset" data-reset-derived="maneuverability" title="{{localize "HKRPG.Derived.ResetAutomatic"}}" aria-label="{{localize "HKRPG.Derived.ResetAutomatic"}}" {{#unless isEditable}}disabled{{/unless}}>↺</button>
@@ -160,7 +164,10 @@
       <div class="hkrpg-overview-grid">
         <div class="hkrpg-overview-main">
           <section class="hkrpg-overview-section">
-            <h2>{{localize "HKRPG.Attributes"}}</h2>
+            <div class="hkrpg-section-title">
+              <h2>{{localize "HKRPG.Attributes"}}</h2>
+              <p class="hkrpg-section-note">{{localize "HKRPG.AttributesRuleHint"}}</p>
+            </div>
             <div class="hkrpg-attributes-grid">
               <div class="hkrpg-attribute">
                 <label class="hkrpg-attribute-score">
@@ -633,7 +640,7 @@
             {{#each equipmentRows as |row|}}
               <article class="hkrpg-equipment-row {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" title="{{row.name}}"{{/if}}>
                 <span class="hkrpg-equipment-row__name">{{#if row.item}}{{row.name}}{{else}}&nbsp;{{/if}}</span>
-                <span class="hkrpg-equipment-value">{{row.values.weight}}</span>
+                <span class="hkrpg-equipment-value">{{row.values.bulk}}</span>
               </article>
             {{/each}}
           </div>
@@ -655,17 +662,17 @@
                 <span>{{localize "HKRPG.Equipment.Weight"}}</span>
                 <span>{{localize "HKRPG.Equipment.Damage"}}</span>
                 <span>{{localize "HKRPG.Equipment.Range"}}</span>
-                <span>{{localize "HKRPG.Equipment.Quantity"}}</span>
+                <span>{{localize "HKRPG.Equipment.Quality"}}</span>
               </div>
             </header>
             <div class="hkrpg-equipment-rows">
               {{#each combatEquipmentRows as |row|}}
                 <article class="hkrpg-equipment-row hkrpg-equipment-row--combat {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" title="{{row.name}}"{{/if}}>
                   <span class="hkrpg-equipment-row__name">{{#if row.item}}{{row.name}}{{else}}&nbsp;{{/if}}</span>
-                  <span class="hkrpg-equipment-value">{{row.values.weight}}</span>
+                  <span class="hkrpg-equipment-value">{{row.values.bulk}}</span>
                   <span class="hkrpg-equipment-value">{{row.values.damage}}</span>
                   <span class="hkrpg-equipment-value">{{row.values.range}}</span>
-                  <span class="hkrpg-equipment-value">{{row.values.quantity}}</span>
+                  <span class="hkrpg-equipment-value">{{row.values.quality}}</span>
                 </article>
               {{/each}}
             </div>
@@ -687,7 +694,7 @@
               {{#each armorRows as |row|}}
                 <article class="hkrpg-equipment-row hkrpg-equipment-row--armor {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" title="{{row.name}}"{{/if}}>
                   <span class="hkrpg-equipment-row__name">{{#if row.item}}{{row.name}}{{else}}&nbsp;{{/if}}</span>
-                  <span class="hkrpg-equipment-value">{{row.values.weight}}</span>
+                  <span class="hkrpg-equipment-value">{{row.values.bulk}}</span>
                   <span class="hkrpg-equipment-value">{{row.values.protection}}</span>
                   <span class="hkrpg-equipment-value">{{row.values.durability}}</span>
                 </article>
