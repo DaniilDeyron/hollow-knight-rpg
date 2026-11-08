@@ -248,3 +248,28 @@ export function summarizeProficiencySkillDice(groups = []) {
   }
   return dice;
 }
+
+
+/**
+ * Prepare the fixed technique grid. A prepared Item occupies its saved slot;
+ * legacy text entries remain visible until they are migrated to Item documents.
+ */
+export function buildTechniqueSlotCards(maximum = 0, items = [], legacySlots = []) {
+  const count = Math.max(0, Math.min(9, Math.floor(numeric(maximum))));
+  const techniques = (items ?? []).filter((item) => item?.type === "technique");
+  return Array.from({ length: count }, (_, index) => {
+    const slotNumber = index + 1;
+    const item = techniques.find((candidate) =>
+      Math.floor(numeric(candidate.system?.preparedSlot)) === slotNumber
+    ) ?? null;
+    const legacy = item ? null : (legacySlots ?? []).find((entry) =>
+      Number(entry.number) === slotNumber && String(entry.name ?? "").trim()
+    ) ?? null;
+    return {
+      number: slotNumber,
+      item,
+      legacy,
+      isEmpty: !item && !legacy
+    };
+  });
+}
