@@ -339,7 +339,19 @@
                       {{#if slot.trait.children.length}}
                         <div class="hkrpg-trait-slot-card__subtraits">
                           {{#each slot.trait.children as |subtrait|}}
-                            <span>{{subtrait.name}}</span>
+                            <span class="hkrpg-trait-slot-card__subtrait">
+                              <span>{{subtrait.name}}</span>
+                              <button type="button" data-edit-feature-item="{{subtrait.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
+                              <button type="button" data-create-subtrait="{{subtrait.id}}" title="{{localize "HKRPG.Features.AddSubtrait"}}">＋</button>
+                              <button type="button" data-delete-feature-item="{{subtrait.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
+                            </span>
+                            {{#each subtrait.children as |nested|}}
+                              <span class="hkrpg-trait-slot-card__subtrait is-nested">
+                                <span>{{nested.name}}</span>
+                                <button type="button" data-edit-feature-item="{{nested.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
+                                <button type="button" data-delete-feature-item="{{nested.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
+                              </span>
+                            {{/each}}
                           {{/each}}
                         </div>
                       {{/if}}
