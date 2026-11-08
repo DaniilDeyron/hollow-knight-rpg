@@ -290,7 +290,9 @@ export function buildTraitCardSlots(maximum = 7, traitTree = {}, legacyTraits = 
     legacy: null,
     isEmpty: true
   }));
-  const roots = Array.isArray(traitTree?.roots) ? traitTree.roots : [];
+  const roots = Array.isArray(traitTree?.roots)
+    ? traitTree.roots.filter((trait) => trait?.kind === "main")
+    : [];
   const assigned = new Set();
 
   for (const trait of roots) {
