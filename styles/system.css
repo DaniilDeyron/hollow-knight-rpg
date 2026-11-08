@@ -4003,3 +4003,32 @@
     grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
   }
 }
+
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__subtrait {
+  align-items: center;
+  gap: 3px;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__subtrait.is-nested {
+  margin-left: 8px;
+  border-style: dashed;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__subtrait button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #506d90;
+  border-radius: 3px;
+  background: #14263e;
+  color: #dce8f8;
+  font-size: .58rem;
+  line-height: 1;
+}
