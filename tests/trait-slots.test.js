@@ -45,3 +45,16 @@ test("Предмет Черты занимает слот вместо стар�
   assert.equal(slots[0].trait.id, "new-trait");
   assert.equal(slots[0].legacy, null);
 });
+
+
+test("Подчерты без основной родительской связи не занимают ячейки основных Черт", () => {
+  const tree = {
+    roots: [
+      { id: "main", name: "Панцирь", kind: "main", slot: 1 },
+      { id: "orphan", name: "Одинокая подчерта", kind: "subtrait", slot: 2 }
+    ]
+  };
+  const slots = buildTraitCardSlots(2, tree);
+  assert.equal(slots[0].trait.id, "main");
+  assert.equal(slots[1].isEmpty, true);
+});
