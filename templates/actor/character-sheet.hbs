@@ -436,6 +436,7 @@
               <div class="hkrpg-path-list">
                 {{#each pathSummary.paths as |path|}}
                   <article class="hkrpg-path-card">
+                    <img class="hkrpg-path-card__image" src="{{path.img}}" alt="" title="{{path.name}}" />
                     <div class="hkrpg-path-card__identity">
                       <strong>{{path.name}}</strong>
                       <span class="hkrpg-path-type hkrpg-path-type--{{path.kind}}">{{path.kindLabel}}</span>
