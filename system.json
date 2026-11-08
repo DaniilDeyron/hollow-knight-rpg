@@ -19,7 +19,8 @@
     "scripts/main.js"
   ],
   "styles": [
-    "styles/system.css"
+    "styles/system.css",
+    "styles/character-sheet-theme.css"
   ],
   "languages": [
     {
