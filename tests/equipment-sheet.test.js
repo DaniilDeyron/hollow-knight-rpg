@@ -40,3 +40,20 @@ test("Пустые строки добавляются только до ука�
   assert.equal(rows[0].isEmpty, false);
   assert.equal(rows[1].isEmpty, true);
 });
+
+test("Читает Bulk по термину книги и сохраняет совместимость со старым полем Вес", () => {
+  const rows = buildEquipmentRows([
+    { name: "Гвоздь", system: { bulk: 2, weight: 99 } },
+    { name: "Старая сумка", system: { weight: 3 } }
+  ], 2, ["bulk"]);
+  assert.equal(rows[0].values.bulk, 2);
+  assert.equal(rows[1].values.bulk, 3);
+});
+
+test("Читает ПУ как Damage Reduction и качество оружия отдельно от количества", () => {
+  const [armor] = buildEquipmentRows([
+    { name: "Лёгкая броня", system: { damageReduction: 1, quality: 2 } }
+  ], 1, ["protection", "quality"]);
+  assert.equal(armor.values.protection, 1);
+  assert.equal(armor.values.quality, 2);
+});
