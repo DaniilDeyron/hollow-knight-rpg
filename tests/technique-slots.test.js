@@ -5,7 +5,8 @@ import { buildTechniqueSlotCards } from "../scripts/rules/feature-sheet.js";
 test("Число ячеек техник соответствует доступному количеству", () => {
   assert.equal(buildTechniqueSlotCards(5).length, 5);
   assert.equal(buildTechniqueSlotCards(0).length, 0);
-  assert.equal(buildTechniqueSlotCards(20).length, 9);
+  assert.equal(buildTechniqueSlotCards(20).length, 20);
+  assert.equal(buildTechniqueSlotCards(200).length, 106);
 });
 
 test("Подготовленная техника отображается в своей ячейке", () => {
