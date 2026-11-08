@@ -34,9 +34,9 @@ test("Основные поля персонажа и игрока остают�
   assert.match(template, /name="system\.attributes\.insight"/);
   assert.match(template, /name="system\.attributes\.shell"/);
   assert.match(template, /name="system\.attributes\.grace"/);
-  assert.match(template, /name="system\.resources\.heart"/);
-  assert.match(template, /name="system\.resources\.soul"/);
-  assert.match(template, /name="system\.resources\.stamina"/);
+  assert.match(template, /data-resource-field="heart"/);
+  assert.match(template, /data-resource-field="soul"/);
+  assert.match(template, /data-resource-field="stamina"/);
   assert.match(template, /name="system\.resources\.hunger"/);
   assert.match(template, /name="system\.resources\.satiety"/);
 });
