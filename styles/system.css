@@ -3836,3 +3836,170 @@
 .hkrpg.sheet.item .hkrpg-technique-item-kind select {
   min-height: 30px;
 }
+
+
+/* Main Trait cards — seven centered slots ready for a compendium drag-and-drop flow. */
+.hkrpg.sheet.actor .hkrpg-trait-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  justify-content: center;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 7px;
+  min-width: 0;
+  min-height: 118px;
+  padding: 8px;
+  border: 1px solid #4c6788;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #172b44, #0a1728);
+  color: #dce8f8;
+  box-shadow: inset 0 1px 0 rgb(220 235 255 / 5%);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card.is-empty {
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  border-color: #5e7898;
+  background: rgb(7 19 34 / 72%);
+  cursor: copy;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card.is-empty:hover,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card.is-filled:hover {
+  border-color: #a9c7e9;
+  background: linear-gradient(180deg, #203b5b, #10243c);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card.is-legacy {
+  justify-content: center;
+  border-color: #8a795e;
+  background: linear-gradient(180deg, #302b28, #191f2a);
+  text-align: center;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__heading {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__heading img {
+  display: block;
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border: 1px solid #587493;
+  border-radius: 4px;
+  background: #081525;
+  cursor: grab;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__identity strong {
+  color: #f0f5fd;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: .82rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__identity span {
+  color: #9fb3ce;
+  font-size: .62rem;
+  line-height: 1.15;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card .hkrpg-trait-modifiers {
+  justify-content: flex-start;
+  gap: 4px;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card .hkrpg-trait-modifiers span {
+  min-height: 19px;
+  padding: 2px 5px;
+  font-size: .61rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__subtraits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__subtraits span {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 2px 5px;
+  border: 1px solid #405b7b;
+  border-radius: 3px;
+  background: rgb(5 15 27 / 55%);
+  color: #b9cbe0;
+  font-size: .6rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card .hkrpg-feature-actions {
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 2px;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__plus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 39px;
+  height: 39px;
+  border: 1px solid #627f9f;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #263f5f, #14263f);
+  color: #e3edf9;
+  font-family: Georgia, serif;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__hint,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card > small {
+  color: #91a8c5;
+  font-size: .62rem;
+  text-align: center;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__legacy {
+  color: #f0e5d3;
+  font-family: "Palatino Linotype", Georgia, serif;
+  font-size: .82rem;
+}
+
+.hkrpg.sheet.actor [data-trait-dropzone].drop-active {
+  border-color: #c6def7;
+  box-shadow: 0 0 0 2px rgb(150 190 232 / 18%), inset 0 0 12px rgb(150 190 232 / 12%);
+}
+
+@media (max-width: 520px) {
+  .hkrpg.sheet.actor .hkrpg-trait-slots-grid {
+    grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  }
+}
