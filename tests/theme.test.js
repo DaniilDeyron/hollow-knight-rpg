@@ -36,7 +36,7 @@ test("Общая тема не переопределяет компоновку
 });
 
 test("Каждая кнопка навигации явно привязана к той же группе, что и панели вкладок", () => {
-  const nav = template.match(/<nav class="hkrpg-tabs"[^>]*>([\\s\\S]*?)<\\/nav>/)?.[1] ?? "";
+  const nav = template.match(/<nav class="hkrpg-tabs"[^>]*>([\s\S]*?)<\/nav>/)?.[1] ?? "";
   const links = [...nav.matchAll(/<a class="item"[^>]*data-tab="([^"]+)"[^>]*>/g)];
   assert.equal(links.length, 6);
   for (const link of links) {
