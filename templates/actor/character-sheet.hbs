@@ -281,8 +281,8 @@
                   <div class="hkrpg-skill-group__rows">
                     {{#each group.skills as |skill|}}
                       <div class="hkrpg-skill-entry">
-                        <input class="hkrpg-skill-entry__name" name="system.skillGroups.{{../id}}.skills.{{skill.id}}.name" type="text" value="{{skill.name}}" placeholder="{{localize "HKRPG.Features.SkillNamePlaceholder"}}" aria-label="{{localize "HKRPG.Features.SkillNamePlaceholder"}} {{skill.id}}" {{#unless ../isEditable}}disabled{{/unless}} />
-                        <input class="hkrpg-skill-entry__mastery" type="checkbox" data-skill-mastery="{{../id}}.{{skill.id}}" {{#if skill.isMastered}}checked{{/if}} aria-label="{{localize "HKRPG.Features.Mastery"}}: {{skill.name}}" title="{{localize "HKRPG.Features.Mastery"}}" {{#unless ../isEditable}}disabled{{/unless}} {{#unless ../canMaster}}disabled{{/unless}} />
+                        <input class="hkrpg-skill-entry__name" name="system.skillGroups.{{../id}}.skills.{{skill.id}}.name" type="text" value="{{skill.name}}" placeholder="{{localize "HKRPG.Features.SkillNamePlaceholder"}}" aria-label="{{localize "HKRPG.Features.SkillNamePlaceholder"}} {{skill.id}}" {{#unless ../../isEditable}}disabled{{/unless}} />
+                        <input class="hkrpg-skill-entry__mastery" type="checkbox" data-skill-mastery="{{../id}}.{{skill.id}}" {{#if skill.isMastered}}checked{{/if}} aria-label="{{localize "HKRPG.Features.Mastery"}}: {{skill.name}}" title="{{localize "HKRPG.Features.Mastery"}}" {{#unless ../../isEditable}}disabled{{/unless}} {{#unless ../canMaster}}disabled{{/unless}} />
                       </div>
                     {{/each}}
                   </div>
