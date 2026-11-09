@@ -194,6 +194,10 @@ export class HKCharacterSheet extends ActorSheet {
     }
 
     bind("[data-resource-field]", "change", this._onResourceFieldChange);
+    bind("[data-skill-mastery]", "change", this._onSkillMasteryChange);
+    bind("[data-create-equipment-row]", "click", this._onCreateEquipmentRow);
+    bind("[data-equipment-field]", "change", this._onEquipmentFieldChange);
+    bind("[data-delete-equipment-item]", "click", this._onDeleteEquipmentItem);
     bind("[data-create-trait]", "click", this._onCreateTrait);
     bind("[data-create-subtrait]", "click", this._onCreateSubtrait);
     bind("[data-create-path]", "click", this._onCreatePath);
@@ -208,6 +212,112 @@ export class HKCharacterSheet extends ActorSheet {
     bind("[data-attribute-roll]", "click", this._onRollAttribute);
     bind("[data-reset-derived]", "click", this._onResetDerived);
     bind("[data-derived-input]", "change", this._onDerivedInputChange);
+  }
+
+  async _onSkillMasteryChange(event) {
+    if (!this.isEditable) return;
+    const input = event.currentTarget;
+    const [groupId, skillId] = String(input.dataset.skillMastery ?? "").split(".");
+    if (!/^group[1-3]$/.test(groupId) || !/^skill[1-4]$/.test(skillId)) return;
+
+    const group = this.actor.system.skillGroups?.[groupId];
+    if (!group || Number(group.rank) !== 3) {
+      input.checked = false;
+      return;
+    }
+
+    const updates = {};
+    const legacySkillId = String(group.masterySkill ?? "");
+    for (let index = 1; index <= 4; index += 1) {
+      const currentSkillId = `skill${index}`;
+      const currentMastery = Number(group.skills?.[currentSkillId]?.mastery ?? 0);
+      if (legacySkillId === currentSkillId && currentMastery < 3) {
+        updates[`system.skillGroups.${groupId}.skills.${currentSkillId}.mastery`] = 3;
+      }
+    }
+
+    updates[`system.skillGroups.${groupId}.skills.${skillId}.mastery`] = input.checked ? 3 : 0;
+    updates[`system.skillGroups.${groupId}.masterySkill`] = "";
+    try {
+      await this.actor.update(updates);
+      this.render(false);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Skill mastery update failed", error);
+      input.checked = !input.checked;
+      ui.notifications.error("Не удалось изменить мастерство навыка. Подробности — в консоли (F12).");
+    }
+  }
+
+  async _onCreateEquipmentRow(event) {
+    event.preventDefault();
+    if (!this.isEditable) return;
+    const type = event.currentTarget.dataset.createEquipmentRow;
+    const definitions = {
+      equipment: { name: "Новое снаряжение", system: { weight: 0, quantity: 1 } },
+      weapon: { name: "Новое оружие", system: { weight: 0, damage: "", range: "", quantity: 1 } },
+      armor: { name: "Новая броня", system: { weight: 0, protection: "", durability: 0 } }
+    };
+    const definition = definitions[type];
+    if (!definition) return;
+    try {
+      await this.actor.createEmbeddedDocuments("Item", [{
+        name: definition.name,
+        type,
+        img: "icons/svg/item-bag.svg",
+        system: definition.system
+      }]);
+      this.render(true);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to create equipment row", error);
+      ui.notifications.error("Не удалось добавить строку. Подробности — в консоли (F12).");
+    }
+  }
+
+  async _onEquipmentFieldChange(event) {
+    if (!this.isEditable) return;
+    const input = event.currentTarget;
+    const item = this.actor.items.get(input.dataset.equipmentId);
+    const field = input.dataset.equipmentField;
+    if (!item || !["equipment", "weapon", "shield", "armor"].includes(item.type)) return;
+    const allowed = {
+      equipment: ["weight", "quantity"],
+      weapon: ["weight", "damage", "range", "quantity"],
+      shield: ["weight", "damage", "range", "quantity"],
+      armor: ["weight", "protection", "durability"]
+    };
+    if (field !== "name" && !allowed[item.type]?.includes(field)) return;
+
+    let value = input.value;
+    if (["weight", "quantity", "durability"].includes(field)) {
+      value = value.trim() === "" ? 0 : Number(value);
+      if (!Number.isFinite(value) || value < 0) {
+        input.value = String(field === "name" ? item.name : item.system[field] ?? 0);
+        ui.notifications.warn("Введите корректное число не меньше нуля.");
+        return;
+      }
+      if (field === "quantity" || field === "durability") value = Math.floor(value);
+    }
+    try {
+      await item.update(field === "name" ? { name: value } : { [`system.${field}`]: value });
+      this.render(false);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Equipment field update failed", error);
+      ui.notifications.error("Не удалось сохранить значение предмета. Подробности — в консоли (F12).");
+    }
+  }
+
+  async _onDeleteEquipmentItem(event) {
+    event.preventDefault();
+    if (!this.isEditable) return;
+    const item = this.actor.items.get(event.currentTarget.dataset.deleteEquipmentItem);
+    if (!item || !["equipment", "weapon", "shield", "armor"].includes(item.type)) return;
+    try {
+      await item.delete();
+      this.render(true);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to delete equipment item", error);
+      ui.notifications.error("Не удалось удалить предмет. Подробности — в консоли (F12).");
+    }
   }
 
   async _onDerivedInputChange(event) {
@@ -557,7 +667,8 @@ export class HKCharacterSheet extends ActorSheet {
   _onDragStart(event) {
     const itemId = event.currentTarget?.dataset?.charmItemId
       ?? event.currentTarget?.dataset?.techniqueItemId
-      ?? event.currentTarget?.dataset?.traitItemId;
+      ?? event.currentTarget?.dataset?.traitItemId
+      ?? event.currentTarget?.dataset?.equipmentItemId;
     const item = itemId ? this.actor.items.get(itemId) : null;
     if (!item) return super._onDragStart(event);
     event.dataTransfer.setData("text/plain", JSON.stringify(item.toDragData()));
@@ -567,7 +678,8 @@ export class HKCharacterSheet extends ActorSheet {
     const charmDropzone = event.target?.closest?.("[data-charm-dropzone]");
     const techniqueDropzone = event.target?.closest?.("[data-technique-dropzone]");
     const traitDropzone = event.target?.closest?.("[data-trait-dropzone]");
-    if (!charmDropzone && !techniqueDropzone && !traitDropzone) return super._onDrop(event);
+    const equipmentDropzone = event.target?.closest?.("[data-equipment-dropzone]");
+    if (!charmDropzone && !techniqueDropzone && !traitDropzone && !equipmentDropzone) return super._onDrop(event);
     event.preventDefault();
     event.stopPropagation();
     if (!this.isEditable) return false;
@@ -607,6 +719,31 @@ export class HKCharacterSheet extends ActorSheet {
         return false;
       }
       return this._prepareDroppedTechnique(item, techniqueDropzone.dataset.techniqueDropzone);
+    }
+
+    if (equipmentDropzone) {
+      const zone = equipmentDropzone.dataset.equipmentDropzone;
+      const allowedTypes = {
+        equipment: ["equipment"],
+        combat: ["weapon", "shield"],
+        armor: ["armor"]
+      };
+      if (!allowedTypes[zone]?.includes(item.type)) {
+        ui.notifications.warn("Перетащите предмет в соответствующий раздел: снаряжение, оружие или броню.");
+        return false;
+      }
+      if (item.parent === this.actor) return true;
+      try {
+        const itemData = item.toObject();
+        delete itemData._id;
+        await this.actor.createEmbeddedDocuments("Item", [itemData]);
+        this.render(true);
+        return true;
+      } catch (error) {
+        console.error("Hollow Knight RPG | Failed to add dropped equipment", error);
+        ui.notifications.error("Не удалось добавить предмет. Подробности — в консоли (F12).");
+        return false;
+      }
     }
 
     if (item.type !== "charm") {
