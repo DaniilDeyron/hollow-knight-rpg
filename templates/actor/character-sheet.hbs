@@ -281,8 +281,8 @@
                   <div class="hkrpg-skill-group__rows">
                     {{#each group.skills as |skill|}}
                       <div class="hkrpg-skill-entry">
-                        <input class="hkrpg-skill-entry__name" name="system.skillGroups.{{../id}}.skills.{{skill.id}}.name" type="text" value="{{skill.name}}" placeholder="{{localize "HKRPG.Features.SkillNamePlaceholder"}}" aria-label="{{localize "HKRPG.Features.SkillNamePlaceholder"}} {{skill.id}}" {{#unless ../../isEditable}}disabled{{/unless}} />
-                        <input class="hkrpg-skill-entry__mastery" type="checkbox" data-skill-mastery="{{../id}}.{{skill.id}}" {{#if skill.isMastered}}checked{{/if}} aria-label="{{localize "HKRPG.Features.Mastery"}}: {{skill.name}}" title="{{localize "HKRPG.Features.Mastery"}}" {{#unless ../../isEditable}}disabled{{/unless}} {{#unless ../canMaster}}disabled{{/unless}} />
+                        <input class="hkrpg-skill-entry__name" name="system.skillGroups.{{../id}}.skills.{{skill.id}}.name" type="text" value="{{skill.name}}" placeholder="{{localize "HKRPG.Features.SkillNamePlaceholder"}}" aria-label="{{localize "HKRPG.Features.SkillNamePlaceholder"}} {{skill.id}}" {{#unless ../isEditable}}disabled{{/unless}} />
+                        <input class="hkrpg-skill-entry__mastery" type="checkbox" data-skill-mastery="{{../id}}.{{skill.id}}" {{#if skill.isMastered}}checked{{/if}} aria-label="{{localize "HKRPG.Features.Mastery"}}: {{skill.name}}" title="{{localize "HKRPG.Features.Mastery"}}" {{#unless ../isEditable}}disabled{{/unless}} {{#unless ../canMaster}}disabled{{/unless}} />
                       </div>
                     {{/each}}
                   </div>
@@ -606,9 +606,9 @@
             {{#each equipmentRows as |row|}}
               <article class="hkrpg-equipment-row {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" data-equipment-item-id="{{row.item.id}}" draggable="true" title="{{row.name}}"{{/if}}>
                 {{#if row.item}}
-                  <input class="hkrpg-equipment-row__name" type="text" value="{{row.name}}" data-equipment-id="{{row.item.id}}" data-equipment-field="name" aria-label="Название предмета" {{#unless ../../isEditable}}disabled{{/unless}} />
-                  <input class="hkrpg-equipment-value" type="number" min="0" step="0.1" value="{{row.values.weight}}" data-equipment-id="{{row.item.id}}" data-equipment-field="weight" aria-label="Вес" {{#unless ../../isEditable}}disabled{{/unless}} />
-                  <button type="button" class="hkrpg-equipment-remove" data-delete-equipment-item="{{row.item.id}}" title="Удалить строку" {{#unless ../../isEditable}}disabled{{/unless}}>×</button>
+                  <input class="hkrpg-equipment-row__name" type="text" value="{{row.name}}" data-equipment-id="{{row.item.id}}" data-equipment-field="name" aria-label="Название предмета" {{#unless ../isEditable}}disabled{{/unless}} />
+                  <input class="hkrpg-equipment-value" type="number" min="0" step="0.1" value="{{row.values.weight}}" data-equipment-id="{{row.item.id}}" data-equipment-field="weight" aria-label="Вес" {{#unless ../isEditable}}disabled{{/unless}} />
+                  <button type="button" class="hkrpg-equipment-remove" data-delete-equipment-item="{{row.item.id}}" title="Удалить строку" {{#unless ../isEditable}}disabled{{/unless}}>×</button>
                 {{else}}
                   <span class="hkrpg-equipment-row__name">&nbsp;</span><span class="hkrpg-equipment-value"></span><span></span>
                 {{/if}}
@@ -639,12 +639,12 @@
               {{#each combatEquipmentRows as |row|}}
                 <article class="hkrpg-equipment-row hkrpg-equipment-row--combat {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" data-equipment-item-id="{{row.item.id}}" draggable="true" title="{{row.name}}"{{/if}}>
                   {{#if row.item}}
-                    <input class="hkrpg-equipment-row__name" type="text" value="{{row.name}}" data-equipment-id="{{row.item.id}}" data-equipment-field="name" aria-label="Название оружия" {{#unless ../../isEditable}}disabled{{/unless}} />
-                    <input class="hkrpg-equipment-value" type="number" min="0" step="0.1" value="{{row.values.weight}}" data-equipment-id="{{row.item.id}}" data-equipment-field="weight" aria-label="Вес" {{#unless ../../isEditable}}disabled{{/unless}} />
-                    <input class="hkrpg-equipment-value" type="text" value="{{row.values.damage}}" data-equipment-id="{{row.item.id}}" data-equipment-field="damage" aria-label="Урон" {{#unless ../../isEditable}}disabled{{/unless}} />
-                    <input class="hkrpg-equipment-value" type="text" value="{{row.values.range}}" data-equipment-id="{{row.item.id}}" data-equipment-field="range" aria-label="Дальность" {{#unless ../../isEditable}}disabled{{/unless}} />
-                    <input class="hkrpg-equipment-value" type="number" min="0" step="1" value="{{row.values.quantity}}" data-equipment-id="{{row.item.id}}" data-equipment-field="quantity" aria-label="Количество" {{#unless ../../isEditable}}disabled{{/unless}} />
-                    <button type="button" class="hkrpg-equipment-remove" data-delete-equipment-item="{{row.item.id}}" title="Удалить строку" {{#unless ../../isEditable}}disabled{{/unless}}>×</button>
+                    <input class="hkrpg-equipment-row__name" type="text" value="{{row.name}}" data-equipment-id="{{row.item.id}}" data-equipment-field="name" aria-label="Название оружия" {{#unless ../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="number" min="0" step="0.1" value="{{row.values.weight}}" data-equipment-id="{{row.item.id}}" data-equipment-field="weight" aria-label="Вес" {{#unless ../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="text" value="{{row.values.damage}}" data-equipment-id="{{row.item.id}}" data-equipment-field="damage" aria-label="Урон" {{#unless ../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="text" value="{{row.values.range}}" data-equipment-id="{{row.item.id}}" data-equipment-field="range" aria-label="Дальность" {{#unless ../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="number" min="0" step="1" value="{{row.values.quantity}}" data-equipment-id="{{row.item.id}}" data-equipment-field="quantity" aria-label="Количество" {{#unless ../isEditable}}disabled{{/unless}} />
+                    <button type="button" class="hkrpg-equipment-remove" data-delete-equipment-item="{{row.item.id}}" title="Удалить строку" {{#unless ../isEditable}}disabled{{/unless}}>×</button>
                   {{else}}
                     <span class="hkrpg-equipment-row__name">&nbsp;</span><span class="hkrpg-equipment-value"></span><span class="hkrpg-equipment-value"></span><span class="hkrpg-equipment-value"></span><span class="hkrpg-equipment-value"></span><span></span>
                   {{/if}}
@@ -672,11 +672,11 @@
               {{#each armorRows as |row|}}
                 <article class="hkrpg-equipment-row hkrpg-equipment-row--armor {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" data-equipment-item-id="{{row.item.id}}" draggable="true" title="{{row.name}}"{{/if}}>
                   {{#if row.item}}
-                    <input class="hkrpg-equipment-row__name" type="text" value="{{row.name}}" data-equipment-id="{{row.item.id}}" data-equipment-field="name" aria-label="Название брони" {{#unless ../../isEditable}}disabled{{/unless}} />
-                    <input class="hkrpg-equipment-value" type="number" min="0" step="0.1" value="{{row.values.weight}}" data-equipment-id="{{row.item.id}}" data-equipment-field="weight" aria-label="Вес" {{#unless ../../isEditable}}disabled{{/unless}} />
-                    <input class="hkrpg-equipment-value" type="text" value="{{row.values.protection}}" data-equipment-id="{{row.item.id}}" data-equipment-field="protection" aria-label="ПУ" {{#unless ../../isEditable}}disabled{{/unless}} />
-                    <input class="hkrpg-equipment-value" type="number" min="0" step="1" value="{{row.values.durability}}" data-equipment-id="{{row.item.id}}" data-equipment-field="durability" aria-label="Прочность" {{#unless ../../isEditable}}disabled{{/unless}} />
-                    <button type="button" class="hkrpg-equipment-remove" data-delete-equipment-item="{{row.item.id}}" title="Удалить строку" {{#unless ../../isEditable}}disabled{{/unless}}>×</button>
+                    <input class="hkrpg-equipment-row__name" type="text" value="{{row.name}}" data-equipment-id="{{row.item.id}}" data-equipment-field="name" aria-label="Название брони" {{#unless ../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="number" min="0" step="0.1" value="{{row.values.weight}}" data-equipment-id="{{row.item.id}}" data-equipment-field="weight" aria-label="Вес" {{#unless ../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="text" value="{{row.values.protection}}" data-equipment-id="{{row.item.id}}" data-equipment-field="protection" aria-label="ПУ" {{#unless ../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="number" min="0" step="1" value="{{row.values.durability}}" data-equipment-id="{{row.item.id}}" data-equipment-field="durability" aria-label="Прочность" {{#unless ../isEditable}}disabled{{/unless}} />
+                    <button type="button" class="hkrpg-equipment-remove" data-delete-equipment-item="{{row.item.id}}" title="Удалить строку" {{#unless ../isEditable}}disabled{{/unless}}>×</button>
                   {{else}}
                     <span class="hkrpg-equipment-row__name">&nbsp;</span><span class="hkrpg-equipment-value"></span><span class="hkrpg-equipment-value"></span><span class="hkrpg-equipment-value"></span><span></span>
                   {{/if}}
