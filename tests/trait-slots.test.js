@@ -65,7 +65,7 @@ test("Пустые слоты Черт используют пустой ква�
   const start = template.indexOf('<div class="hkrpg-trait-slots-grid">');
   const end = template.indexOf('<div class="hkrpg-trait-totals">', start);
   const slots = template.slice(start, end);
-  assert.match(slots, /hkrpg-trait-slot-card__empty-tile/);
+  assert.doesNotMatch(slots, /hkrpg-trait-slot-card__empty-tile|hkrpg-trait-slot-card__hint|DropTrait/);
   assert.match(slots, /hkrpg-trait-slot-card__image/);
   assert.doesNotMatch(slots, /hkrpg-trait-slot-card__plus|data-create-trait/);
   assert.match(slots, /<strong class="hkrpg-trait-slot-card__name">{{slot\.trait\.name}}<\/strong>/);
