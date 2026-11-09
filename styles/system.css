@@ -4913,3 +4913,35 @@
 .hkrpg.sheet.actor .hkrpg-trait-slot-card__hint {
   display: none !important;
 }
+
+
+/* Mastery is a toggle, not a text field: keep it visibly clickable and marked. */
+.hkrpg.sheet.actor input.hkrpg-skill-entry__mastery[type="checkbox"] {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  display: block;
+  box-sizing: border-box;
+  width: 22px !important;
+  min-width: 22px;
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 !important;
+  margin: 0;
+  border: 1px solid #7188a3 !important;
+  border-radius: 50% !important;
+  background: #26313d !important;
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 35%);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.hkrpg.sheet.actor input.hkrpg-skill-entry__mastery[type="checkbox"]:checked {
+  border: 2px solid #f2f6fc !important;
+  background: radial-gradient(circle, #f7f9fc 0 43%, #9bb5d2 48% 63%, #263b54 69%) !important;
+  box-shadow: 0 0 0 2px rgb(175 202 231 / 18%), 0 0 8px rgb(190 218 250 / 25%);
+}
+
+.hkrpg.sheet.actor input.hkrpg-skill-entry__mastery[type="checkbox"]:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
