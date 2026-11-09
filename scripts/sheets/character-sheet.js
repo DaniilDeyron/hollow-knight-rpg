@@ -195,7 +195,24 @@ export class HKCharacterSheet extends ActorSheet {
     }
 
     bind("[data-resource-field]", "change", this._onResourceFieldChange);
-    bind("[data-skill-mastery]", "change", this._onSkillMasteryChange);
+
+    // Mastery uses a capture-phase click handler so Foundry's form listeners
+    // cannot swallow the checkbox interaction before the actor update.
+    if (root?.addEventListener && root.dataset.hkrpgMasteryCapture !== "true") {
+      root.dataset.hkrpgMasteryCapture = "true";
+      root.addEventListener("click", async (event) => {
+        const input = event.target?.closest?.("[data-skill-mastery]");
+        if (!input || !root.contains(input)) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+
+        if (!this.isEditable || input.disabled) return;
+        input.checked = !input.checked;
+        await this._onSkillMasteryChange({ currentTarget: input });
+      }, true);
+    }
     bind("[data-create-equipment-row]", "click", this._onCreateEquipmentRow);
     bind("[data-equipment-field]", "change", this._onEquipmentFieldChange);
     bind("[data-delete-equipment-item]", "click", this._onDeleteEquipmentItem);
