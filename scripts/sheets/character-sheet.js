@@ -723,14 +723,9 @@ export class HKCharacterSheet extends ActorSheet {
     }
 
     if (equipmentDropzone) {
-      const zone = equipmentDropzone.dataset.equipmentDropzone;
-      const allowedTypes = {
-        equipment: ["equipment"],
-        combat: ["weapon", "shield"],
-        armor: ["armor"]
-      };
-      if (!allowedTypes[zone]?.includes(item.type)) {
-        ui.notifications.warn("Перетащите предмет в соответствующий раздел: снаряжение, оружие или броню.");
+      const supportedTypes = new Set(["equipment", "weapon", "shield", "armor"]);
+      if (!supportedTypes.has(item.type)) {
+        ui.notifications.warn("В снаряжение можно переносить предметы типов «Оружие», «Снаряжение» и «Броня».");
         return false;
       }
       if (item.parent === this.actor) return true;
