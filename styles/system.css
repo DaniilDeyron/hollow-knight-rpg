@@ -4945,3 +4945,193 @@
   opacity: .45;
   cursor: not-allowed;
 }
+
+
+/* Creature effects: active statuses and the source-based rules reference. */
+.hkrpg.sheet.actor .hkrpg-effects-tab.active {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-effects-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-effects-active-list,
+.hkrpg.sheet.actor .hkrpg-effect-library-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-active-card,
+.hkrpg.sheet.actor .hkrpg-effect-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #425d7b;
+  border-radius: 5px;
+  background: rgb(7 19 33 / 72%);
+  color: #dce7f5;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-active-card {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-active-card > img,
+.hkrpg.sheet.actor .hkrpg-effect-card__heading > img {
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border: 1px solid #526e8d;
+  border-radius: 4px;
+  background: #0a1727;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-active-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-card__title,
+.hkrpg.sheet.actor .hkrpg-effect-card__heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-card__heading > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-card__title strong,
+.hkrpg.sheet.actor .hkrpg-effect-card__heading strong,
+.hkrpg.sheet.actor .hkrpg-effect-category h3 {
+  color: #f0d9a1;
+  font-weight: 700;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-card__heading span,
+.hkrpg.sheet.actor .hkrpg-effect-source,
+.hkrpg.sheet.actor .hkrpg-effect-state {
+  color: #91a9c5;
+  font-size: .72rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-card p,
+.hkrpg.sheet.actor .hkrpg-effect-active-card p {
+  margin: 0;
+  color: #d4e0ef;
+  font-size: .78rem;
+  line-height: 1.35;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-card__rules,
+.hkrpg.sheet.actor .hkrpg-effect-active-card small:not(.hkrpg-effect-source) {
+  color: #b8c8dc;
+  font-size: .74rem;
+  line-height: 1.4;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-category {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-category h3 {
+  margin: 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #405a78;
+  font-size: .95rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-state {
+  padding: 2px 5px;
+  border: 1px solid #596d85;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-state.is-active {
+  color: #b8e1c5;
+  border-color: #537f69;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-active-card.is-disabled {
+  opacity: .62;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-active-card__actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-card button,
+.hkrpg.sheet.actor .hkrpg-effect-active-card button {
+  min-height: 26px;
+  padding: 3px 8px;
+  border: 1px solid #617d9d;
+  border-radius: 3px;
+  background: #142943;
+  color: #edf3fc;
+  font-family: inherit;
+  font-size: .72rem;
+  cursor: pointer;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-card button:hover,
+.hkrpg.sheet.actor .hkrpg-effect-active-card button:hover {
+  border-color: #b2cbe8;
+  background: #1b3654;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-active-card .hkrpg-effect-remove {
+  color: #e7b6b6;
+  border-color: #805b62;
+}
+
+.hkrpg.sheet.actor .hkrpg-effects-note {
+  padding: 8px 10px;
+  border-left: 3px solid #829fbd;
+  background: rgb(30 50 73 / 45%);
+  color: #c5d5e8;
+  font-size: .78rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 760px) {
+  .hkrpg.sheet.actor .hkrpg-effects-active-list,
+  .hkrpg.sheet.actor .hkrpg-effect-library-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hkrpg.sheet.actor .hkrpg-effect-active-card {
+    flex-wrap: wrap;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-effect-active-card__actions {
+    flex-direction: row;
+    width: 100%;
+  }
+}
