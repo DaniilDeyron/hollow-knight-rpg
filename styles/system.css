@@ -4869,3 +4869,47 @@
     min-width: 18px;
   }
 }
+
+
+/* Trait dropzones are the visible empty frames themselves.
+   Empty frames contain no inner placeholder or instructional icon.
+   Filled frames grow naturally with their item image and text. */
+.hkrpg.sheet.actor .hkrpg-trait-slots-grid {
+  align-items: start;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card {
+  height: auto;
+  min-height: 118px;
+  align-self: start;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card.is-empty {
+  align-items: stretch;
+  justify-content: flex-start;
+  min-height: 118px;
+  padding: 8px;
+  cursor: copy;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card.is-filled {
+  height: auto;
+  min-height: 118px;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__image {
+  display: block;
+  flex: 0 0 76px;
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  border: 1px solid #607b99;
+  border-radius: 5px;
+  background: #081525;
+  cursor: grab;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__empty-tile,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__hint {
+  display: none !important;
+}
