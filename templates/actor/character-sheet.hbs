@@ -701,11 +701,74 @@
       </section>
     </section>
 
-    <section class="tab" data-group="primary" data-tab="effects">
-      <div class="hkrpg-section-grid hkrpg-effects-grid">
-        <section class="hkrpg-panel hkrpg-effects-panel">
-          <div class="hkrpg-panel-heading"><h2>{{localize "HKRPG.Development.Marks"}}</h2></div>
-          <p class="hkrpg-empty">{{localize "HKRPG.Empty.MarksLater"}}</p>
+    <section class="tab hkrpg-effects-tab" data-group="primary" data-tab="effects">
+      <div class="hkrpg-effects-layout">
+        <section class="hkrpg-panel hkrpg-effects-active-panel">
+          <div class="hkrpg-panel-heading">
+            <div>
+              <h2>{{localize "HKRPG.Effects.ActiveTitle"}}</h2>
+              <p>{{localize "HKRPG.Effects.ActiveHint"}}</p>
+            </div>
+            <strong>{{activeEffects.length}}</strong>
+          </div>
+          {{#if activeEffects.length}}
+            <div class="hkrpg-effects-active-list">
+              {{#each activeEffects as |effect|}}
+                <article class="hkrpg-effect-active-card {{#if effect.disabled}}is-disabled{{/if}}">
+                  <img src="{{effect.icon}}" alt="" />
+                  <div class="hkrpg-effect-active-card__body">
+                    <div class="hkrpg-effect-card__title">
+                      <strong>{{effect.name}}</strong>
+                      {{#if effect.disabled}}<span class="hkrpg-effect-state">{{localize "HKRPG.Effects.Disabled"}}</span>{{else}}<span class="hkrpg-effect-state is-active">{{localize "HKRPG.Effects.Enabled"}}</span>{{/if}}
+                    </div>
+                    <p>{{effect.summary}}</p>
+                    <small>{{effect.rules}}</small>
+                    <small class="hkrpg-effect-source">{{effect.source}}</small>
+                  </div>
+                  <div class="hkrpg-effect-active-card__actions">
+                    <button type="button" data-effect-document-toggle="{{effect.documentId}}">{{#if effect.disabled}}{{localize "HKRPG.Effects.Enable"}}{{else}}{{localize "HKRPG.Effects.Disable"}}{{/if}}</button>
+                    <button type="button" class="hkrpg-effect-remove" data-effect-delete="{{effect.documentId}}">{{localize "HKRPG.Effects.Remove"}}</button>
+                  </div>
+                </article>
+              {{/each}}
+            </div>
+          {{else}}
+            <p class="hkrpg-empty">{{localize "HKRPG.Effects.NoActive"}}</p>
+          {{/if}}
+        </section>
+
+        <section class="hkrpg-panel hkrpg-effects-reference-panel">
+          <div class="hkrpg-panel-heading">
+            <div>
+              <h2>{{localize "HKRPG.Effects.ReferenceTitle"}}</h2>
+              <p>{{localize "HKRPG.Effects.ReferenceHint"}}</p>
+            </div>
+          </div>
+          <div class="hkrpg-effects-note">{{localize "HKRPG.Effects.TokenHudHint"}}</div>
+          {{#each effectGroups as |group|}}
+            <section class="hkrpg-effect-category">
+              <h3>{{group.label}}</h3>
+              <div class="hkrpg-effect-library-grid">
+                {{#each group.effects as |effect|}}
+                  <article class="hkrpg-effect-card">
+                    <div class="hkrpg-effect-card__heading">
+                      <img src="{{effect.icon}}" alt="" />
+                      <div>
+                        <strong>{{effect.name}}</strong>
+                        <span>{{effect.duration}}</span>
+                      </div>
+                    </div>
+                    <p>{{effect.summary}}</p>
+                    <div class="hkrpg-effect-card__rules">{{effect.rules}}</div>
+                    <small class="hkrpg-effect-source">{{effect.source}}</small>
+                    <button type="button" data-effect-catalog-toggle="{{effect.id}}">
+                      {{#if effect.isActive}}{{localize "HKRPG.Effects.Disable"}}{{else if effect.isDisabled}}{{localize "HKRPG.Effects.Enable"}}{{else}}{{localize "HKRPG.Effects.Apply"}}{{/if}}
+                    </button>
+                  </article>
+                {{/each}}
+              </div>
+            </section>
+          {{/each}}
         </section>
       </div>
     </section>
