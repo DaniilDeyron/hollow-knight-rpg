@@ -27,7 +27,8 @@ export class HKCharacterSheet extends ActorSheet {
         ...(super.defaultOptions.dragDrop ?? []),
         { dragSelector: "[data-charm-item-id]", dropSelector: "[data-charm-dropzone]" },
         { dragSelector: "[data-technique-item-id]", dropSelector: "[data-technique-dropzone]" },
-        { dragSelector: "[data-trait-item-id]", dropSelector: "[data-trait-dropzone]" }
+        { dragSelector: "[data-trait-item-id]", dropSelector: "[data-trait-dropzone]" },
+        { dragSelector: "[data-equipment-item-id]", dropSelector: "[data-equipment-dropzone]" }
       ],
       tabs: [
         {
