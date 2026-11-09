@@ -4673,3 +4673,199 @@
     grid-template-columns: repeat(3, 34px);
   }
 }
+
+
+/* Multi-skill mastery toggles: independent marks, available at group rank 3. */
+.hkrpg.sheet.actor .hkrpg-skill-entry__mastery {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  min-height: 22px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #7188a3;
+  border-radius: 50%;
+  background: #26313d;
+  cursor: pointer;
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-entry__mastery:checked {
+  border: 2px solid #e9edf2;
+  background: radial-gradient(circle, #f6f7f9 0 42%, #8da5bf 47% 62%, #263b54 68%);
+  box-shadow: 0 0 0 2px rgb(175 202 231 / 13%);
+}
+
+.hkrpg.sheet.actor .hkrpg-skill-entry__mastery:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* Trait library slots: one quiet square for the item image, its name below. */
+.hkrpg.sheet.actor .hkrpg-trait-slot-card {
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  min-height: 150px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__image,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__empty-tile {
+  display: block;
+  flex: 0 0 76px;
+  width: 76px;
+  height: 76px;
+  object-fit: contain;
+  border: 1px solid #607b99;
+  border-radius: 5px;
+  background: #081525;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__image {
+  cursor: grab;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__empty-tile {
+  border-style: dashed;
+  background: rgb(5 15 27 / 42%);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__name {
+  display: block;
+  max-width: 100%;
+  color: #edf3fc;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: .82rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__category,
+.hkrpg.sheet.actor .hkrpg-trait-slot-card > small {
+  color: #91a8c5;
+  font-size: .64rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__controls {
+  display: flex;
+  gap: 5px;
+  margin-top: auto;
+  opacity: .72;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card__controls button {
+  width: 24px;
+  min-width: 24px;
+  height: 22px;
+  min-height: 22px;
+  padding: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-slot-card.is-empty {
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 12px;
+}
+
+/* Equipment row fields are real Item fields and persist on the embedded document. */
+.hkrpg.sheet.actor .hkrpg-equipment-heading__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-add {
+  min-height: 22px;
+  height: 22px;
+  padding: 1px 7px;
+  border: 1px solid #536f8e;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #2a4563, #172c45);
+  color: #eaf1fb;
+  font-size: .62rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row {
+  grid-template-columns: minmax(0, 1fr) 42px 20px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--combat {
+  grid-template-columns: minmax(0, 1fr) repeat(4, 50px) 20px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row--armor {
+  grid-template-columns: minmax(0, 1fr) repeat(3, 50px) 20px;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row__name,
+.hkrpg.sheet.actor .hkrpg-equipment-value {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row__name {
+  height: 27px;
+  min-height: 27px;
+  padding: 2px 5px;
+  border: 1px solid #607996;
+  border-radius: 2px;
+  background: #0a1728;
+  color: #edf3fc;
+  font-size: .78rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-value {
+  height: 27px;
+  min-height: 27px;
+  padding: 1px 2px;
+  text-align: center;
+  font-size: .72rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-remove {
+  width: 20px;
+  min-width: 20px;
+  height: 22px;
+  min-height: 22px;
+  padding: 0;
+  border: 1px solid #765b60;
+  border-radius: 3px;
+  background: #35242b;
+  color: #e9cbd0;
+  line-height: 1;
+}
+
+.hkrpg.sheet.actor .hkrpg-equipment-row[draggable="true"] {
+  cursor: grab;
+}
+
+.hkrpg.sheet.actor [data-equipment-dropzone].drop-active {
+  border-color: #c6def7;
+  box-shadow: 0 0 0 2px rgb(150 190 232 / 18%), inset 0 0 12px rgb(150 190 232 / 12%);
+}
+
+@media (max-width: 560px) {
+  .hkrpg.sheet.actor .hkrpg-equipment-row--combat {
+    grid-template-columns: minmax(0, 1fr) repeat(4, 34px) 18px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-row--armor {
+    grid-template-columns: minmax(0, 1fr) repeat(3, 34px) 18px;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-equipment-remove {
+    width: 18px;
+    min-width: 18px;
+  }
+}

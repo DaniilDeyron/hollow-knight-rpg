@@ -58,3 +58,15 @@ test("Подчерты без основной родительской связ
   assert.equal(slots[0].trait.id, "main");
   assert.equal(slots[1].isEmpty, true);
 });
+
+test("Пустые слоты Черт используют пустой квадрат без знака плюса", async () => {
+  const { readFileSync } = await import("node:fs");
+  const template = readFileSync(new URL("../templates/actor/character-sheet.hbs", import.meta.url), "utf8");
+  const start = template.indexOf('<div class="hkrpg-trait-slots-grid">');
+  const end = template.indexOf('<div class="hkrpg-trait-totals">', start);
+  const slots = template.slice(start, end);
+  assert.match(slots, /hkrpg-trait-slot-card__empty-tile/);
+  assert.match(slots, /hkrpg-trait-slot-card__image/);
+  assert.doesNotMatch(slots, /hkrpg-trait-slot-card__plus|data-create-trait/);
+  assert.match(slots, /<strong class="hkrpg-trait-slot-card__name">{{slot\.trait\.name}}<\/strong>/);
+});

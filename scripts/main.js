@@ -4,6 +4,7 @@ import { HKCharmData } from "./data/charm-data.js";
 import { HKCharmSheet } from "./sheets/charm-sheet.js";
 import { HKTraitData, HKPathData } from "./data/feature-item-data.js";
 import { HKTechniqueData } from "./data/technique-data.js";
+import { HKInventoryItemData } from "./data/inventory-item-data.js";
 import { HKFeatureItemSheet } from "./sheets/feature-item-sheet.js";
 
 Hooks.once("init", () => {
@@ -14,6 +15,9 @@ Hooks.once("init", () => {
   CONFIG.Item.dataModels.trait = HKTraitData;
   CONFIG.Item.dataModels.path = HKPathData;
   CONFIG.Item.dataModels.technique = HKTechniqueData;
+  for (const type of ["equipment", "weapon", "shield", "armor"]) {
+    CONFIG.Item.dataModels[type] = HKInventoryItemData;
+  }
 
   Actors.unregisterSheet("core", ActorSheet);
   Items.registerSheet("hollow-knight-rpg", HKFeatureItemSheet, {

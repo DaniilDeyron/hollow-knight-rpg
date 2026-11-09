@@ -40,3 +40,29 @@ test("Пустые строки добавляются только до ука�
   assert.equal(rows[0].isEmpty, false);
   assert.equal(rows[1].isEmpty, true);
 });
+
+test("Оружие, снаряжение и броня имеют отдельные зоны перетаскивания и добавления строк", async () => {
+  const { readFileSync } = await import("node:fs");
+  const template = readFileSync(new URL("../templates/actor/character-sheet.hbs", import.meta.url), "utf8");
+  const sheet = readFileSync(new URL("../scripts/sheets/character-sheet.js", import.meta.url), "utf8");
+  for (const [zone, type] of [["equipment", "equipment"], ["combat", "weapon"], ["armor", "armor"]]) {
+    assert.ok(template.includes(`data-equipment-dropzone="${zone}"`));
+    assert.ok(template.includes(`data-create-equipment-row="${type}"`));
+  }
+  assert.match(sheet, /async _onCreateEquipmentRow\(event\)/);
+  assert.match(sheet, /async _onEquipmentFieldChange\(event\)/);
+  assert.match(sheet, /async _onDeleteEquipmentItem\(event\)/);
+  assert.match(sheet, /new Set\(\["equipment", "weapon", "shield", "armor"\]\)/);
+});
+
+test("Строки снаряжения используют сохраняемые поля встроенного предмета", async () => {
+  const { readFileSync } = await import("node:fs");
+  const template = readFileSync(new URL("../templates/actor/character-sheet.hbs", import.meta.url), "utf8");
+  for (const field of ["name", "weight", "damage", "range", "quantity", "protection", "durability"]) {
+    assert.ok(template.includes(`data-equipment-field="${field}"`), `Missing editable field ${field}`);
+  }
+  const model = readFileSync(new URL("../scripts/data/inventory-item-data.js", import.meta.url), "utf8");
+  for (const field of ["weight", "quantity", "damage", "range", "protection", "durability"]) {
+    assert.match(model, new RegExp(`\\b${field}:`));
+  }
+});
