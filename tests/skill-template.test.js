@@ -53,3 +53,18 @@ test("Старое одиночное мастерство остаётся от
   assert.equal(group.skills[2].isMastered, true);
   assert.equal(group.skills[0].isMastered, false);
 });
+
+
+test("Мастерство переключается через capture click, а не теряется в обработчиках формы Foundry", () => {
+  assert.match(sheet, /hkrpgMasteryCapture/);
+  assert.match(sheet, /closest\?\.\("\[data-skill-mastery\]"\)/);
+  assert.match(sheet, /input\.checked = !input\.checked/);
+  assert.doesNotMatch(sheet, /bind\("\[data-skill-mastery\]", "change"/);
+});
+
+test("Отмеченное мастерство имеет заметное визуальное состояние", async () => {
+  const { readFileSync } = await import("node:fs");
+  const css = readFileSync(new URL("../styles/system.css", import.meta.url), "utf8");
+  assert.match(css, /input\.hkrpg-skill-entry__mastery\[type="checkbox"\]:checked/);
+  assert.match(css, /radial-gradient\(circle, #f7f9fc/);
+});
