@@ -52,9 +52,7 @@ test("Оружие, снаряжение и броня имеют отдельн
   assert.match(sheet, /async _onCreateEquipmentRow\(event\)/);
   assert.match(sheet, /async _onEquipmentFieldChange\(event\)/);
   assert.match(sheet, /async _onDeleteEquipmentItem\(event\)/);
-  assert.match(sheet, /equipment: \["equipment"\]/);
-  assert.match(sheet, /combat: \["weapon", "shield"\]/);
-  assert.match(sheet, /armor: \["armor"\]/);
+  assert.match(sheet, /new Set\(\["equipment", "weapon", "shield", "armor"\]\)/);
 });
 
 test("Строки снаряжения используют сохраняемые поля встроенного предмета", async () => {
