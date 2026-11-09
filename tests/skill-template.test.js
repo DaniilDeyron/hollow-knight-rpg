@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { buildSkillGroups } from "../scripts/rules/feature-sheet.js";
 import { readFileSync } from "node:fs";
 
 const template = readFileSync(
@@ -29,4 +30,26 @@ test("Мастерство доступно только при третьем �
 test("Старое одиночное мастерство переносится в индивидуальные отметки", () => {
   assert.match(sheet, /const legacySkillId = String\(group\.masterySkill \?\? ""\)/);
   assert.match(sheet, /system\.skillGroups\.\${groupId}\.masterySkill/);
+});
+
+test("Несколько навыков одной группы могут одновременно иметь мастерство", () => {
+  const [group] = buildSkillGroups({
+    group1: {
+      rank: 3,
+      skills: {
+        skill1: { name: "Парирование", mastery: 3 },
+        skill2: { name: "Уклонение", mastery: 3 },
+        skill3: { name: "Скрытность", mastery: 0 }
+      }
+    }
+  });
+  assert.deepEqual(group.skills.map((skill) => skill.isMastered), [true, true, false, false]);
+});
+
+test("Старое одиночное мастерство остаётся отмеченным после обновления", () => {
+  const [group] = buildSkillGroups({
+    group1: { rank: 3, masterySkill: "skill3", skills: {} }
+  });
+  assert.equal(group.skills[2].isMastered, true);
+  assert.equal(group.skills[0].isMastered, false);
 });
