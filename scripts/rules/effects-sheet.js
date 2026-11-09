@@ -1,0 +1,57 @@
+import { HK_EFFECT_CATALOG, HK_EFFECT_CATEGORIES } from "../data/effects-catalog.js";
+
+function getStatusIds(effect) {
+  const statuses = effect?.statuses;
+  if (statuses instanceof Set) return [...statuses];
+  if (Array.isArray(statuses)) return statuses;
+  if (statuses && typeof statuses[Symbol.iterator] === "function") return [...statuses];
+  const legacyId = effect?.getFlag?.("core", "statusId");
+  return legacyId ? [legacyId] : [];
+}
+
+function getCatalogId(effect, catalogById) {
+  const explicit = effect?.getFlag?.("hkrpg", "catalogId");
+  if (explicit && catalogById.has(explicit)) return explicit;
+  return getStatusIds(effect).find((id) => catalogById.has(id)) ?? null;
+}
+
+export function buildEffectsSheetData(actorEffects = [], catalog = HK_EFFECT_CATALOG) {
+  const effects = Array.isArray(actorEffects)
+    ? actorEffects
+    : actorEffects?.contents ?? [...(actorEffects ?? [])];
+  const catalogById = new Map(catalog.map((entry) => [entry.id, entry]));
+  const activeEffects = effects.map((effect) => {
+    const catalogId = getCatalogId(effect, catalogById);
+    const reference = catalogById.get(catalogId);
+    return {
+      documentId: effect.id,
+      catalogId,
+      name: effect.name ?? reference?.name ?? "Эффект без названия",
+      icon: effect.img ?? reference?.icon ?? "icons/svg/aura.svg",
+      summary: reference?.summary ?? "Пользовательский эффект. Откройте его карточку, чтобы проверить описание.",
+      rules: reference?.rules ?? "Описание эффекта не найдено в справочнике.",
+      source: reference?.source ?? "Пользовательский эффект",
+      disabled: Boolean(effect.disabled)
+    };
+  });
+
+  const activeById = new Map();
+  for (const effect of activeEffects) {
+    if (effect.catalogId && !activeById.has(effect.catalogId)) {
+      activeById.set(effect.catalogId, effect);
+    }
+  }
+
+  const groups = HK_EFFECT_CATEGORIES.map((category) => ({
+    ...category,
+    effects: catalog
+      .filter((entry) => entry.category === category.id)
+      .map((entry) => ({
+        ...entry,
+        isActive: activeById.has(entry.id) && !activeById.get(entry.id).disabled,
+        isDisabled: activeById.has(entry.id) && activeById.get(entry.id).disabled
+      }))
+  })).filter((category) => category.effects.length > 0);
+
+  return { activeEffects, effectGroups: groups };
+}
