@@ -6,9 +6,17 @@ import { HKTraitData, HKPathData } from "./data/feature-item-data.js";
 import { HKTechniqueData } from "./data/technique-data.js";
 import { HKInventoryItemData } from "./data/inventory-item-data.js";
 import { HKFeatureItemSheet } from "./sheets/feature-item-sheet.js";
+import { getEffectStatuses } from "./data/effects-catalog.js";
 
 Hooks.once("init", () => {
   console.log("Hollow Knight RPG | Initializing system");
+
+  // Add the system reference effects to Foundry's native Token HUD picker.
+  const existingStatuses = CONFIG.statusEffects ?? [];
+  CONFIG.statusEffects = [
+    ...existingStatuses.filter((effect) => !String(effect.id ?? "").startsWith("hkrpg-")),
+    ...getEffectStatuses()
+  ];
 
   CONFIG.Actor.dataModels.character = HKCharacterData;
   CONFIG.Item.dataModels.charm = HKCharmData;
