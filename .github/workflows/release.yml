@@ -68,7 +68,7 @@ jobs:
           node -e "JSON.parse(require('node:fs').readFileSync('system.json', 'utf8'))"
           node -e "JSON.parse(require('node:fs').readFileSync('lang/ru.json', 'utf8'))"
           npm test
-          for file in scripts/main.js scripts/data/character-data.js scripts/data/charm-data.js scripts/data/feature-item-data.js scripts/data/technique-data.js scripts/rules/equipment-sheet.js scripts/rules/derived.js scripts/rules/charm-tracker.js scripts/rules/feature-sheet.js scripts/sheets/character-sheet.js scripts/sheets/charm-sheet.js scripts/sheets/feature-item-sheet.js; do
+          for file in scripts/main.js scripts/data/character-data.js scripts/data/charm-data.js scripts/data/feature-item-data.js scripts/data/technique-data.js scripts/data/inventory-item-data.js scripts/rules/equipment-sheet.js scripts/rules/derived.js scripts/rules/charm-tracker.js scripts/rules/feature-sheet.js scripts/sheets/character-sheet.js scripts/sheets/charm-sheet.js scripts/sheets/feature-item-sheet.js; do
             node --check "$file"
           done
 
@@ -87,7 +87,7 @@ jobs:
             throw new Error(`ZIP manifest mismatch: expected ${expected}, got ${packaged.version}`);
           }
           const entries = execFileSync("unzip", ["-Z1", "hollow-knight-rpg.zip"], { encoding: "utf8" }).trim().split("\n");
-          for (const required of ["system.json", "scripts/main.js", "scripts/data/charm-data.js", "scripts/data/feature-item-data.js", "scripts/data/technique-data.js", "scripts/rules/equipment-sheet.js", "scripts/rules/charm-tracker.js", "scripts/rules/feature-sheet.js", "scripts/sheets/character-sheet.js", "scripts/sheets/charm-sheet.js", "scripts/sheets/feature-item-sheet.js", "templates/actor/character-sheet.hbs", "templates/item/charm-sheet.hbs", "templates/item/feature-item-sheet.hbs", "styles/system.css", "styles/character-sheet-theme.css", "lang/ru.json"]) {
+          for (const required of ["system.json", "scripts/main.js", "scripts/data/charm-data.js", "scripts/data/feature-item-data.js", "scripts/data/technique-data.js", "scripts/data/inventory-item-data.js", "scripts/rules/equipment-sheet.js", "scripts/rules/charm-tracker.js", "scripts/rules/feature-sheet.js", "scripts/sheets/character-sheet.js", "scripts/sheets/charm-sheet.js", "scripts/sheets/feature-item-sheet.js", "templates/actor/character-sheet.hbs", "templates/item/charm-sheet.hbs", "templates/item/feature-item-sheet.hbs", "styles/system.css", "styles/character-sheet-theme.css", "lang/ru.json"]) {
             if (!entries.includes(required)) throw new Error(`Missing package entry: ${required}`);
           }
           console.log(`Verified packaged system.json version: ${packaged.version}`);
