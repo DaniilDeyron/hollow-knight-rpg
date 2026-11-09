@@ -282,7 +282,7 @@
                     {{#each group.skills as |skill|}}
                       <div class="hkrpg-skill-entry">
                         <input class="hkrpg-skill-entry__name" name="system.skillGroups.{{../id}}.skills.{{skill.id}}.name" type="text" value="{{skill.name}}" placeholder="{{localize "HKRPG.Features.SkillNamePlaceholder"}}" aria-label="{{localize "HKRPG.Features.SkillNamePlaceholder"}} {{skill.id}}" {{#unless ../../isEditable}}disabled{{/unless}} />
-                        <input class="hkrpg-skill-entry__mastery" type="radio" name="system.skillGroups.{{../id}}.masterySkill" value="{{skill.id}}" {{#if skill.isMastered}}checked{{/if}} aria-label="{{localize "HKRPG.Features.Mastery"}}: {{skill.name}}" {{#unless ../../isEditable}}disabled{{/unless}} {{#unless ../canMaster}}disabled{{/unless}} />
+                        <input class="hkrpg-skill-entry__mastery" type="checkbox" data-skill-mastery="{{../id}}.{{skill.id}}" {{#if skill.isMastered}}checked{{/if}} aria-label="{{localize "HKRPG.Features.Mastery"}}: {{skill.name}}" title="{{localize "HKRPG.Features.Mastery"}}" {{#unless ../../isEditable}}disabled{{/unless}} {{#unless ../canMaster}}disabled{{/unless}} />
                       </div>
                     {{/each}}
                   </div>
@@ -323,48 +323,20 @@
                            data-trait-dropzone="{{slot.number}}"
                            aria-label="{{localize "HKRPG.Development.Traits"}} {{slot.number}}">
                     {{#if slot.trait}}
-                      <div class="hkrpg-trait-slot-card__heading">
-                        <img src="{{slot.trait.img}}" alt="" draggable="true"
-                             data-trait-item-id="{{slot.trait.id}}" title="{{slot.trait.name}}" />
-                        <div class="hkrpg-trait-slot-card__identity">
-                          <strong>{{slot.trait.name}}</strong>
-                          <span>{{slot.trait.categoryLabel}}</span>
-                        </div>
-                      </div>
-                      <div class="hkrpg-trait-modifiers">
-                        <span title="{{localize "HKRPG.Resource.Hunger"}}">Г {{slot.trait.hungerLabel}}</span>
-                        <span title="{{localize "HKRPG.Secondary.Cute"}}">П {{slot.trait.cuteLabel}}</span>
-                        <span title="{{localize "HKRPG.Secondary.Spook"}}">Ж {{slot.trait.spookLabel}}</span>
-                      </div>
-                      {{#if slot.trait.children.length}}
-                        <div class="hkrpg-trait-slot-card__subtraits">
-                          {{#each slot.trait.children as |subtrait|}}
-                            <span class="hkrpg-trait-slot-card__subtrait">
-                              <span>{{subtrait.name}}</span>
-                              <button type="button" data-edit-feature-item="{{subtrait.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
-                              <button type="button" data-create-subtrait="{{subtrait.id}}" title="{{localize "HKRPG.Features.AddSubtrait"}}">＋</button>
-                              <button type="button" data-delete-feature-item="{{subtrait.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
-                            </span>
-                            {{#each subtrait.children as |nested|}}
-                              <span class="hkrpg-trait-slot-card__subtrait is-nested">
-                                <span>{{nested.name}}</span>
-                                <button type="button" data-edit-feature-item="{{nested.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
-                                <button type="button" data-delete-feature-item="{{nested.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
-                              </span>
-                            {{/each}}
-                          {{/each}}
-                        </div>
-                      {{/if}}
-                      <div class="hkrpg-feature-actions">
+                      <img class="hkrpg-trait-slot-card__image" src="{{slot.trait.img}}" alt=""
+                           draggable="true" data-trait-item-id="{{slot.trait.id}}" title="{{slot.trait.name}}" />
+                      <strong class="hkrpg-trait-slot-card__name">{{slot.trait.name}}</strong>
+                      <span class="hkrpg-trait-slot-card__category">{{slot.trait.categoryLabel}}</span>
+                      <div class="hkrpg-trait-slot-card__controls">
                         <button type="button" data-edit-feature-item="{{slot.trait.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
-                        <button type="button" data-create-subtrait="{{slot.trait.id}}" title="{{localize "HKRPG.Features.AddSubtrait"}}">＋</button>
                         <button type="button" data-delete-feature-item="{{slot.trait.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
                       </div>
                     {{else if slot.legacy}}
-                      <strong class="hkrpg-trait-slot-card__legacy">{{slot.legacy.name}}</strong>
+                      <span class="hkrpg-trait-slot-card__empty-tile"></span>
+                      <strong class="hkrpg-trait-slot-card__name">{{slot.legacy.name}}</strong>
                       <small>{{localize "HKRPG.Features.LegacyEntries"}}</small>
                     {{else}}
-                      <span class="hkrpg-trait-slot-card__plus" aria-hidden="true">＋</span>
+                      <span class="hkrpg-trait-slot-card__empty-tile"></span>
                       <span class="hkrpg-trait-slot-card__hint">{{localize "HKRPG.Features.DropTrait"}}</span>
                     {{/if}}
                   </article>
@@ -374,13 +346,11 @@
               <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoTraits"}}</p>
             {{/if}}
 
-                        <footer class="hkrpg-feature-panel__footer">
-              <div class="hkrpg-trait-totals">
+            <div class="hkrpg-trait-totals">
                 <span>Голод <strong>{{traitTotals.hungerLabel}}</strong></span>
                 <span>Прив. <strong>{{traitTotals.cuteLabel}}</strong></span>
                 <span>Жуть <strong>{{traitTotals.spookLabel}}</strong></span>
               </div>
-              <button type="button" class="hkrpg-feature-add" data-create-trait {{#unless isEditable}}disabled{{/unless}} {{#unless canAddTrait}}disabled title="{{localize "HKRPG.Features.MainTraitLimitReached"}}"{{/unless}}>＋ {{localize "HKRPG.Features.AddTrait"}}</button>
             </footer>
           </section>
 
@@ -621,75 +591,95 @@
 
 <section class="tab hkrpg-equipment-tab" data-group="primary" data-tab="equipment">
       <div class="hkrpg-equipment-layout">
-        <section class="hkrpg-panel hkrpg-equipment-panel hkrpg-equipment-panel--inventory">
+        <section class="hkrpg-panel hkrpg-equipment-panel hkrpg-equipment-panel--inventory" data-equipment-dropzone="equipment">
           <header class="hkrpg-equipment-heading">
             <div>
               <h2>{{localize "HKRPG.Equipment.Inventory"}}</h2>
               <span class="hkrpg-equipment-count">{{itemGroups.equipment.length}}</span>
             </div>
-            <span class="hkrpg-equipment-column-title">{{localize "HKRPG.Equipment.Weight"}}</span>
+            <div class="hkrpg-equipment-heading__actions">
+              <span class="hkrpg-equipment-column-title">{{localize "HKRPG.Equipment.Weight"}}</span>
+              <button type="button" class="hkrpg-equipment-add" data-create-equipment-row="equipment" {{#unless isEditable}}disabled{{/unless}}>＋ Строка</button>
+            </div>
           </header>
           <div class="hkrpg-equipment-rows">
             {{#each equipmentRows as |row|}}
-              <article class="hkrpg-equipment-row {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" title="{{row.name}}"{{/if}}>
-                <span class="hkrpg-equipment-row__name">{{#if row.item}}{{row.name}}{{else}}&nbsp;{{/if}}</span>
-                <span class="hkrpg-equipment-value">{{row.values.weight}}</span>
+              <article class="hkrpg-equipment-row {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" data-equipment-item-id="{{row.item.id}}" draggable="true" title="{{row.name}}"{{/if}}>
+                {{#if row.item}}
+                  <input class="hkrpg-equipment-row__name" type="text" value="{{row.name}}" data-equipment-id="{{row.item.id}}" data-equipment-field="name" aria-label="Название предмета" {{#unless ../../isEditable}}disabled{{/unless}} />
+                  <input class="hkrpg-equipment-value" type="number" min="0" step="0.1" value="{{row.values.weight}}" data-equipment-id="{{row.item.id}}" data-equipment-field="weight" aria-label="Вес" {{#unless ../../isEditable}}disabled{{/unless}} />
+                  <button type="button" class="hkrpg-equipment-remove" data-delete-equipment-item="{{row.item.id}}" title="Удалить строку" {{#unless ../../isEditable}}disabled{{/unless}}>×</button>
+                {{else}}
+                  <span class="hkrpg-equipment-row__name">&nbsp;</span><span class="hkrpg-equipment-value"></span><span></span>
+                {{/if}}
               </article>
             {{/each}}
           </div>
-          {{#if itemGroups.equipment.length}}
-            <p class="hkrpg-equipment-hint">{{localize "HKRPG.Equipment.DragHint"}}</p>
-          {{else}}
-            <p class="hkrpg-equipment-hint">{{localize "HKRPG.Empty.NoEquipment"}}</p>
-          {{/if}}
+          <p class="hkrpg-equipment-hint">{{localize "HKRPG.Equipment.DragHint"}}</p>
         </section>
 
         <section class="hkrpg-panel hkrpg-equipment-panel hkrpg-equipment-panel--combat">
-          <section class="hkrpg-equipment-subsection hkrpg-equipment-subsection--weapons">
+          <section class="hkrpg-equipment-subsection hkrpg-equipment-subsection--weapons" data-equipment-dropzone="combat">
             <header class="hkrpg-equipment-heading">
               <div>
                 <h2>{{localize "HKRPG.Equipment.WeaponsAndShields"}}</h2>
                 <span class="hkrpg-equipment-count">{{itemGroups.weapons.length}} + {{itemGroups.shields.length}}</span>
               </div>
-              <div class="hkrpg-equipment-column-head hkrpg-equipment-column-head--combat">
-                <span>{{localize "HKRPG.Equipment.Weight"}}</span>
-                <span>{{localize "HKRPG.Equipment.Damage"}}</span>
-                <span>{{localize "HKRPG.Equipment.Range"}}</span>
-                <span>{{localize "HKRPG.Equipment.Quantity"}}</span>
+              <div class="hkrpg-equipment-heading__actions">
+                <div class="hkrpg-equipment-column-head hkrpg-equipment-column-head--combat">
+                  <span>{{localize "HKRPG.Equipment.Weight"}}</span>
+                  <span>{{localize "HKRPG.Equipment.Damage"}}</span>
+                  <span>{{localize "HKRPG.Equipment.Range"}}</span>
+                  <span>{{localize "HKRPG.Equipment.Quantity"}}</span>
+                </div>
+                <button type="button" class="hkrpg-equipment-add" data-create-equipment-row="weapon" {{#unless isEditable}}disabled{{/unless}}>＋ Строка</button>
               </div>
             </header>
             <div class="hkrpg-equipment-rows">
               {{#each combatEquipmentRows as |row|}}
-                <article class="hkrpg-equipment-row hkrpg-equipment-row--combat {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" title="{{row.name}}"{{/if}}>
-                  <span class="hkrpg-equipment-row__name">{{#if row.item}}{{row.name}}{{else}}&nbsp;{{/if}}</span>
-                  <span class="hkrpg-equipment-value">{{row.values.weight}}</span>
-                  <span class="hkrpg-equipment-value">{{row.values.damage}}</span>
-                  <span class="hkrpg-equipment-value">{{row.values.range}}</span>
-                  <span class="hkrpg-equipment-value">{{row.values.quantity}}</span>
+                <article class="hkrpg-equipment-row hkrpg-equipment-row--combat {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" data-equipment-item-id="{{row.item.id}}" draggable="true" title="{{row.name}}"{{/if}}>
+                  {{#if row.item}}
+                    <input class="hkrpg-equipment-row__name" type="text" value="{{row.name}}" data-equipment-id="{{row.item.id}}" data-equipment-field="name" aria-label="Название оружия" {{#unless ../../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="number" min="0" step="0.1" value="{{row.values.weight}}" data-equipment-id="{{row.item.id}}" data-equipment-field="weight" aria-label="Вес" {{#unless ../../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="text" value="{{row.values.damage}}" data-equipment-id="{{row.item.id}}" data-equipment-field="damage" aria-label="Урон" {{#unless ../../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="text" value="{{row.values.range}}" data-equipment-id="{{row.item.id}}" data-equipment-field="range" aria-label="Дальность" {{#unless ../../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="number" min="0" step="1" value="{{row.values.quantity}}" data-equipment-id="{{row.item.id}}" data-equipment-field="quantity" aria-label="Количество" {{#unless ../../isEditable}}disabled{{/unless}} />
+                    <button type="button" class="hkrpg-equipment-remove" data-delete-equipment-item="{{row.item.id}}" title="Удалить строку" {{#unless ../../isEditable}}disabled{{/unless}}>×</button>
+                  {{else}}
+                    <span class="hkrpg-equipment-row__name">&nbsp;</span><span class="hkrpg-equipment-value"></span><span class="hkrpg-equipment-value"></span><span class="hkrpg-equipment-value"></span><span class="hkrpg-equipment-value"></span><span></span>
+                  {{/if}}
                 </article>
               {{/each}}
             </div>
           </section>
 
-          <section class="hkrpg-equipment-subsection hkrpg-equipment-subsection--armor">
+          <section class="hkrpg-equipment-subsection hkrpg-equipment-subsection--armor" data-equipment-dropzone="armor">
             <header class="hkrpg-equipment-heading">
               <div>
                 <h2>{{localize "HKRPG.Equipment.Armor"}}</h2>
                 <span class="hkrpg-equipment-count">{{itemGroups.armor.length}}</span>
               </div>
-              <div class="hkrpg-equipment-column-head hkrpg-equipment-column-head--armor">
-                <span>{{localize "HKRPG.Equipment.Weight"}}</span>
-                <span>{{localize "HKRPG.Equipment.Protection"}}</span>
-                <span>{{localize "HKRPG.Equipment.Durability"}}</span>
+              <div class="hkrpg-equipment-heading__actions">
+                <div class="hkrpg-equipment-column-head hkrpg-equipment-column-head--armor">
+                  <span>{{localize "HKRPG.Equipment.Weight"}}</span>
+                  <span>{{localize "HKRPG.Equipment.Protection"}}</span>
+                  <span>{{localize "HKRPG.Equipment.Durability"}}</span>
+                </div>
+                <button type="button" class="hkrpg-equipment-add" data-create-equipment-row="armor" {{#unless isEditable}}disabled{{/unless}}>＋ Строка</button>
               </div>
             </header>
             <div class="hkrpg-equipment-rows">
               {{#each armorRows as |row|}}
-                <article class="hkrpg-equipment-row hkrpg-equipment-row--armor {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" title="{{row.name}}"{{/if}}>
-                  <span class="hkrpg-equipment-row__name">{{#if row.item}}{{row.name}}{{else}}&nbsp;{{/if}}</span>
-                  <span class="hkrpg-equipment-value">{{row.values.weight}}</span>
-                  <span class="hkrpg-equipment-value">{{row.values.protection}}</span>
-                  <span class="hkrpg-equipment-value">{{row.values.durability}}</span>
+                <article class="hkrpg-equipment-row hkrpg-equipment-row--armor {{#if row.isEmpty}}is-empty{{/if}}" {{#if row.item}}data-equipment-item="{{row.item.id}}" data-equipment-item-id="{{row.item.id}}" draggable="true" title="{{row.name}}"{{/if}}>
+                  {{#if row.item}}
+                    <input class="hkrpg-equipment-row__name" type="text" value="{{row.name}}" data-equipment-id="{{row.item.id}}" data-equipment-field="name" aria-label="Название брони" {{#unless ../../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="number" min="0" step="0.1" value="{{row.values.weight}}" data-equipment-id="{{row.item.id}}" data-equipment-field="weight" aria-label="Вес" {{#unless ../../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="text" value="{{row.values.protection}}" data-equipment-id="{{row.item.id}}" data-equipment-field="protection" aria-label="ПУ" {{#unless ../../isEditable}}disabled{{/unless}} />
+                    <input class="hkrpg-equipment-value" type="number" min="0" step="1" value="{{row.values.durability}}" data-equipment-id="{{row.item.id}}" data-equipment-field="durability" aria-label="Прочность" {{#unless ../../isEditable}}disabled{{/unless}} />
+                    <button type="button" class="hkrpg-equipment-remove" data-delete-equipment-item="{{row.item.id}}" title="Удалить строку" {{#unless ../../isEditable}}disabled{{/unless}}>×</button>
+                  {{else}}
+                    <span class="hkrpg-equipment-row__name">&nbsp;</span><span class="hkrpg-equipment-value"></span><span class="hkrpg-equipment-value"></span><span class="hkrpg-equipment-value"></span><span></span>
+                  {{/if}}
                 </article>
               {{/each}}
             </div>
