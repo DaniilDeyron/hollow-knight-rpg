@@ -47,17 +47,24 @@ export function planCatalogEffectDeduplication(actorEffects = [], catalog = HK_E
   for (const [catalogId, group] of groups) {
     if (group.length < 2) continue;
     const definition = catalogById.get(catalogId);
-    const managed = group.filter((effect) => effect?.getFlag?.("hkrpg", "catalogId") === catalogId);
     const native = definition?.coreStatusId
-      ? group.find((effect) =>
+      ? group.filter((effect) =>
         effect?.getFlag?.("hkrpg", "catalogId") !== catalogId &&
         getStatusIds(effect).includes(definition.coreStatusId)
       )
-      : null;
+      : [];
+    const managed = group.filter((effect) =>
+      effect?.getFlag?.("hkrpg", "catalogId") === catalogId
+    );
 
-    if (native && managed.length) {
-      if (native.disabled && group.some((effect) => !effect.disabled)) enableIds.add(native.id);
-      for (const effect of managed) removeIds.add(effect.id);
+    if (native.length) {
+      // Keep one native status entry (prefer an active one) and remove all
+      // system-managed aliases plus redundant native copies of that same status.
+      const keep = native.find((effect) => !effect.disabled) ?? native[0];
+      if (keep.disabled && group.some((effect) => !effect.disabled)) enableIds.add(keep.id);
+      for (const effect of group) {
+        if (effect !== keep) removeIds.add(effect.id);
+      }
     } else if (managed.length > 1) {
       const keep = managed.find((effect) => !effect.disabled) ?? managed[0];
       for (const effect of managed) {
