@@ -6,17 +6,29 @@ import { HKTraitData, HKPathData } from "./data/feature-item-data.js";
 import { HKTechniqueData } from "./data/technique-data.js";
 import { HKInventoryItemData } from "./data/inventory-item-data.js";
 import { HKFeatureItemSheet } from "./sheets/feature-item-sheet.js";
-import { getEffectStatuses } from "./data/effects-catalog.js";
+import { HK_EFFECT_CATALOG, getEffectStatuses } from "./data/effects-catalog.js";
+import { planCatalogEffectDeduplication } from "./rules/effects-sheet.js";
+
+function statusEffectEntries(statusEffects = []) {
+  if (Array.isArray(statusEffects)) return statusEffects;
+  if (statusEffects && typeof statusEffects.values === "function") {
+    return Array.from(statusEffects.values());
+  }
+  if (statusEffects && typeof statusEffects[Symbol.iterator] === "function") {
+    return Array.from(statusEffects);
+  }
+  return Object.values(statusEffects ?? {});
+}
 
 Hooks.once("init", () => {
   console.log("Hollow Knight RPG | Initializing system");
 
-  // Add the system reference effects to Foundry's native Token HUD picker.
-  const existingStatuses = CONFIG.statusEffects ?? [];
-  CONFIG.statusEffects = [
-    ...existingStatuses.filter((effect) => !String(effect.id ?? "").startsWith("hkrpg-")),
-    ...getEffectStatuses()
-  ];
+  // Preserve Foundry's own statuses, remove stale system entries, and keep one
+  // configured entry per ID before appending only genuinely new HK conditions.
+  const nativeStatuses = statusEffectEntries(CONFIG.statusEffects ?? [])
+    .filter((effect) => effect?.id && !String(effect.id).startsWith("hkrpg-"));
+  const uniqueStatuses = [...new Map(nativeStatuses.map((effect) => [effect.id, effect])).values()];
+  CONFIG.statusEffects = [...uniqueStatuses, ...getEffectStatuses(uniqueStatuses)];
 
   CONFIG.Actor.dataModels.character = HKCharacterData;
   CONFIG.Item.dataModels.charm = HKCharmData;
@@ -67,6 +79,15 @@ Hooks.once("ready", async () => {
     if (stale.length) {
       await actor.deleteEmbeddedDocuments("ActiveEffect", stale.map((effect) => effect.id));
     }
+
+    const duplicatePlan = planCatalogEffectDeduplication(actor.effects, HK_EFFECT_CATALOG);
+    for (const effectId of duplicatePlan.enableIds) {
+      const effect = actor.effects.get(effectId);
+      if (effect?.disabled) await effect.update({ disabled: false });
+    }
+    if (duplicatePlan.removeIds.length) {
+      await actor.deleteEmbeddedDocuments("ActiveEffect", duplicatePlan.removeIds);
+    }
   }
   console.log(`Hollow Knight RPG | Ready (v${game.system.version})`);
 });
@@ -74,12 +95,14 @@ Hooks.once("ready", async () => {
 Hooks.on("renderTokenHUD", (app, html) => {
   const root = html?.[0] ?? html;
   if (!root?.querySelectorAll) return;
-  const definitions = new Map(getEffectStatuses().map((effect) => [effect.id, effect]));
+  const definitions = new Map();
+  for (const entry of HK_EFFECT_CATALOG) {
+    definitions.set(entry.id, entry);
+    if (entry.coreStatusId) definitions.set(entry.coreStatusId, entry);
+  }
   for (const control of root.querySelectorAll("[data-status-id], .status-effects .effect-control")) {
     const statusId = control.dataset.statusId ?? control.dataset.status;
-    const definition = definitions.get(statusId);
-    if (!definition) continue;
-    const catalogEntry = HK_EFFECT_CATALOG.find((entry) => entry.id === statusId);
+    const catalogEntry = definitions.get(statusId);
     if (!catalogEntry) continue;
     const tooltip = [catalogEntry.name, catalogEntry.summary, catalogEntry.rules, `Длительность: ${catalogEntry.duration}`, catalogEntry.source].join("\n\n");
     control.dataset.tooltip = tooltip;
