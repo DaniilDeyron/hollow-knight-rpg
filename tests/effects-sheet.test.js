@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { HK_EFFECT_CATALOG, HK_EFFECT_CATEGORIES, getEffectStatuses } from "../scripts/data/effects-catalog.js";
-import { buildEffectsSheetData } from "../scripts/rules/effects-sheet.js";
+import { buildEffectsSheetData, planCatalogEffectDeduplication } from "../scripts/rules/effects-sheet.js";
 
 test("Каталог содержит только боевые состояния и уникальные записи", () => {
   const ids = HK_EFFECT_CATALOG.map((effect) => effect.id);
