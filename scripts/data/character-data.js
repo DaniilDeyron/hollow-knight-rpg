@@ -204,7 +204,9 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         group2: proficiencySkillGroupField(),
         group3: proficiencySkillGroupField()
       }),
-      notes: textField()
+      names: textField(),
+      notes: textField(),
+      diary: textField()
     };
   }
 
