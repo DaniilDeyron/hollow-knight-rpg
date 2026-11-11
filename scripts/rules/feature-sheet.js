@@ -277,8 +277,8 @@ export function buildTechniqueSlotCards(maximum = 0, items = [], legacySlots = [
 
 
 /**
- * Build seven fixed Trait drop targets. Existing Items without an explicit slot
- * keep their current visibility and are assigned to the first available target.
+ * Build only occupied Trait cards. Existing Items without an explicit slot
+ * are assigned to the first available position; empty capacity is not rendered.
  * Legacy text-only traits remain visible until converted into Item documents.
  */
 export function buildTraitCardSlots(maximum = 7, traitTree = {}, legacyTraits = []) {
@@ -318,5 +318,5 @@ export function buildTraitCardSlots(maximum = 7, traitTree = {}, legacyTraits = 
     target.isEmpty = false;
   }
 
-  return slots;
+  return slots.filter((slot) => !slot.isEmpty);
 }
