@@ -28,8 +28,9 @@ export function buildEffectsSheetData(actorEffects = [], catalog = HK_EFFECT_CAT
       catalogId,
       name: effect.name ?? reference?.name ?? "Эффект без названия",
       icon: effect.img ?? reference?.icon ?? "icons/svg/aura.svg",
-      summary: reference?.summary ?? "Пользовательский эффект. Откройте его карточку, чтобы проверить описание.",
-      rules: reference?.rules ?? "Описание эффекта не найдено в справочнике.",
+      summary: reference?.summary ?? "Пользовательский эффект.",
+      rules: reference?.rules ?? "Описание этого эффекта отсутствует в справочнике.",
+      duration: reference?.duration ?? "",
       source: reference?.source ?? "Пользовательский эффект",
       disabled: Boolean(effect.disabled)
     };
@@ -37,9 +38,7 @@ export function buildEffectsSheetData(actorEffects = [], catalog = HK_EFFECT_CAT
 
   const activeById = new Map();
   for (const effect of activeEffects) {
-    if (effect.catalogId && !activeById.has(effect.catalogId)) {
-      activeById.set(effect.catalogId, effect);
-    }
+    if (effect.catalogId && !activeById.has(effect.catalogId)) activeById.set(effect.catalogId, effect);
   }
 
   const groups = HK_EFFECT_CATEGORIES.map((category) => ({
