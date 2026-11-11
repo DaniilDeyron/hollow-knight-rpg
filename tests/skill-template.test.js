@@ -55,10 +55,11 @@ test("Старое одиночное мастерство остаётся от
 });
 
 
-test("Мастерство переключается через capture click, а не теряется в обработчиках формы Foundry", () => {
-  assert.match(sheet, /hkrpgMasteryCapture/);
-  assert.match(sheet, /closest\?\.\("\[data-skill-mastery\]"\)/);
-  assert.match(sheet, /input\.checked = !input\.checked/);
+test("Мастерство переключается через capture click по нативному состоянию чекбокса", () => {
+  const handler = sheet.slice(sheet.indexOf("hkrpgMasteryCapture"), sheet.indexOf('bind("[data-create-equipment-row]'));
+  assert.match(handler, /closest\?\.\("\[data-skill-mastery\]"\)/);
+  assert.match(handler, /await this\._onSkillMasteryChange\(\{ currentTarget: input \}\)/);
+  assert.doesNotMatch(handler, /input\.checked = !input\.checked/);
   assert.doesNotMatch(sheet, /bind\("\[data-skill-mastery\]", "change"/);
 });
 
