@@ -72,7 +72,7 @@ export function getEffectStatuses(catalog = HK_EFFECT_CATALOG) {
     id,
     name,
     img: icon,
-    description: [summary, rules, `Длительность: ${duration}`, source].join("\\n\\n"),
+    description: [summary, rules, `Длительность: ${duration}`, source].join("\n\n"),
     flags: { hkrpg: { catalogId: id } }
   }));
 }
