@@ -837,13 +837,12 @@ export class HKCharacterSheet extends ActorSheet {
       : this._moveDroppedCharmToCollection(item);
   }
 
-  async _prepareDroppedTrait(sourceItem, slotValue) {
-    const slot = Number(slotValue);
-    if (!Number.isInteger(slot) || slot < 1 || slot > 7) return false;
+  async _prepareDroppedTrait(sourceItem, slotValue = "auto") {
     if (sourceItem.system.kind !== "main") return false;
 
+    // Exclude the dragged Item itself so an existing Trait can be repositioned.
     const mainTraits = this.actor.items.filter((item) =>
-      item.type === "trait" && item.system.kind === "main"
+      item.type === "trait" && item.system.kind === "main" && item.id !== sourceItem.id
     );
     const legacyTraits = buildLegacyTraitRows(this.actor.system.featureSheet.traits, mainTraits);
     if (sourceItem.parent !== this.actor && mainTraits.length + legacyTraits.length >= 7) {
@@ -851,9 +850,21 @@ export class HKCharacterSheet extends ActorSheet {
       return false;
     }
 
-    const occupying = mainTraits.find((item) =>
-      Number(item.system.slot ?? 0) === slot && item.id !== sourceItem.id
-    );
+    let slot;
+    if (slotValue === "auto" || slotValue === "" || slotValue == null) {
+      const occupied = new Set(buildTraitCardSlots(7, buildTraitTree(mainTraits), legacyTraits)
+        .map((card) => card.number));
+      slot = Array.from({ length: 7 }, (_, index) => index + 1)
+        .find((number) => !occupied.has(number));
+    } else {
+      slot = Number(slotValue);
+    }
+    if (!Number.isInteger(slot) || slot < 1 || slot > 7) {
+      ui.notifications.warn(game.i18n.localize("HKRPG.Features.MainTraitLimitReached"));
+      return false;
+    }
+
+    const occupying = mainTraits.find((item) => Number(item.system.slot ?? 0) === slot);
     if (occupying) {
       ui.notifications.warn("Эта ячейка уже занята. Сначала освободите её.");
       return false;
