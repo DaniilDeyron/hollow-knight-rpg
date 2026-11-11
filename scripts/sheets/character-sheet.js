@@ -839,11 +839,13 @@ export class HKCharacterSheet extends ActorSheet {
   async _prepareDroppedTrait(sourceItem, slotValue = "auto") {
     if (sourceItem.system.kind !== "main") return false;
 
-    // Exclude the dragged Item itself so an existing Trait can be repositioned.
-    const mainTraits = this.actor.items.filter((item) =>
-      item.type === "trait" && item.system.kind === "main" && item.id !== sourceItem.id
+    const allMainTraits = this.actor.items.filter((item) =>
+      item.type === "trait" && item.system.kind === "main"
     );
-    const legacyTraits = buildLegacyTraitRows(this.actor.system.featureSheet.traits, mainTraits);
+    // Exclude the dragged Item from occupied slots, but keep it in the legacy
+    // migration filter so its old text row cannot be counted as a second Trait.
+    const mainTraits = allMainTraits.filter((item) => item.id !== sourceItem.id);
+    const legacyTraits = buildLegacyTraitRows(this.actor.system.featureSheet.traits, allMainTraits);
     if (sourceItem.parent !== this.actor && mainTraits.length + legacyTraits.length >= 7) {
       ui.notifications.warn(game.i18n.localize("HKRPG.Features.MainTraitLimitReached"));
       return false;
