@@ -222,7 +222,6 @@ export class HKCharacterSheet extends ActorSheet {
         const input = event.target?.closest?.("[data-skill-mastery]");
         if (!input || !root.contains(input)) return;
 
-        event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
 
