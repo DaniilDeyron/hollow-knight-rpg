@@ -3,26 +3,27 @@ import assert from "node:assert/strict";
 import { HK_EFFECT_CATALOG, HK_EFFECT_CATEGORIES, getEffectStatuses } from "../scripts/data/effects-catalog.js";
 import { buildEffectsSheetData } from "../scripts/rules/effects-sheet.js";
 
-test("Справочник содержит уникальные статусы и все категории", () => {
+test("Каталог содержит только боевые состояния и уникальные записи", () => {
   const ids = HK_EFFECT_CATALOG.map((effect) => effect.id);
   assert.equal(ids.length, new Set(ids).size);
-  assert.ok(ids.length >= 35);
-  for (const category of HK_EFFECT_CATEGORIES) {
-    assert.ok(HK_EFFECT_CATALOG.some((effect) => effect.category === category.id), category.id);
-  }
+  assert.equal(ids.length, 7);
+  assert.deepEqual(HK_EFFECT_CATEGORIES.map((category) => category.id), ["combat"]);
+  assert.ok(HK_EFFECT_CATALOG.every((effect) => effect.category === "combat"));
+  assert.ok(HK_EFFECT_CATALOG.every((effect) => effect.source.startsWith("Книга, с.")));
 });
 
-test("Все записи справочника доступны в стандартном HUD токена", () => {
+test("В HUD регистрируются только семь боевых эффектов с описаниями", () => {
   const statuses = getEffectStatuses();
-  assert.equal(statuses.length, HK_EFFECT_CATALOG.length);
+  assert.equal(statuses.length, 7);
   for (const status of statuses) {
     assert.match(status.id, /^hkrpg-/);
     assert.ok(status.name);
     assert.ok(status.img);
+    assert.ok(status.description.length > 20);
   }
 });
 
-test("Вкладка эффектов показывает активные статусы и ссылки на их памятки", () => {
+test("Вкладка эффектов связывает активный статус с его памяткой", () => {
   const effect = {
     id: "ae-1",
     name: "Дисбаланс",
@@ -33,7 +34,7 @@ test("Вкладка эффектов показывает активные ст
   };
   const data = buildEffectsSheetData([effect]);
   const active = data.activeEffects.find((entry) => entry.documentId === "ae-1");
-  const category = data.effectGroups.find((entry) => entry.id === "core");
+  const category = data.effectGroups.find((entry) => entry.id === "combat");
   const reference = category.effects.find((entry) => entry.id === "hkrpg-off-balance");
   assert.equal(active.name, "Дисбаланс");
   assert.match(active.rules, /Выносливость/);
