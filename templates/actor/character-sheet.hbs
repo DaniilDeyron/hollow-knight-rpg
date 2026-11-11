@@ -316,31 +316,48 @@
               </div>
             {{/if}}
 
-            {{#if traitSlots.length}}
-              <div class="hkrpg-trait-slots-grid">
-                {{#each traitSlots as |slot|}}
-                  <article class="hkrpg-trait-slot-card {{#if slot.trait}}is-filled{{else if slot.legacy}}is-legacy{{else}}is-empty{{/if}}"
-                           data-trait-dropzone="{{slot.number}}"
-                           aria-label="{{localize "HKRPG.Development.Traits"}} {{slot.number}}">
+            <div class="hkrpg-trait-collection" data-trait-dropzone="auto">
+              {{#if traitSlots.length}}
+                <div class="hkrpg-trait-collection-grid">
+                  {{#each traitSlots as |slot|}}
                     {{#if slot.trait}}
-                      <img class="hkrpg-trait-slot-card__image" src="{{slot.trait.img}}" alt=""
-                           draggable="true" data-trait-item-id="{{slot.trait.id}}" title="{{slot.trait.name}}" />
-                      <strong class="hkrpg-trait-slot-card__name">{{slot.trait.name}}</strong>
-                      <span class="hkrpg-trait-slot-card__category">{{slot.trait.categoryLabel}}</span>
-                      <div class="hkrpg-trait-slot-card__controls">
-                        <button type="button" data-edit-feature-item="{{slot.trait.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
-                        <button type="button" data-delete-feature-item="{{slot.trait.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
-                      </div>
+                      <article class="hkrpg-trait-card" draggable="true" data-trait-item-id="{{slot.trait.id}}">
+                        <img class="hkrpg-trait-card__image" src="{{slot.trait.img}}" alt="" title="{{slot.trait.name}}" />
+                        <div class="hkrpg-trait-card__identity">
+                          <strong>{{slot.trait.name}}</strong>
+                          <span>{{slot.trait.categoryLabel}}</span>
+                        </div>
+                        <div class="hkrpg-trait-card__modifiers">
+                          <span>Голод {{slot.trait.hungerLabel}}</span>
+                          <span>Прив. {{slot.trait.cuteLabel}}</span>
+                          <span>Жуть {{slot.trait.spookLabel}}</span>
+                        </div>
+                        {{#if slot.trait.children.length}}
+                          <div class="hkrpg-trait-card__subtraits">
+                            {{#each slot.trait.children as |child|}}
+                              <span>{{child.name}}</span>
+                            {{/each}}
+                          </div>
+                        {{/if}}
+                        <div class="hkrpg-trait-card__controls">
+                          <button type="button" data-edit-feature-item="{{slot.trait.id}}" title="{{localize "HKRPG.Features.EditEntry"}}">✎</button>
+                          <button type="button" data-delete-feature-item="{{slot.trait.id}}" title="{{localize "HKRPG.Features.DeleteEntry"}}">×</button>
+                        </div>
+                      </article>
                     {{else if slot.legacy}}
-                      <strong class="hkrpg-trait-slot-card__name">{{slot.legacy.name}}</strong>
-                      <small>{{localize "HKRPG.Features.LegacyEntries"}}</small>
+                      <article class="hkrpg-trait-card is-legacy">
+                        <div class="hkrpg-trait-card__identity">
+                          <strong>{{slot.legacy.name}}</strong>
+                          <span>{{localize "HKRPG.Features.LegacyEntries"}}</span>
+                        </div>
+                      </article>
                     {{/if}}
-                  </article>
-                {{/each}}
-              </div>
-            {{else}}
-              <p class="hkrpg-empty">{{localize "HKRPG.Empty.NoTraits"}}</p>
-            {{/if}}
+                  {{/each}}
+                </div>
+              {{else}}
+                <p class="hkrpg-traits-empty">Перетащите сюда предмет «Черта» из библиотеки Foundry. Основные Черты будут добавляться по мере заполнения.</p>
+              {{/if}}
+            </div>
 
             <footer class="hkrpg-feature-panel__footer">
               <div class="hkrpg-trait-totals">
