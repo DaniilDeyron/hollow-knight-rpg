@@ -43,7 +43,7 @@ export const HK_EFFECT_CATALOG = [
   },
   {
     id: "hkrpg-suffocation", category: "combat", name: "Удушение",
-    icon: "icons/svg/breath.svg",
+    icon: "systems/hollow-knight-rpg/assets/icons/status/suffocation.svg",
     summary: "Существо находится в среде, где не может дышать.",
     rules: "Каждый ход удушения уменьшает максимум Выносливости жука на 1. Когда максимум Выносливости падает до 0, удушение начинает наносить урон Сердцу.",
     duration: "Прекращается, когда жук проводит целый ход в пригодном для дыхания окружении.",
