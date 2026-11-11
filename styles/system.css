@@ -5118,3 +5118,169 @@
     grid-column: auto;
   }
 }
+
+ 
+/* Main Traits — populated collection cards, with a single compact drag-and-drop surface. */
+.hkrpg.sheet.actor .hkrpg-trait-collection {
+  min-width: 0;
+  min-height: 56px;
+  padding: 8px;
+  border: 1px dashed #526c8b;
+  border-radius: 4px;
+  background: rgb(6 14 25 / 62%);
+  transition: border-color 120ms ease, background 120ms ease, box-shadow 120ms ease;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-collection.drop-active {
+  border-color: #b5d1f1;
+  background: rgb(50 79 116 / 25%);
+  box-shadow: inset 0 0 18px rgb(117 170 226 / 13%);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  align-items: stretch;
+  gap: 8px;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-content: start;
+  align-items: center;
+  gap: 6px 9px;
+  min-width: 0;
+  min-height: 76px;
+  padding: 7px;
+  border: 1px solid #405673;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgb(24 40 62 / 94%), rgb(11 22 37 / 97%));
+  color: #dce8f8;
+  box-shadow: inset 0 1px 0 rgb(220 235 255 / 5%);
+  cursor: grab;
+  transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card:hover {
+  border-color: #91b2d8;
+  background: linear-gradient(180deg, rgb(37 59 87 / 96%), rgb(15 29 48 / 98%));
+  transform: translateY(-1px);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card__image {
+  display: block;
+  grid-row: span 2;
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  padding: 3px;
+  border: 1px solid #587493;
+  border-radius: 4px;
+  background: radial-gradient(circle, #263d5b, #0a1524);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding-right: 42px;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card__identity strong {
+  overflow-wrap: anywhere;
+  color: #f0f5fd;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  font-size: .8rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card__identity span {
+  color: #9fb3ce;
+  font-size: .62rem;
+  line-height: 1.15;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card__modifiers,
+.hkrpg.sheet.actor .hkrpg-trait-card__subtraits {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card__modifiers span,
+.hkrpg.sheet.actor .hkrpg-trait-card__subtraits span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 2px 5px;
+  border: 1px solid #435c79;
+  border-radius: 3px;
+  background: rgb(8 19 33 / 75%);
+  color: #b9cbe0;
+  font-size: .6rem;
+  line-height: 1.1;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card__subtraits span {
+  border-color: #766b56;
+  color: #d7c7a8;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card__controls {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: flex;
+  gap: 3px;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card__controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  min-width: 22px;
+  height: 22px;
+  min-height: 22px;
+  padding: 0;
+  border: 1px solid #526d8b;
+  border-radius: 3px;
+  background: #14263d;
+  color: #dce8f8;
+  line-height: 1;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card__controls button:hover {
+  border-color: #c5d8ef;
+  background: #294564;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-card.is-legacy {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  border-color: #8a795e;
+  background: linear-gradient(180deg, #302b28, #191f2a);
+  cursor: default;
+}
+
+.hkrpg.sheet.actor .hkrpg-traits-empty {
+  margin: 0;
+  padding: 10px 6px;
+  color: #9fb3ce;
+  font-size: .74rem;
+  font-style: italic;
+  text-align: center;
+}
+
+@media (max-width: 520px) {
+  .hkrpg.sheet.actor .hkrpg-trait-collection-grid {
+    grid-template-columns: 1fr;
+  }
+}

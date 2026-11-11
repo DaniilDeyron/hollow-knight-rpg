@@ -14,7 +14,7 @@ import {
 import { buildCharmNotchState, evaluateCharmEquip } from "../rules/charm-tracker.js";
 import { buildEquipmentRows } from "../rules/equipment-sheet.js";
 import { buildEffectsSheetData } from "../rules/effects-sheet.js";
-import { HK_EFFECT_CATALOG } from "../data/effects-catalog.js";
+import { HK_EFFECT_CATALOG, getEffectStatusId } from "../data/effects-catalog.js";
 
 export class HKCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -222,12 +222,10 @@ export class HKCharacterSheet extends ActorSheet {
         const input = event.target?.closest?.("[data-skill-mastery]");
         if (!input || !root.contains(input)) return;
 
-        event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
 
         if (!this.isEditable || input.disabled) return;
-        input.checked = !input.checked;
         await this._onSkillMasteryChange({ currentTarget: input });
       }, true);
     }
@@ -261,18 +259,21 @@ export class HKCharacterSheet extends ActorSheet {
       if (catalogId) {
         const definition = HK_EFFECT_CATALOG.find((effect) => effect.id === catalogId);
         if (!definition) return;
-        const existing = this.actor.effects.find((effect) =>
-          effect.getFlag?.("hkrpg", "catalogId") === catalogId ||
-          effect.statuses?.has?.(catalogId) ||
-          (Array.isArray(effect.statuses) && effect.statuses.includes(catalogId))
-        );
+        const statusId = getEffectStatusId(definition, CONFIG.statusEffects ?? []);
+        const existing = this.actor.effects.find((effect) => {
+          const statuses = effect.statuses instanceof Set
+            ? [...effect.statuses]
+            : Array.isArray(effect.statuses) ? effect.statuses : [];
+          return effect.getFlag?.("hkrpg", "catalogId") === catalogId ||
+            statuses.includes(statusId) || statuses.includes(catalogId);
+        });
         if (existing) {
           await existing.update({ disabled: !existing.disabled });
         } else {
           await this.actor.createEmbeddedDocuments("ActiveEffect", [{
             name: definition.name,
             img: definition.icon,
-            statuses: [definition.id],
+            statuses: [statusId],
             origin: this.actor.uuid,
             disabled: false,
             flags: {
@@ -835,23 +836,36 @@ export class HKCharacterSheet extends ActorSheet {
       : this._moveDroppedCharmToCollection(item);
   }
 
-  async _prepareDroppedTrait(sourceItem, slotValue) {
-    const slot = Number(slotValue);
-    if (!Number.isInteger(slot) || slot < 1 || slot > 7) return false;
+  async _prepareDroppedTrait(sourceItem, slotValue = "auto") {
     if (sourceItem.system.kind !== "main") return false;
 
-    const mainTraits = this.actor.items.filter((item) =>
+    const allMainTraits = this.actor.items.filter((item) =>
       item.type === "trait" && item.system.kind === "main"
     );
-    const legacyTraits = buildLegacyTraitRows(this.actor.system.featureSheet.traits, mainTraits);
+    // Exclude the dragged Item from occupied slots, but keep it in the legacy
+    // migration filter so its old text row cannot be counted as a second Trait.
+    const mainTraits = allMainTraits.filter((item) => item.id !== sourceItem.id);
+    const legacyTraits = buildLegacyTraitRows(this.actor.system.featureSheet.traits, allMainTraits);
     if (sourceItem.parent !== this.actor && mainTraits.length + legacyTraits.length >= 7) {
       ui.notifications.warn(game.i18n.localize("HKRPG.Features.MainTraitLimitReached"));
       return false;
     }
 
-    const occupying = mainTraits.find((item) =>
-      Number(item.system.slot ?? 0) === slot && item.id !== sourceItem.id
-    );
+    let slot;
+    if (slotValue === "auto" || slotValue === "" || slotValue == null) {
+      const occupied = new Set(buildTraitCardSlots(7, buildTraitTree(mainTraits), legacyTraits)
+        .map((card) => card.number));
+      slot = Array.from({ length: 7 }, (_, index) => index + 1)
+        .find((number) => !occupied.has(number));
+    } else {
+      slot = Number(slotValue);
+    }
+    if (!Number.isInteger(slot) || slot < 1 || slot > 7) {
+      ui.notifications.warn(game.i18n.localize("HKRPG.Features.MainTraitLimitReached"));
+      return false;
+    }
+
+    const occupying = mainTraits.find((item) => Number(item.system.slot ?? 0) === slot);
     if (occupying) {
       ui.notifications.warn("Эта ячейка уже занята. Сначала освободите её.");
       return false;

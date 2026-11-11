@@ -2,9 +2,11 @@ import { HK_EFFECT_CATALOG, HK_EFFECT_CATEGORIES } from "../data/effects-catalog
 
 function getStatusIds(effect) {
   const statuses = effect?.statuses;
-  if (statuses instanceof Set) return [...statuses];
-  if (Array.isArray(statuses)) return statuses;
-  if (statuses && typeof statuses[Symbol.iterator] === "function") return [...statuses];
+  let ids = [];
+  if (statuses instanceof Set) ids = [...statuses];
+  else if (Array.isArray(statuses)) ids = statuses;
+  else if (statuses && typeof statuses[Symbol.iterator] === "function") ids = [...statuses];
+  if (ids.length) return ids;
   const legacyId = effect?.getFlag?.("core", "statusId");
   return legacyId ? [legacyId] : [];
 }
@@ -12,7 +14,66 @@ function getStatusIds(effect) {
 function getCatalogId(effect, catalogById) {
   const explicit = effect?.getFlag?.("hkrpg", "catalogId");
   if (explicit && catalogById.has(explicit)) return explicit;
-  return getStatusIds(effect).find((id) => catalogById.has(id)) ?? null;
+  for (const statusId of getStatusIds(effect)) {
+    if (catalogById.has(statusId)) return statusId;
+    const alias = [...catalogById.values()].find((entry) => entry.coreStatusId === statusId);
+    if (alias) return alias.id;
+  }
+  return null;
+}
+
+/**
+ * Return duplicate system-managed ActiveEffects that can be removed safely.
+ * User-created effects are never deleted; when a native status and a managed
+ * copy coexist, the native effect is kept and enabled if either copy was active.
+ */
+export function planCatalogEffectDeduplication(actorEffects = [], catalog = HK_EFFECT_CATALOG) {
+  const effects = Array.isArray(actorEffects)
+    ? actorEffects
+    : actorEffects?.contents ?? [...(actorEffects ?? [])];
+  const catalogById = new Map(catalog.map((entry) => [entry.id, entry]));
+  const groups = new Map();
+
+  for (const effect of effects) {
+    const catalogId = getCatalogId(effect, catalogById);
+    if (!catalogId) continue;
+    if (!groups.has(catalogId)) groups.set(catalogId, []);
+    groups.get(catalogId).push(effect);
+  }
+
+  const removeIds = new Set();
+  const enableIds = new Set();
+
+  for (const [catalogId, group] of groups) {
+    if (group.length < 2) continue;
+    const definition = catalogById.get(catalogId);
+    const native = definition?.coreStatusId
+      ? group.filter((effect) =>
+        effect?.getFlag?.("hkrpg", "catalogId") !== catalogId &&
+        getStatusIds(effect).includes(definition.coreStatusId)
+      )
+      : [];
+    const managed = group.filter((effect) =>
+      effect?.getFlag?.("hkrpg", "catalogId") === catalogId
+    );
+
+    if (native.length) {
+      // Keep one native status entry (prefer an active one) and remove all
+      // system-managed aliases plus redundant native copies of that same status.
+      const keep = native.find((effect) => !effect.disabled) ?? native[0];
+      if (keep.disabled && group.some((effect) => !effect.disabled)) enableIds.add(keep.id);
+      for (const effect of group) {
+        if (effect !== keep) removeIds.add(effect.id);
+      }
+    } else if (managed.length > 1) {
+      const keep = managed.find((effect) => !effect.disabled) ?? managed[0];
+      for (const effect of managed) {
+        if (effect !== keep) removeIds.add(effect.id);
+      }
+    }
+  }
+
+  return { removeIds: [...removeIds], enableIds: [...enableIds] };
 }
 
 export function buildEffectsSheetData(actorEffects = [], catalog = HK_EFFECT_CATALOG) {
@@ -25,21 +86,33 @@ export function buildEffectsSheetData(actorEffects = [], catalog = HK_EFFECT_CAT
     const catalogId = effect?.getFlag?.("hkrpg", "catalogId");
     return !(typeof catalogId === "string" && catalogId.startsWith("hkrpg-") && !catalogById.has(catalogId));
   });
-  const activeEffects = visibleEffects.map((effect) => {
+
+  const activeEffects = [];
+  const activeIndexByKey = new Map();
+  for (const effect of visibleEffects) {
     const catalogId = getCatalogId(effect, catalogById);
     const reference = catalogById.get(catalogId);
-    return {
+    const row = {
       documentId: effect.id,
       catalogId,
-      name: effect.name ?? reference?.name ?? "Эффект без названия",
-      icon: effect.img ?? reference?.icon ?? "icons/svg/aura.svg",
+      name: reference?.name ?? effect.name ?? "Эффект без названия",
+      icon: reference?.icon ?? effect.img ?? "icons/svg/aura.svg",
       summary: reference?.summary ?? "Пользовательский эффект.",
       rules: reference?.rules ?? "Описание этого эффекта отсутствует в справочнике.",
       duration: reference?.duration ?? "",
       source: reference?.source ?? "Пользовательский эффект",
       disabled: Boolean(effect.disabled)
     };
-  });
+    const key = catalogId ? `catalog:${catalogId}` : `document:${effect.id}`;
+    const existingIndex = activeIndexByKey.get(key);
+    if (existingIndex === undefined) {
+      activeIndexByKey.set(key, activeEffects.length);
+      activeEffects.push(row);
+    } else if (activeEffects[existingIndex].disabled && !row.disabled) {
+      // Prefer the active copy when two legacy/native representations overlap.
+      activeEffects[existingIndex] = row;
+    }
+  }
 
   const activeById = new Map();
   for (const effect of activeEffects) {

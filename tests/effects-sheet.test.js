@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { HK_EFFECT_CATALOG, HK_EFFECT_CATEGORIES, getEffectStatuses } from "../scripts/data/effects-catalog.js";
-import { buildEffectsSheetData } from "../scripts/rules/effects-sheet.js";
+import { buildEffectsSheetData, planCatalogEffectDeduplication } from "../scripts/rules/effects-sheet.js";
 
 test("Каталог содержит только боевые состояния и уникальные записи", () => {
   const ids = HK_EFFECT_CATALOG.map((effect) => effect.id);
@@ -72,4 +72,71 @@ test("Пользовательские эффекты без записи в с�
   const data = buildEffectsSheetData([effect]);
   assert.equal(data.activeEffects[0].name, "Проклятие Мастера");
   assert.match(data.activeEffects[0].summary, /Пользовательский эффект/);
+});
+
+
+test("Стандартные статусы Foundry не дублируются в системном HUD", () => {
+  const statuses = getEffectStatuses([
+    { id: "grappled" },
+    { id: "unconscious" },
+    { id: "invisible" }
+  ]);
+  const ids = statuses.map((status) => status.id);
+  assert.equal(ids.length, 4);
+  assert.equal(new Set(ids).size, ids.length);
+  assert.ok(!ids.includes("hkrpg-grappled"));
+  assert.ok(!ids.includes("hkrpg-unconscious"));
+  assert.ok(!ids.includes("hkrpg-invisible"));
+});
+
+test("Нативный статус отображается в журнале как соответствующий боевой эффект", () => {
+  const native = {
+    id: "native-unconscious",
+    name: "Unconscious",
+    img: "icons/svg/unconscious.svg",
+    disabled: false,
+    statuses: new Set(["unconscious"]),
+    getFlag: () => null
+  };
+  const data = buildEffectsSheetData([native]);
+  assert.equal(data.activeEffects.length, 1);
+  assert.equal(data.activeEffects[0].catalogId, "hkrpg-unconscious");
+  assert.equal(data.activeEffects[0].name, "Потеря сознания");
+  const reference = data.effectGroups[0].effects.find((entry) => entry.id === "hkrpg-unconscious");
+  assert.equal(reference.isActive, true);
+});
+
+test("Системный дубль нативного статуса удаляется с сохранением активности", () => {
+  const native = {
+    id: "native-invisible",
+    disabled: true,
+    statuses: new Set(["invisible"]),
+    getFlag: () => null
+  };
+  const managed = {
+    id: "managed-invisible",
+    disabled: false,
+    statuses: new Set(["hkrpg-invisible"]),
+    getFlag: (scope, key) => scope === "hkrpg" && key === "catalogId" ? "hkrpg-invisible" : null
+  };
+  assert.deepEqual(
+    planCatalogEffectDeduplication([managed, native]),
+    { removeIds: ["managed-invisible"], enableIds: ["native-invisible"] }
+  );
+});
+
+test("Повторные системные копии одного боевого эффекта сводятся к одной", () => {
+  const makeEffect = (id, disabled) => ({
+    id,
+    disabled,
+    statuses: new Set(["hkrpg-off-balance"]),
+    getFlag: (scope, key) => scope === "hkrpg" && key === "catalogId" ? "hkrpg-off-balance" : null
+  });
+  assert.deepEqual(
+    planCatalogEffectDeduplication([
+      makeEffect("inactive-copy", true),
+      makeEffect("active-copy", false)
+    ]),
+    { removeIds: ["inactive-copy"], enableIds: [] }
+  );
 });
