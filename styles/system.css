@@ -5074,3 +5074,47 @@
   white-space: pre-line;
   line-height: 1.4;
 }
+
+
+/* Three-part journal: two compact columns above one wide diary field. */
+.hkrpg.sheet.actor .hkrpg-journal-tab.active {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.hkrpg.sheet.actor .hkrpg-journal-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(190px, auto) minmax(300px, auto);
+  gap: 10px;
+  min-width: 0;
+}
+.hkrpg.sheet.actor .hkrpg-journal-panel {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+.hkrpg.sheet.actor .hkrpg-journal-panel h2 {
+  flex: 0 0 auto;
+}
+.hkrpg.sheet.actor .hkrpg-journal-panel textarea {
+  flex: 1 1 auto;
+  min-height: 130px;
+  width: 100%;
+  resize: vertical;
+}
+.hkrpg.sheet.actor .hkrpg-journal-panel--diary {
+  grid-column: 1 / -1;
+}
+.hkrpg.sheet.actor .hkrpg-journal-panel--diary textarea {
+  min-height: 300px;
+}
+@media (max-width: 680px) {
+  .hkrpg.sheet.actor .hkrpg-journal-layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+  }
+  .hkrpg.sheet.actor .hkrpg-journal-panel--diary {
+    grid-column: auto;
+  }
+}

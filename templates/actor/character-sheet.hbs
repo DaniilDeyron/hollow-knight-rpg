@@ -763,17 +763,21 @@
       </div>
     </section>
 
-    <section class="tab" data-group="primary" data-tab="journal">
-      <div class="hkrpg-notes-layout">
-        <section class="hkrpg-panel">
-          <h2>{{localize "HKRPG.Profile.Description"}}</h2>
-          <textarea name="system.profile.description" rows="8">{{system.profile.description}}</textarea>
+    <section class="tab hkrpg-journal-tab" data-group="primary" data-tab="journal">
+      <div class="hkrpg-journal-layout">
+        <section class="hkrpg-panel hkrpg-journal-panel hkrpg-journal-panel--names">
+          <h2>Имена</h2>
+          <textarea name="system.names" rows="8" placeholder="Имена знакомых, союзников и тех, кого стоит помнить...">{{system.names}}</textarea>
         </section>
-        <section class="hkrpg-panel hkrpg-notes-panel">
-          <h2>{{localize "HKRPG.Notes"}}</h2>
-          <textarea name="system.notes" rows="16" placeholder="{{localize "HKRPG.NotesPlaceholder"}}">{{system.notes}}</textarea>
+        <section class="hkrpg-panel hkrpg-journal-panel hkrpg-journal-panel--notes">
+          <h2>Заметки</h2>
+          <textarea name="system.notes" rows="8" placeholder="Короткие заметки и важные сведения...">{{system.notes}}</textarea>
+        </section>
+        <section class="hkrpg-panel hkrpg-journal-panel hkrpg-journal-panel--diary">
+          <h2>Дневник</h2>
+          <textarea name="system.diary" rows="16" placeholder="Записи о путешествии, событиях и переживаниях персонажа...">{{system.diary}}</textarea>
         </section>
       </div>
     </section>
-  </div>
+      </div>
 </form>
