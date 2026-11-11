@@ -51,3 +51,21 @@ Hooks.once("init", () => {
 Hooks.once("ready", () => {
   console.log(`Hollow Knight RPG | Ready (v${game.system.version})`);
 });
+// Add full rules summaries to the native Token HUD status-icon tooltips.
+Hooks.on("renderTokenHUD", (app, html) => {
+  const root = html?.[0] ?? html;
+  if (!root?.querySelectorAll) return;
+  const definitions = new Map(getEffectStatuses().map((effect) => [effect.id, effect]));
+  for (const control of root.querySelectorAll("[data-status-id], .status-effects .effect-control")) {
+    const statusId = control.dataset.statusId ?? control.dataset.status;
+    const definition = definitions.get(statusId);
+    if (!definition) continue;
+    const catalogEntry = HK_EFFECT_CATALOG.find((entry) => entry.id === statusId);
+    if (!catalogEntry) continue;
+    const tooltip = [catalogEntry.name, catalogEntry.summary, catalogEntry.rules, `Длительность: ${catalogEntry.duration}`, catalogEntry.source].join("\\n\\n");
+    control.dataset.tooltip = tooltip;
+    control.dataset.tooltipClass = "hkrpg-status-tooltip";
+    control.setAttribute("title", tooltip);
+    control.setAttribute("aria-label", catalogEntry.name);
+  }
+});
