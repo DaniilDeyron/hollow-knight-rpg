@@ -58,6 +58,7 @@ test("Старое одиночное мастерство остаётся от
 test("Мастерство переключается через capture click по нативному состоянию чекбокса", () => {
   const handler = sheet.slice(sheet.indexOf("hkrpgMasteryCapture"), sheet.indexOf('bind("[data-create-equipment-row]'));
   assert.match(handler, /closest\?\.\("\[data-skill-mastery\]"\)/);
+  assert.match(handler, /event\.preventDefault\(\)/);
   assert.match(handler, /await this\._onSkillMasteryChange\(\{ currentTarget: input \}\)/);
   assert.doesNotMatch(handler, /input\.checked = !input\.checked/);
   assert.doesNotMatch(sheet, /bind\("\[data-skill-mastery\]", "change"/);
