@@ -10,7 +10,7 @@ export const HK_EFFECT_CATEGORIES = [
 
 export const HK_EFFECT_CATALOG = [
   {
-    id: "hkrpg-grappled", category: "combat", name: "Схвачен",
+    id: "hkrpg-grappled", category: "combat", name: "Схвачен", coreStatusId: "grappled",
     icon: "icons/svg/net.svg",
     summary: "Существо удерживается противником и не может свободно перемещаться.",
     rules: "Схваченный жук получает −1 к броскам атаки и защиты и не может перемещаться по своей воле. В свой ход он может потратить 1 Выносливость и попытаться вырваться проверкой Мощи или Грации. Схвативший сопротивляется проверкой Мощи с бонусами захвата от природного оружия и придатков; обе стороны могут вкладывать Выносливость.",
@@ -34,7 +34,7 @@ export const HK_EFFECT_CATALOG = [
     source: "Книга, с. 120"
   },
   {
-    id: "hkrpg-unconscious", category: "combat", name: "Потеря сознания",
+    id: "hkrpg-unconscious", category: "combat", name: "Потеря сознания", coreStatusId: "unconscious",
     icon: "icons/svg/unconscious.svg",
     summary: "Существо не может самостоятельно двигаться или предпринимать действия.",
     rules: "Когда Сердце падает до 0, жук может добровольно потерять сознание. Это делает его менее приоритетной целью и полностью восстанавливает Выносливость, даже если он уже был у Врат Смерти после последнего Отдыха. Бессознательный жук не может двигаться или предпринимать действия своими силами. Получаемый урон наносится Выносливости, которая не восстанавливается естественным образом. При падении Выносливости до 0 жук умирает.",
@@ -58,7 +58,7 @@ export const HK_EFFECT_CATALOG = [
     source: "Книга, с. 120"
   },
   {
-    id: "hkrpg-invisible", category: "combat", name: "Невидимость",
+    id: "hkrpg-invisible", category: "combat", name: "Невидимость", coreStatusId: "invisible",
     icon: "icons/svg/invisible.svg",
     summary: "Существо невидимо для тех, кто не способен его обнаружить.",
     rules: "Атаки и защита против невидимого жука получают штраф −2. Если противник не знает о невидимом жуке, он не может уклониться или парировать его первую атаку. Невидимые жуки не провоцируют атаки.",
@@ -67,12 +67,48 @@ export const HK_EFFECT_CATALOG = [
   }
 ];
 
-export function getEffectStatuses(catalog = HK_EFFECT_CATALOG) {
-  return catalog.map(({ id, name, icon, summary, rules, duration, source }) => ({
-    id,
-    name,
-    img: icon,
-    description: [summary, rules, `Длительность: ${duration}`, source].join("\n\n"),
-    flags: { hkrpg: { catalogId: id } }
-  }));
+function statusEntries(statusEffects = []) {
+  if (Array.isArray(statusEffects)) return statusEffects;
+  if (statusEffects && typeof statusEffects.values === "function") {
+    return Array.from(statusEffects.values());
+  }
+  if (statusEffects && typeof statusEffects[Symbol.iterator] === "function") {
+    return Array.from(statusEffects);
+  }
+  return Object.values(statusEffects ?? {});
+}
+
+function configuredStatusIds(statusEffects = []) {
+  return new Set(statusEntries(statusEffects)
+    .map((status) => typeof status === "string" ? status : status?.id)
+    .filter(Boolean));
+}
+
+/**
+ * Use Foundry's built-in status ID when it already represents this condition.
+ * Otherwise retain the system-specific ID so the condition remains available.
+ */
+export function getEffectStatusId(effect, configuredStatuses = []) {
+  const existingIds = configuredStatusIds(configuredStatuses);
+  return effect?.coreStatusId && existingIds.has(effect.coreStatusId)
+    ? effect.coreStatusId
+    : effect?.id;
+}
+
+/**
+ * Register only statuses which are not already supplied by Foundry or another
+ * active system/module. This keeps the Token HUD from showing duplicate icons.
+ */
+export function getEffectStatuses(existingStatuses = []) {
+  const existingIds = configuredStatusIds(existingStatuses);
+  return HK_EFFECT_CATALOG
+    .filter((entry) => !existingIds.has(entry.id))
+    .filter((entry) => !entry.coreStatusId || !existingIds.has(entry.coreStatusId))
+    .map(({ id, name, icon, summary, rules, duration, source }) => ({
+      id,
+      name,
+      img: icon,
+      description: [summary, rules, `Длительность: ${duration}`, source].join("\n\n"),
+      flags: { hkrpg: { catalogId: id } }
+    }));
 }
