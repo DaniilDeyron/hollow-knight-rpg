@@ -712,24 +712,19 @@
             <strong>{{activeEffects.length}}</strong>
           </div>
           {{#if activeEffects.length}}
-            <div class="hkrpg-effects-active-list">
+            <div class="hkrpg-effects-icon-grid hkrpg-effects-icon-grid--active">
               {{#each activeEffects as |effect|}}
-                <article class="hkrpg-effect-active-card {{#if effect.disabled}}is-disabled{{/if}}">
-                  <img src="{{effect.icon}}" alt="" />
-                  <div class="hkrpg-effect-active-card__body">
-                    <div class="hkrpg-effect-card__title">
-                      <strong>{{effect.name}}</strong>
-                      {{#if effect.disabled}}<span class="hkrpg-effect-state">{{localize "HKRPG.Effects.Disabled"}}</span>{{else}}<span class="hkrpg-effect-state is-active">{{localize "HKRPG.Effects.Enabled"}}</span>{{/if}}
-                    </div>
-                    <p>{{effect.summary}}</p>
-                    <small>{{effect.rules}}</small>
-                    <small class="hkrpg-effect-source">{{effect.source}}</small>
-                  </div>
-                  <div class="hkrpg-effect-active-card__actions">
-                    <button type="button" data-effect-document-toggle="{{effect.documentId}}">{{#if effect.disabled}}{{localize "HKRPG.Effects.Enable"}}{{else}}{{localize "HKRPG.Effects.Disable"}}{{/if}}</button>
-                    <button type="button" class="hkrpg-effect-remove" data-effect-delete="{{effect.documentId}}">{{localize "HKRPG.Effects.Remove"}}</button>
-                  </div>
-                </article>
+                <div class="hkrpg-effect-icon-wrap {{#if effect.disabled}}is-disabled{{/if}}">
+                  <button type="button" class="hkrpg-effect-icon" data-effect-document-toggle="{{effect.documentId}}"
+                    data-tooltip="{{effect.name}}&#10;{{effect.summary}}&#10;{{effect.rules}}"
+                    aria-label="{{effect.name}}">
+                    <img src="{{effect.icon}}" alt="" />
+                    <span class="hkrpg-effect-icon__toggle">{{#if effect.disabled}}○{{else}}●{{/if}}</span>
+                  </button>
+                  <button type="button" class="hkrpg-effect-icon__remove" data-effect-delete="{{effect.documentId}}"
+                    aria-label="{{localize "HKRPG.Effects.Remove"}}" title="{{localize "HKRPG.Effects.Remove"}}">×</button>
+                  <span class="hkrpg-effect-icon__name">{{effect.name}}</span>
+                </div>
               {{/each}}
             </div>
           {{else}}
@@ -748,23 +743,18 @@
           {{#each effectGroups as |group|}}
             <section class="hkrpg-effect-category">
               <h3>{{group.label}}</h3>
-              <div class="hkrpg-effect-library-grid">
+              <div class="hkrpg-effects-icon-grid">
                 {{#each group.effects as |effect|}}
-                  <article class="hkrpg-effect-card">
-                    <div class="hkrpg-effect-card__heading">
+                  <div class="hkrpg-effect-icon-wrap {{#if effect.isActive}}is-active{{/if}} {{#if effect.isDisabled}}is-disabled{{/if}}">
+                    <button type="button" class="hkrpg-effect-icon" data-effect-catalog-toggle="{{effect.id}}"
+                      data-tooltip="{{effect.name}}&#10;{{effect.summary}}&#10;{{effect.rules}}&#10;Длительность: {{effect.duration}}&#10;{{effect.source}}"
+                      aria-label="{{effect.name}}">
                       <img src="{{effect.icon}}" alt="" />
-                      <div>
-                        <strong>{{effect.name}}</strong>
-                        <span>{{effect.duration}}</span>
-                      </div>
-                    </div>
-                    <p>{{effect.summary}}</p>
-                    <div class="hkrpg-effect-card__rules">{{effect.rules}}</div>
-                    <small class="hkrpg-effect-source">{{effect.source}}</small>
-                    <button type="button" data-effect-catalog-toggle="{{effect.id}}">
-                      {{#if effect.isActive}}{{localize "HKRPG.Effects.Disable"}}{{else if effect.isDisabled}}{{localize "HKRPG.Effects.Enable"}}{{else}}{{localize "HKRPG.Effects.Apply"}}{{/if}}
+                      {{#if effect.isActive}}<span class="hkrpg-effect-icon__toggle">●</span>{{/if}}
+                      {{#if effect.isDisabled}}<span class="hkrpg-effect-icon__toggle">○</span>{{/if}}
                     </button>
-                  </article>
+                    <span class="hkrpg-effect-icon__name">{{effect.name}}</span>
+                  </div>
                 {{/each}}
               </div>
             </section>
@@ -773,7 +763,7 @@
       </div>
     </section>
 
-<section class="tab" data-group="primary" data-tab="journal">
+    <section class="tab" data-group="primary" data-tab="journal">
       <div class="hkrpg-notes-layout">
         <section class="hkrpg-panel">
           <h2>{{localize "HKRPG.Profile.Description"}}</h2>
