@@ -14,7 +14,7 @@ import {
 import { buildCharmNotchState, evaluateCharmEquip } from "../rules/charm-tracker.js";
 import { buildEquipmentRows } from "../rules/equipment-sheet.js";
 import { buildEffectsSheetData } from "../rules/effects-sheet.js";
-import { HK_EFFECT_CATALOG } from "../data/effects-catalog.js";
+import { HK_EFFECT_CATALOG, getEffectStatusId } from "../data/effects-catalog.js";
 
 export class HKCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -227,7 +227,6 @@ export class HKCharacterSheet extends ActorSheet {
         event.stopImmediatePropagation();
 
         if (!this.isEditable || input.disabled) return;
-        input.checked = !input.checked;
         await this._onSkillMasteryChange({ currentTarget: input });
       }, true);
     }
@@ -261,18 +260,21 @@ export class HKCharacterSheet extends ActorSheet {
       if (catalogId) {
         const definition = HK_EFFECT_CATALOG.find((effect) => effect.id === catalogId);
         if (!definition) return;
-        const existing = this.actor.effects.find((effect) =>
-          effect.getFlag?.("hkrpg", "catalogId") === catalogId ||
-          effect.statuses?.has?.(catalogId) ||
-          (Array.isArray(effect.statuses) && effect.statuses.includes(catalogId))
-        );
+        const statusId = getEffectStatusId(definition, CONFIG.statusEffects ?? []);
+        const existing = this.actor.effects.find((effect) => {
+          const statuses = effect.statuses instanceof Set
+            ? [...effect.statuses]
+            : Array.isArray(effect.statuses) ? effect.statuses : [];
+          return effect.getFlag?.("hkrpg", "catalogId") === catalogId ||
+            statuses.includes(statusId) || statuses.includes(catalogId);
+        });
         if (existing) {
           await existing.update({ disabled: !existing.disabled });
         } else {
           await this.actor.createEmbeddedDocuments("ActiveEffect", [{
             name: definition.name,
             img: definition.icon,
-            statuses: [definition.id],
+            statuses: [statusId],
             origin: this.actor.uuid,
             disabled: false,
             flags: {
