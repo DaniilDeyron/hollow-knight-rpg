@@ -245,7 +245,7 @@ export function buildTraitItemData(entry, parentId = "", slot = 0) {
       speed: Number(modifiers.speed ?? 0),
       carryingCapacity: Number(modifiers.carryingCapacity ?? 0),
       description: entry.description,
-      effects: entry.description
+      effects: ""
     }
   };
 }
@@ -277,6 +277,7 @@ export function buildTraitLibraryGroups(actorItems = []) {
   );
   const buildNode = (entry, parentActorId = "") => {
     const actorItem = findActorItem(entry, parentActorId);
+    const parentActorItem = parentActorId ? actorItems.find((item) => item.id === parentActorId) : null;
     const existingCount = actorItems.filter((item) =>
       item.type === "trait" &&
       item.system?.libraryId === entry.id &&
@@ -285,6 +286,17 @@ export function buildTraitLibraryGroups(actorItems = []) {
     const repeatable = /можно (?:взять|брать) (?:дважды|несколько раз)/i.test(entry.description ?? "");
     const isMain = entry.kind === "main";
     const mainCount = actorItems.filter((item) => item.type === "trait" && item.system?.kind === "main").length;
+    const modifiers = getTraitModifiers(entry.id);
+    const modifierNames = {
+      might: "Мощь", insight: "Проницательность", shell: "Панцирь", grace: "Грация",
+      heartMax: "Сердце", staminaMax: "Выносливость", soulMax: "Душа",
+      satietyMax: "Сытость", cute: "Привлекательность", spook: "Жуть",
+      speed: "Скорость", carryingCapacity: "Нагрузка"
+    };
+    const modifierSummary = Object.entries(modifiers)
+      .filter(([, value]) => Number(value) !== 0)
+      .map(([key, value]) => `${modifierNames[key] ?? key} ${Number(value) > 0 ? "+" : ""}${value}`)
+      .join(" · ");
     return {
       id: entry.id,
       name: entry.name,
@@ -298,8 +310,12 @@ export function buildTraitLibraryGroups(actorItems = []) {
       added: Boolean(actorItem),
       canAdd: isMain
         ? (existingCount === 0 || (repeatable && existingCount < 2)) && mainCount < 7
-        : Boolean(parentActorId) && (existingCount === 0 || (repeatable && existingCount < 2)),
-      modifiers: getTraitModifiers(entry.id),
+        : Boolean(parentActorItem && parentActorItem.system?.selected !== false) &&
+          (existingCount === 0 || (repeatable && existingCount < 2)),
+      limitReached: isMain && mainCount >= 7,
+      parentMissing: !isMain && !parentActorItem,
+      modifiers,
+      modifierSummary,
       children: (byParent.get(entry.id) ?? []).map((child) => buildNode(child, actorItem?.id ?? ""))
     };
   };
