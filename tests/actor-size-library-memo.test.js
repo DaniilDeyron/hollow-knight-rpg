@@ -42,14 +42,14 @@ test("Шаблоны применяются моделью выбранного 
   const model = read("../scripts/data/character-data.js");
   const template = read("../templates/actor/character-sheet.hbs");
   assert.doesNotMatch(sheet, /_onBugSizeChange/);
-  assert.doesNotMatch(template, /select\[name="system\.size"\]/);
+  assert.doesNotMatch(template, /name="system\.size"/);
   assert.match(template, /bugSizeLabel/);
   assert.match(main, /dataModels\.smallBug = HKSmallBugData/);
   assert.match(main, /dataModels\.mediumBug = HKMediumBugData/);
   assert.match(main, /dataModels\.largeBug = HKLargeBugData/);
   assert.match(model, /static get bugTemplateKey\(\)/);
   assert.match(model, /template\?\.attributes\.might/);
-  assert.match(model, /template\?\.resources\.heartMax/);
+  assert.match(model, /initial\("heartMax"\)/);
   assert.match(main, /preCreateActor/);
 });
 
