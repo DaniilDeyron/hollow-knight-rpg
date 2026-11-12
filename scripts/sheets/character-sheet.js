@@ -53,6 +53,22 @@ export class HKCharacterSheet extends ActorSheet {
     const resources = this.actor.system.resources;
     const traitBonuses = this.actor.system.derived.traitBonuses ?? {};
     context.traitBonuses = traitBonuses;
+    context.effectiveAttributes = Object.fromEntries(
+      ["might", "insight", "shell", "grace"].map((key) => [
+        key, Number(this.actor.system.attributes[key] ?? 0) + Number(traitBonuses[key] ?? 0)
+      ])
+    );
+    context.effectiveSocial = {
+      cute: Number(this.actor.system.social.cute ?? 0) + Number(traitBonuses.cute ?? 0),
+      spook: Number(this.actor.system.social.spook ?? 0) + Number(traitBonuses.spook ?? 0),
+      speed: Number(this.actor.system.social.speed ?? 0) + Number(traitBonuses.speed ?? 0)
+    };
+    context.effectiveMaxima = {
+      heart: Math.max(0, resources.heartMax + Number(traitBonuses.heartMax ?? 0)),
+      soul: Math.max(0, resources.soulMax + Number(traitBonuses.soulMax ?? 0)),
+      stamina: Math.max(0, resources.staminaMax + Number(traitBonuses.staminaMax ?? 0)),
+      satiety: this.actor.system.derived.satietyMax
+    };
     context.resourcePips = {
       heart: buildResourcePips(Math.max(0, resources.heartMax + traitBonuses.heartMax), resources.heart, resources.heartTemp),
       soul: buildResourcePips(Math.max(0, resources.soulMax + traitBonuses.soulMax), resources.soul, resources.soulTemp),
