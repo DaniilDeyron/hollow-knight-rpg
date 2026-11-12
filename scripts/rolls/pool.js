@@ -246,7 +246,7 @@ export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
     label,
     formula,
     results,
-    rerollsAvailable,
+    rerollsAvailable: Math.min(rerollsAvailable, results.length),
     rerollsUsed: false,
     selecting: false,
     selectedIndices: [],
