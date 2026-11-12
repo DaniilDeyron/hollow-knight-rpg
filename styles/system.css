@@ -5393,3 +5393,114 @@
 .hkrpg.sheet.actor .hkrpg-effect-icon[data-open-status-id] {
   cursor: pointer;
 }
+
+
+/* Interactive HKRPG roll cards: successes stay green even under the chat theme. */
+.hkrpg-roll .hkrpg-die--success {
+  border-color: #4ba96b !important;
+  background: linear-gradient(180deg, #214d36, #163826) !important;
+  color: #b8f0c7 !important;
+  box-shadow: inset 0 1px 0 rgb(211 255 224 / 12%), 0 0 7px rgb(70 185 105 / 16%);
+}
+
+.hkrpg-roll .hkrpg-die--selectable {
+  padding: 0;
+  font: inherit;
+  font-size: .95rem;
+  cursor: pointer;
+  transition: transform 110ms ease, border-color 110ms ease, box-shadow 110ms ease;
+}
+
+.hkrpg-roll .hkrpg-die--selectable:hover {
+  border-color: #b7cde6;
+  transform: translateY(-1px);
+}
+
+.hkrpg-roll .hkrpg-die--selectable.is-selected {
+  border: 2px solid #e5c783 !important;
+  background: linear-gradient(180deg, #59482b, #30281d) !important;
+  color: #fff0c8 !important;
+  box-shadow: 0 0 0 2px rgb(229 199 131 / 18%), 0 0 10px rgb(229 199 131 / 28%);
+  transform: translateY(-2px);
+}
+
+.hkrpg-roll__reroll-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  padding: 8px 9px;
+  border: 1px solid rgb(92 117 148 / 65%);
+  border-radius: 4px;
+  background: rgb(16 31 49 / 72%);
+}
+
+.hkrpg-roll__reroll-panel .hkrpg-roll__note {
+  margin: 0;
+  line-height: 1.4;
+}
+
+.hkrpg-roll__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.hkrpg-roll__action {
+  min-height: 28px;
+  padding: 4px 10px;
+  border: 1px solid #617a97;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #263d59, #172b42);
+  color: #e5edf8;
+  font-family: inherit;
+  font-size: .78rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.hkrpg-roll__action:hover:not(:disabled) {
+  border-color: #a8c1df;
+  background: linear-gradient(180deg, #355475, #203a57);
+}
+
+.hkrpg-roll__action--primary {
+  border-color: #668b74;
+  background: linear-gradient(180deg, #2b6042, #1b402e);
+  color: #d9f4df;
+}
+
+.hkrpg-roll__action--primary:hover:not(:disabled) {
+  border-color: #99cfaa;
+  background: linear-gradient(180deg, #387b54, #235239);
+}
+
+.hkrpg-roll__action:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+.hkrpg-roll__reroll-used {
+  padding: 7px 9px;
+  border-left: 3px solid #668b74;
+  background: rgb(33 72 49 / 24%);
+  line-height: 1.4;
+}
+
+@media (max-width: 460px) {
+  .hkrpg-roll__reroll-panel {
+    align-items: stretch;
+  }
+
+  .hkrpg-roll__actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .hkrpg-roll__action {
+    flex: 1 1 auto;
+  }
+}
