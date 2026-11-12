@@ -31,6 +31,7 @@ export class HKCharacterSheet extends ActorSheet {
         { dragSelector: "[data-charm-item-id]", dropSelector: "[data-charm-dropzone]" },
         { dragSelector: "[data-technique-item-id]", dropSelector: "[data-technique-dropzone]" },
         { dragSelector: "[data-trait-item-id]", dropSelector: "[data-trait-dropzone]" },
+        { dragSelector: "[data-trait-library-id]", dropSelector: "[data-trait-child-dropzone]" },
         { dragSelector: "[data-equipment-item-id]", dropSelector: "[data-equipment-dropzone]" }
       ],
       tabs: [
@@ -226,6 +227,7 @@ export class HKCharacterSheet extends ActorSheet {
     bind("[data-edit-feature-item]", "click", this._onEditFeatureItem);
     bind("[data-delete-feature-item]", "click", this._onDeleteFeatureItem);
     bind("[data-path-rank]", "change", this._onPathRankChange);
+    bind("[data-trait-select]", "change", this._onTraitSelectionChange);
     bind("[data-migrate-legacy-features]", "click", this._onMigrateLegacyFeatures);
     bind("[data-create-charm]", "click", this._onCreateCharm);
     bind("[data-edit-charm]", "click", this._onEditCharm);
@@ -253,6 +255,21 @@ export class HKCharacterSheet extends ActorSheet {
     // This temporary Item is a read-only preview and never changes actor effects.
     const preview = new Item(buildStatusItemData(definition), { temporary: true });
     preview.sheet.render(true);
+  }
+
+  async _onTraitSelectionChange(event) {
+    if (!this.isEditable) return;
+    const input = event.currentTarget;
+    const item = this.actor.items.get(input.dataset.traitSelect);
+    if (!item || item.type !== "trait" || item.system.kind === "main") return;
+    const parent = this.actor.items.get(String(item.system.parentId ?? ""));
+    if (!parent || parent.type !== "trait" || parent.system.selected === false) {
+      input.checked = false;
+      ui.notifications.warn("Сначала выберите родительскую черту.");
+      return;
+    }
+    await item.update({ "system.selected": Boolean(input.checked) });
+    this.render(false);
   }
 
   async _onSkillMasteryChange(event) {
@@ -719,8 +736,9 @@ export class HKCharacterSheet extends ActorSheet {
     const charmDropzone = event.target?.closest?.("[data-charm-dropzone]");
     const techniqueDropzone = event.target?.closest?.("[data-technique-dropzone]");
     const traitDropzone = event.target?.closest?.("[data-trait-dropzone]");
+    const traitChildDropzone = event.target?.closest?.("[data-trait-child-dropzone]");
     const equipmentDropzone = event.target?.closest?.("[data-equipment-dropzone]");
-    if (!charmDropzone && !techniqueDropzone && !traitDropzone && !equipmentDropzone) return super._onDrop(event);
+    if (!charmDropzone && !techniqueDropzone && !traitDropzone && !traitChildDropzone && !equipmentDropzone) return super._onDrop(event);
     event.preventDefault();
     event.stopPropagation();
     if (!this.isEditable) return false;
@@ -745,6 +763,29 @@ export class HKCharacterSheet extends ActorSheet {
       return false;
     }
     if (!item || item.documentName !== "Item") return false;
+
+    if (traitChildDropzone) {
+      if (item.type !== "trait" || item.system.kind === "main") {
+        ui.notifications.warn("Сюда можно помещать только подчерты из библиотеки.");
+        return false;
+      }
+      const parent = this.actor.items.get(traitChildDropzone.dataset.traitChildDropzone);
+      if (!parent || parent.type !== "trait" || parent.system.selected === false) {
+        ui.notifications.warn("Сначала добавьте и выберите основную черту.");
+        return false;
+      }
+      if (String(item.system.parentLibraryId ?? "") !== String(parent.system.libraryId ?? "")) {
+        ui.notifications.warn("Эта подчерта относится к другой основной черте.");
+        return false;
+      }
+      const itemData = item.toObject();
+      delete itemData._id;
+      itemData.system.parentId = parent.id;
+      itemData.system.selected = true;
+      await this.actor.createEmbeddedDocuments("Item", [itemData]);
+      this.render(true);
+      return true;
+    }
 
     if (traitDropzone) {
       if (item.type !== "trait" || item.system.kind !== "main") {
