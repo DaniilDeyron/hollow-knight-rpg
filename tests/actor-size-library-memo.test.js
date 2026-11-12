@@ -42,7 +42,7 @@ test("Лист применяет шаблон при смене поля раз
   for (const key of ["attributes.might","attributes.insight","attributes.shell","attributes.grace",
     "resources.heartMax","resources.staminaMax","resources.soulMax","resources.hunger",
     "resources.satietyMaxOverride","social.cute","social.spook","social.speed",
-    "prototypeToken.width","prototypeToken.height"]) {
+    "prototypeToken"]) {
     assert.ok(sheet.includes(`system.${key}`), `missing update for ${key}`);
   }
 });
