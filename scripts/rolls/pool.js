@@ -46,6 +46,55 @@ export function summarizeD6Results(values = []) {
   };
 }
 
+/**
+ * Apply a single post-roll selection. Each chosen die keeps the better of
+ * its original result and the new d6 result, exactly as the core rule states.
+ */
+export function resolveD6Rerolls(originalResults, selectedIndices, rerolledResults, maximumRerolls) {
+  const originals = Array.isArray(originalResults) ? [...originalResults] : [];
+  const selected = Array.isArray(selectedIndices) ? selectedIndices : [];
+  const rerolled = Array.isArray(rerolledResults) ? rerolledResults : [];
+  const maximum = Number(maximumRerolls);
+
+  originals.forEach(classifyD6Result);
+  if (!Number.isInteger(maximum) || maximum < 0) {
+    throw new RangeError("Количество доступных перебросов должно быть неотрицательным целым числом.");
+  }
+
+  const unique = new Set(selected);
+  if (unique.size !== selected.length) {
+    throw new RangeError("Одну и ту же кость нельзя выбрать для переброса дважды.");
+  }
+  if (selected.length > maximum) {
+    throw new RangeError("Выбрано больше костей, чем разрешено перебросами.");
+  }
+  if (rerolled.length !== selected.length) {
+    throw new RangeError("Количество новых результатов не совпадает с выбранными костями.");
+  }
+
+  const history = [];
+  for (let index = 0; index < selected.length; index += 1) {
+    const dieIndex = selected[index];
+    if (!Number.isInteger(dieIndex) || dieIndex < 0 || dieIndex >= originals.length) {
+      throw new RangeError("Выбрана несуществующая кость.");
+    }
+
+    const nextValue = Number(rerolled[index]);
+    classifyD6Result(nextValue);
+    const previousValue = originals[dieIndex];
+    const keptValue = Math.max(previousValue, nextValue);
+    originals[dieIndex] = keptValue;
+    history.push({
+      index: dieIndex,
+      previous: previousValue,
+      rolled: nextValue,
+      kept: keptValue
+    });
+  }
+
+  return { results: originals, history };
+}
+
 export async function rollD6Pool(diceCount) {
   const count = Number(diceCount);
   if (!Number.isInteger(count) || count < 0 || count > 100) {
@@ -68,17 +117,95 @@ function pluralizeRussian(number, forms) {
   return forms[2];
 }
 
-function renderDice(values) {
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[character]);
+}
+
+function renderDice(values, selection = {}) {
   if (!values.length) {
     return '<span class="hkrpg-roll__empty">Нет костей для броска</span>';
   }
 
+  const selected = new Set(selection.selectedIndices ?? []);
+  const isSelecting = Boolean(selection.selecting);
   return values.map((value, index) => {
     const isSuccess = classifyD6Result(value) === "success";
     const type = isSuccess ? " hkrpg-die--success" : "";
+    const isSelected = selected.has(index);
+    const selectedClass = isSelected ? " is-selected" : "";
     const title = isSuccess ? "Успех" : `Результат ${value}`;
-    return `<span class="hkrpg-die${type}" title="${title}" aria-label="Кость ${index + 1}: ${value}">${value}</span>`;
+    const label = `Кость ${index + 1}: ${value}`;
+    if (isSelecting) {
+      return `<button type="button" class="hkrpg-die hkrpg-die--selectable${type}${selectedClass}" data-hkrpg-reroll-index="${index}" aria-pressed="${isSelected}" title="${title}" aria-label="${label}">${value}</button>`;
+    }
+    return `<span class="hkrpg-die${type}" title="${title}" aria-label="${label}">${value}</span>`;
   }).join("");
+}
+
+/**
+ * Render the editable dice-pool card stored as ChatMessage content.
+ * Selection state is persisted in the message flag and survives chat redraws.
+ */
+export function renderAttributeRollCardContent(state = {}) {
+  const results = Array.isArray(state.results) ? state.results : [];
+  const summary = summarizeD6Results(results);
+  const successesLabel = pluralizeRussian(summary.successes, ["успех", "успеха", "успехов"]);
+  const available = Math.max(0, Math.floor(Number(state.rerollsAvailable) || 0));
+  const selected = Array.isArray(state.selectedIndices) ? state.selectedIndices : [];
+  const selecting = Boolean(state.selecting && !state.rerollsUsed && available > 0);
+  const label = escapeHtml(state.label ?? "Проверка");
+  const formula = escapeHtml(state.formula ?? `${results.length}d6`);
+
+  let controls = "";
+  if (available > 0 && !state.rerollsUsed) {
+    if (selecting) {
+      controls = `
+        <div class="hkrpg-roll__reroll-panel">
+          <p class="hkrpg-roll__note">Выберите не более <strong>${available}</strong> ${available === 1 ? "кости" : "костей"}. Засчитывается лучший результат из двух.</p>
+          <div class="hkrpg-roll__actions">
+            <button type="button" class="hkrpg-roll__action hkrpg-roll__action--primary" data-hkrpg-roll-action="confirm" ${selected.length ? "" : "disabled"}>Перебросить выбранные (${selected.length}/${available})</button>
+            <button type="button" class="hkrpg-roll__action" data-hkrpg-roll-action="cancel">Отмена</button>
+          </div>
+        </div>`;
+    } else {
+      controls = `
+        <div class="hkrpg-roll__reroll-panel">
+          <span class="hkrpg-roll__note">Доступно перебросов: <strong>${available}</strong></span>
+          <button type="button" class="hkrpg-roll__action hkrpg-roll__action--primary" data-hkrpg-roll-action="start">Переброс</button>
+        </div>`;
+    }
+  } else if (state.rerollsUsed && Array.isArray(state.rerollHistory) && state.rerollHistory.length) {
+    controls = `
+      <div class="hkrpg-roll__note hkrpg-roll__reroll-used">
+        Переброс потрачен: ${state.rerollHistory.map((entry) =>
+          `кость ${Number(entry.index) + 1}: ${Number(entry.previous)} → ${Number(entry.rolled)}, оставлено ${Number(entry.kept)}`
+        ).join("; ")}
+      </div>`;
+  }
+
+  return `
+    <section class="hkrpg-roll">
+      <header class="hkrpg-roll__header">
+        <h3 class="hkrpg-roll__title">${label}</h3>
+        <span class="hkrpg-roll__formula">${formula}</span>
+      </header>
+      <div class="hkrpg-roll__dice" aria-label="Результаты костей">
+        ${renderDice(results, { selecting, selectedIndices: selected })}
+      </div>
+      <footer class="hkrpg-roll__result">
+        <span>Успехи</span>
+        <strong>${summary.successes}</strong>
+        <span class="hkrpg-roll__plural">${successesLabel}</span>
+      </footer>
+      ${controls}
+    </section>
+  `;
 }
 
 export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
@@ -108,46 +235,45 @@ export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
     rerollsAvailable
   } = getAttributePool(value, temporaryValue);
   const { roll, results } = await rollD6Pool(diceCount);
-  const summary = summarizeD6Results(results);
   const label = game.i18n.localize(characteristic.localizationKey);
-  const successesLabel = pluralizeRussian(summary.successes, ["успех", "успеха", "успехов"]);
   const formula = bonusDiceCount > 0
     ? `${baseDiceCount}d6 + ${bonusDiceCount}d6 = ${diceCount}d6`
     : `${diceCount}d6`;
-  const rerollText = rerollsAvailable
-    ? `<div class="hkrpg-roll__note">Доступен повторный бросок: <strong>${rerollsAvailable}</strong></div>`
-    : "";
 
-  const content = `
-    <section class="hkrpg-roll">
-      <header class="hkrpg-roll__header">
-        <h3 class="hkrpg-roll__title">${label}</h3>
-        <span class="hkrpg-roll__formula">${formula}</span>
-      </header>
-      <div class="hkrpg-roll__dice" aria-label="Результаты костей">
-        ${renderDice(results)}
-      </div>
-      <footer class="hkrpg-roll__result">
-        <span>Успехи</span>
-        <strong>${summary.successes}</strong>
-        <span class="hkrpg-roll__plural">${successesLabel}</span>
-      </footer>
-      ${rerollText}
-    </section>
-  `;
-
+  const state = {
+    kind: "attribute-check",
+    attributeKey,
+    label,
+    formula,
+    results,
+    rerollsAvailable: Math.min(rerollsAvailable, results.length),
+    rerollsUsed: false,
+    selecting: false,
+    selectedIndices: [],
+    rerollHistory: [],
+    rollData: roll?.toJSON?.() ?? null
+  };
+  const content = renderAttributeRollCardContent(state);
   const speaker = ChatMessage.getSpeaker({ actor });
 
   if (roll) {
-    return roll.toMessage(
-      { speaker, content },
-      { rollMode: game.settings.get("core", "rollMode") }
+    // Prepare the standard Foundry roll metadata and visibility mode, but keep
+    // the system's own compact card as the only visible message content.
+    const messageData = await roll.toMessage(
+      { speaker, content: "" },
+      { create: false, rollMode: game.settings.get("core", "rollMode") }
     );
+    messageData.content = content;
+    messageData.flags ??= {};
+    messageData.flags.hkrpg ??= {};
+    messageData.flags.hkrpg.attributeRoll = state;
+    return ChatMessage.create(messageData);
   }
 
   return ChatMessage.create({
     speaker,
     content,
-    type: CONST.CHAT_MESSAGE_TYPES.OTHER
+    type: CONST.CHAT_MESSAGE_TYPES.OTHER,
+    flags: { hkrpg: { attributeRoll: state } }
   });
 }
