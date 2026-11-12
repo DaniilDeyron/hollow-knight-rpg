@@ -59,8 +59,8 @@ export class HKCharacterSheet extends ActorSheet {
       ])
     );
     context.effectiveSocial = {
-      cute: Number(this.actor.system.social.cute ?? 0) + Number(traitBonuses.cute ?? 0),
-      spook: Number(this.actor.system.social.spook ?? 0) + Number(traitBonuses.spook ?? 0),
+      cute: Number(this.actor.system.social.cute ?? 0) + Number(this.actor.system.social.bonus ?? 0) + Number(traitBonuses.cute ?? 0),
+      spook: Number(this.actor.system.social.spook ?? 0) + Number(this.actor.system.social.bonus ?? 0) + Number(traitBonuses.spook ?? 0),
       speed: Number(this.actor.system.social.speed ?? 0) + Number(traitBonuses.speed ?? 0)
     };
     context.effectiveMaxima = {
