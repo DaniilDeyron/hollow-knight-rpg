@@ -5825,3 +5825,11 @@
 }
 
 /* The trait catalogue lives in the Foundry Items Directory, not the actor sheet. */
+
+
+.hkrpg.sheet.actor .hkrpg-trait-library-note {
+  margin: 4px 0 0;
+  color: #aebfd5;
+  font-size: .7rem;
+  line-height: 1.35;
+}
