@@ -209,7 +209,6 @@ export const HK_TRAIT_MODIFIERS = {
   wild: { insight: -1, soulMax: -1 },
   hauler: { carryingCapacity: 1 },
   "legless-extra": { carryingCapacity: 1 },
-  "natural-saddle": { carryingCapacity: 2 },
   "one-eye-flaw": { spook: 0.5 }
 };
 
