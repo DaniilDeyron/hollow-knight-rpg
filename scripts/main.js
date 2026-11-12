@@ -107,20 +107,20 @@ async function ensureTraitLibrary() {
       await getFolder(entry.name, parentFolder ?? categoryFolder);
     folders.set(entry.id, folder);
     const modifiers = {
-      "characteristic-bookworm": { insight: 1, might: -1 },
       dazzling: { cute: 1 },
       dull: { insight: -1 },
       fragile: { shell: -1 },
-      graceful: { grace: 1 },
+      graceful: { grace: 0.5 },
       heartful: { heartMax: 1 },
       frail: { heartMax: -1 },
-      insightful: { insight: 1 },
-      mighty: { might: 1 },
+      insightful: { insight: 0.5 },
+      mighty: { might: 0.5, spook: 0.5 },
       slow: { speed: -1 },
-      weak: { might: -1 },
+      weak: { might: -1, cute: 0.5 },
       clumsy: { grace: -1 },
       spooky: { spook: 1 },
-      "big-strike": { might: 1 }
+      sturdy: { shell: 0.5 },
+      fast: { speed: 1 }
     }[entry.id] ?? {};
     const system = {
       kind: entry.kind, parentId: "", parentLibraryId: entry.parentId ?? "",
