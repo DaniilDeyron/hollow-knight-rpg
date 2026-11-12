@@ -5596,3 +5596,154 @@
 .hkrpg.sheet.actor[data-actor-type="smallBug"] .window-content {
   scrollbar-color: #6c83a0 #0c1929;
 }
+
+
+/* Restore the compact character header geometry used by the original sheet. */
+.hkrpg.sheet.actor .hkrpg-sheet-header {
+  grid-template-columns: 112px minmax(0, 1fr) 154px;
+  align-items: stretch;
+}
+
+.hkrpg.sheet.actor .hkrpg-portrait {
+  display: block;
+  width: 112px;
+  height: 112px;
+  min-height: 112px;
+  max-height: 112px;
+  align-self: stretch;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (max-width: 760px) {
+  .hkrpg.sheet.actor .hkrpg-sheet-header {
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
+
+  .hkrpg.sheet.actor .hkrpg-portrait {
+    width: 84px;
+    height: 84px;
+    min-height: 84px;
+    max-height: 84px;
+  }
+}
+
+/* Visible in-sheet trait catalogue; entries remain draggable into trait slots. */
+.hkrpg.sheet.actor .hkrpg-trait-library {
+  min-width: 0;
+  margin-top: 10px;
+  padding: 10px 11px;
+  border: 1px solid #405673;
+  border-radius: 5px;
+  background: linear-gradient(180deg, rgb(22 37 58 / 97%), rgb(11 22 38 / 98%));
+  color: #e8effa;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library__summary,
+.hkrpg.sheet.actor .hkrpg-trait-library__category > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: #f0f5fd;
+  cursor: pointer;
+  list-style: none;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library__summary {
+  padding-bottom: 7px;
+  border-bottom: 1px solid #506b8b;
+  font-size: .95rem;
+  font-weight: 800;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library__summary strong,
+.hkrpg.sheet.actor .hkrpg-trait-library__category > summary small {
+  padding: 2px 7px;
+  border: 1px solid #526d8d;
+  border-radius: 4px;
+  color: #d9e4f2;
+  font-size: .72rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library__category {
+  margin-top: 7px;
+  border: 1px solid rgb(82 109 141 / 55%);
+  border-radius: 4px;
+  background: rgb(6 16 29 / 35%);
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library__category > summary {
+  padding: 7px 9px;
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library__items {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 330px;
+  overflow: auto;
+  padding: 0 7px 7px;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library-item {
+  min-width: 0;
+  padding: 7px 9px;
+  border: 1px solid #405a78;
+  border-radius: 4px;
+  background: linear-gradient(145deg, #182b42, #101e31);
+  cursor: grab;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library-item:active {
+  cursor: grabbing;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library-item--subtrait {
+  margin-left: 14px;
+  border-left: 3px solid #8e7953;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library-item--subtrait2 {
+  margin-left: 28px;
+  border-left: 3px solid #607f9f;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library-item__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library-item__heading strong {
+  color: #f0dfb9;
+  font-size: .82rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library-item__heading small,
+.hkrpg.sheet.actor .hkrpg-trait-library-item__hunger {
+  color: #9fb3cc;
+  font-size: .66rem;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library-item p {
+  margin: 4px 0;
+  color: #c1cee0;
+  font-size: .72rem;
+  line-height: 1.35;
+}
+
+.hkrpg.sheet.actor .hkrpg-spell-reference {
+  margin-top: 0;
+}
+
+.hkrpg.sheet.actor .hkrpg-trait-library-item__parent {
+  display: block;
+  margin-top: 2px;
+  color: #c7b184;
+  font-size: .66rem;
+}

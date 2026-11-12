@@ -153,7 +153,7 @@
     <a class="item" data-tab="features" data-group="primary">{{localize "HKRPG.Tabs.Features"}}</a>
     <a class="item" data-tab="charms" data-group="primary">{{localize "HKRPG.Tabs.Charms"}}</a>
     <a class="item" data-tab="equipment" data-group="primary">{{localize "HKRPG.Tabs.Equipment"}}</a>
-    <a class="item" data-tab="effects" data-group="primary">{{localize "HKRPG.Tabs.Effects"}}</a>
+    <a class="item" data-tab="effects" data-group="primary">{{localize "HKRPG.Tabs.Memo"}}</a>
     <a class="item" data-tab="journal" data-group="primary">{{localize "HKRPG.Tabs.Journal"}}</a>
   </nav>
 
@@ -402,6 +402,36 @@
             </footer>
           </section>
 
+          <details class="hkrpg-panel hkrpg-trait-library" open>
+            <summary class="hkrpg-trait-library__summary">
+              <span>Библиотека черт</span>
+              <strong>{{traitLibraryCount}}</strong>
+            </summary>
+            {{#if traitLibraryGroups.length}}
+              {{#each traitLibraryGroups as |group|}}
+                <details class="hkrpg-trait-library__category">
+                  <summary><span>{{group.label}}</span><small>{{group.items.length}}</small></summary>
+                  <div class="hkrpg-trait-library__items">
+                    {{#each group.items as |trait|}}
+                      <article class="hkrpg-trait-library-item hkrpg-trait-library-item--{{trait.kind}}"
+                               draggable="true" data-trait-library-id="{{trait.id}}">
+                        <div class="hkrpg-trait-library-item__heading">
+                          <strong>{{trait.name}}</strong>
+                          <small>{{trait.kindLabel}}</small>
+                        </div>
+                        {{#if trait.parentName}}<small class="hkrpg-trait-library-item__parent">Для: {{trait.parentName}}</small>{{/if}}
+                        {{#if trait.description}}<p>{{trait.description}}</p>{{/if}}
+                        <span class="hkrpg-trait-library-item__hunger">Голод: {{trait.hunger}}</span>
+                      </article>
+                    {{/each}}
+                  </div>
+                </details>
+              {{/each}}
+            {{else}}
+              <p class="hkrpg-empty">Каталог пока не создан. Войдите в мир от имени Мастера и перезагрузите его.</p>
+            {{/if}}
+          </details>
+
           {{#if legacyTraits.length}}
             <section class="hkrpg-feature-legacy-list hkrpg-panel">
               <p>{{localize "HKRPG.Features.LegacyTraitList"}}</p>
@@ -411,19 +441,6 @@
             </section>
           {{/if}}
 
-          <details class="hkrpg-panel hkrpg-spell-reference">
-            <summary>{{localize "HKRPG.Features.SpellModifications"}}</summary>
-            <p>{{localize "HKRPG.Features.SpellRangeSummary"}}</p>
-            <p>{{localize "HKRPG.Features.SpellDurationSummary"}}</p>
-            <p>{{localize "HKRPG.Features.SpellDamageSummary"}}</p>
-            <ul>
-              <li>{{localize "HKRPG.Features.SpellSplitSummary"}}</li>
-              <li>{{localize "HKRPG.Features.SpellExpandSummary"}}</li>
-              <li>{{localize "HKRPG.Features.SpellAccelerateSummary"}}</li>
-              <li>{{localize "HKRPG.Features.SpellConjureSummary"}}</li>
-            </ul>
-            <small>{{localize "HKRPG.Features.SpellReferenceSource"}}</small>
-          </details>
         </div>
 
         <div class="hkrpg-features-column hkrpg-features-column--right">
@@ -754,41 +771,6 @@
 
     <section class="tab hkrpg-effects-tab" data-group="primary" data-tab="effects">
       <div class="hkrpg-effects-layout">
-        <section class="hkrpg-panel hkrpg-effects-active-panel">
-          <div class="hkrpg-panel-heading">
-            <div>
-              <h2>{{localize "HKRPG.Effects.ActiveTitle"}}</h2>
-              <p>{{localize "HKRPG.Effects.ActiveHint"}}</p>
-            </div>
-            <strong>{{activeEffects.length}}</strong>
-          </div>
-          {{#if activeEffects.length}}
-            <div class="hkrpg-effects-icon-grid hkrpg-effects-icon-grid--active">
-              {{#each activeEffects as |effect|}}
-                <div class="hkrpg-effect-icon-wrap {{#if effect.disabled}}is-disabled{{else}}is-active{{/if}}">
-                  {{#if effect.catalogId}}
-                    <button type="button" class="hkrpg-effect-icon" data-open-status-id="{{effect.catalogId}}"
-                      data-tooltip="{{effect.name}}&#10;{{effect.summary}}&#10;{{effect.rules}}"
-                      aria-label="Открыть описание: {{effect.name}}">
-                      <img src="{{effect.icon}}" alt="" />
-                      <span class="hkrpg-effect-icon__toggle">{{#if effect.disabled}}○{{else}}●{{/if}}</span>
-                    </button>
-                  {{else}}
-                    <div class="hkrpg-effect-icon hkrpg-effect-icon--readonly"
-                      data-tooltip="{{effect.name}}&#10;{{effect.summary}}&#10;{{effect.rules}}">
-                      <img src="{{effect.icon}}" alt="" />
-                      <span class="hkrpg-effect-icon__toggle">{{#if effect.disabled}}○{{else}}●{{/if}}</span>
-                    </div>
-                  {{/if}}
-                  <span class="hkrpg-effect-icon__name">{{effect.name}}</span>
-                </div>
-              {{/each}}
-            </div>
-          {{else}}
-            <p class="hkrpg-empty">{{localize "HKRPG.Effects.NoActive"}}</p>
-          {{/if}}
-        </section>
-
         <section class="hkrpg-panel hkrpg-effects-reference-panel">
           <div class="hkrpg-panel-heading">
             <div>
@@ -817,6 +799,20 @@
             </section>
           {{/each}}
         </section>
+
+        <details class="hkrpg-panel hkrpg-spell-reference">
+          <summary>{{localize "HKRPG.Features.SpellModifications"}}</summary>
+          <p>{{localize "HKRPG.Features.SpellRangeSummary"}}</p>
+          <p>{{localize "HKRPG.Features.SpellDurationSummary"}}</p>
+          <p>{{localize "HKRPG.Features.SpellDamageSummary"}}</p>
+          <ul>
+            <li>{{localize "HKRPG.Features.SpellSplitSummary"}}</li>
+            <li>{{localize "HKRPG.Features.SpellExpandSummary"}}</li>
+            <li>{{localize "HKRPG.Features.SpellAccelerateSummary"}}</li>
+            <li>{{localize "HKRPG.Features.SpellConjureSummary"}}</li>
+          </ul>
+          <small>{{localize "HKRPG.Features.SpellReferenceSource"}}</small>
+        </details>
       </div>
     </section>
 
