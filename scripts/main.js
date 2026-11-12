@@ -1,6 +1,5 @@
-import { HKCharacterData } from "./data/character-data.js";
+import { HKCharacterData, HKSmallBugData, HKMediumBugData, HKLargeBugData } from "./data/character-data.js";
 import { buildBugActorDefaults } from "./data/bug-templates.js";
-import { flattenTraitLibrary } from "./data/trait-library.js";
 import { HKCharacterSheet } from "./sheets/character-sheet.js";
 import { HKCharmData } from "./data/charm-data.js";
 import { HKCharmSheet } from "./sheets/charm-sheet.js";
@@ -23,9 +22,9 @@ Hooks.once("init", () => {
   CONFIG.statusEffects = getOrderedEffectStatuses(CONFIG.statusEffects ?? []);
 
   CONFIG.Actor.dataModels.character = HKCharacterData;
-  CONFIG.Actor.dataModels.largeBug = HKCharacterData;
-  CONFIG.Actor.dataModels.mediumBug = HKCharacterData;
-  CONFIG.Actor.dataModels.smallBug = HKCharacterData;
+  CONFIG.Actor.dataModels.largeBug = HKLargeBugData;
+  CONFIG.Actor.dataModels.mediumBug = HKMediumBugData;
+  CONFIG.Actor.dataModels.smallBug = HKSmallBugData;
   CONFIG.Item.dataModels.charm = HKCharmData;
   CONFIG.Item.dataModels.trait = HKTraitData;
   CONFIG.Item.dataModels.path = HKPathData;
@@ -65,92 +64,11 @@ Hooks.once("init", () => {
 
 const BUG_ACTOR_TYPES = ["largeBug", "mediumBug", "smallBug"];
 Hooks.on("preCreateActor", (actor) => {
-  if (BUG_ACTOR_TYPES.includes(actor.type)) actor.updateSource(buildBugActorDefaults(actor.type));
+  if (!BUG_ACTOR_TYPES.includes(actor.type)) return;
+  const defaults = buildBugActorDefaults(actor.type);
+  // The type-specific DataModel owns system defaults; this hook only sets token footprint.
+  actor.updateSource({ prototypeToken: defaults.prototypeToken });
 });
-
-async function ensureTraitLibrary() {
-  if (!game.user?.isGM || !game.items) return;
-  const folderCache = new Map();
-  const getFolder = async (name, parent = null) => {
-    const key = `${parent?.id ?? "root"}:${name}`;
-    if (folderCache.has(key)) return folderCache.get(key);
-    let folder = game.folders.find((entry) => entry.type === "Item" &&
-      entry.name === name && (entry.folder?.id ?? null) === (parent?.id ?? null) &&
-      entry.getFlag?.("hkrpg", "traitLibraryFolder"));
-    if (!folder) folder = await Folder.implementation.create({
-      name, type: "Item", folder: parent?.id ?? null,
-      flags: { hkrpg: { traitLibraryFolder: true } }
-    });
-    folderCache.set(key, folder);
-    return folder;
-  };
-  const categoryNames = {
-    naturalWeapon:"01 · Природное оружие", characteristics:"02 · Черты характеристик",
-    mind:"03 · Черты разума", physiological:"04 · Физиологические черты",
-    senses:"05 · Черты чувств", mystical:"06 · Мистические черты",
-    body:"07 · Черты тела", movement:"08 · Черты движения",
-    naturalDefense:"09 · Черты природной защиты"
-  };
-  const existing = new Map(game.items.contents
-    .filter((item) => item.type === "trait" && item.getFlag?.("hkrpg", "traitLibraryId"))
-    .map((item) => [item.getFlag("hkrpg", "traitLibraryId"), item]));
-  const itemMap = new Map(existing);
-  const folders = new Map();
-  for (const entry of flattenTraitLibrary()) {
-    let categoryFolder = folders.get(entry.category);
-    if (!categoryFolder) {
-      categoryFolder = await getFolder(categoryNames[entry.category] ?? "Черты · Прочее");
-      folders.set(entry.category, categoryFolder);
-    }
-    const parentFolder = entry.parentId ? folders.get(entry.parentId) : null;
-    const folder = entry.kind === "main" ? categoryFolder :
-      await getFolder(entry.name, parentFolder ?? categoryFolder);
-    folders.set(entry.id, folder);
-    const modifiers = {
-      dazzling: { cute: 1 },
-      dull: { insight: -1 },
-      fragile: { shell: -1 },
-      graceful: { grace: 0.5 },
-      heartful: { heartMax: 1 },
-      frail: { heartMax: -1 },
-      insightful: { insight: 0.5 },
-      mighty: { might: 0.5, spook: 0.5 },
-      slow: { speed: -1 },
-      weak: { might: -1, cute: 0.5 },
-      clumsy: { grace: -1 },
-      spooky: { spook: 1 },
-      sturdy: { shell: 0.5 },
-      fast: { speed: 1 }
-    }[entry.id] ?? {};
-    const system = {
-      kind: entry.kind, parentId: "", parentLibraryId: entry.parentId ?? "",
-      libraryId: entry.id, group: entry.category, slot: 0, category: entry.category,
-      selected: entry.kind === "main", hunger: entry.hunger, cute: modifiers.cute ?? 0,
-      spook: modifiers.spook ?? 0, might: modifiers.might ?? 0,
-      insight: modifiers.insight ?? 0, shell: modifiers.shell ?? 0,
-      grace: modifiers.grace ?? 0, heartMax: modifiers.heartMax ?? 0,
-      staminaMax: modifiers.staminaMax ?? 0, soulMax: modifiers.soulMax ?? 0,
-      satietyMax: modifiers.satietyMax ?? 0, speed: modifiers.speed ?? 0,
-      description: entry.description, effects: entry.description
-    };
-    const prior = itemMap.get(entry.id);
-    if (prior) {
-      await prior.update({ name: entry.name, folder: folder.id, system,
-        ownership: { default: CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2 },
-        "flags.hkrpg.traitLibraryVersion": 1 });
-      itemMap.set(entry.id, prior);
-    } else {
-      const [created] = await Item.implementation.createDocuments([{
-        name: entry.name, type: "trait",
-        img: "icons/commodities/biological/antenna-insect-green.webp",
-        folder: folder.id, system,
-        ownership: { default: CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2 },
-        flags: { hkrpg: { traitLibraryId: entry.id, traitLibraryVersion: 1 } }
-      }]);
-      itemMap.set(entry.id, created);
-    }
-  }
-}
 
 async function ensureStatusReferenceItems() {
   if (!game.user?.isGM || !game.items) return;
@@ -213,7 +131,6 @@ async function ensureStatusReferenceItems() {
 Hooks.once("ready", async () => {
   try {
     await ensureStatusReferenceItems();
-    await ensureTraitLibrary();
   } catch (error) {
     console.error("Hollow Knight RPG | Could not prepare status reference Items", error);
   }

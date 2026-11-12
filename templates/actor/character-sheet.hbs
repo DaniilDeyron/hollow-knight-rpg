@@ -9,16 +9,10 @@
       </label>
 
       <div class="hkrpg-header-fields">
-        <label>
+        <div class="hkrpg-size-display">
           <span>{{localize "HKRPG.Size.Label"}}</span>
-          <select name="system.size">
-            {{#select system.size}}
-              <option value="small">{{localize "HKRPG.Size.Small"}}</option>
-              <option value="medium">{{localize "HKRPG.Size.Medium"}}</option>
-              <option value="large">{{localize "HKRPG.Size.Large"}}</option>
-            {{/select}}
-          </select>
-        </label>
+          <strong>{{bugSizeLabel}}</strong>
+        </div>
         <label>
           <span>{{localize "HKRPG.Profile.Milestone"}}</span>
           <input name="system.profile.milestone" type="number" min="0" value="{{system.profile.milestone}}" />
@@ -345,6 +339,10 @@
                           {{#if slot.trait.grace}}<span>Грация {{slot.trait.grace}}</span>{{/if}}
                           {{#if slot.trait.heartMax}}<span>Сердце {{slot.trait.heartMax}}</span>{{/if}}
                           {{#if slot.trait.satietyMax}}<span>Макс. сытость {{slot.trait.satietyMax}}</span>{{/if}}
+                          {{#if slot.trait.staminaMax}}<span>Выносливость {{slot.trait.staminaMax}}</span>{{/if}}
+                          {{#if slot.trait.soulMax}}<span>Душа {{slot.trait.soulMax}}</span>{{/if}}
+                          {{#if slot.trait.speed}}<span>Скорость {{slot.trait.speed}}</span>{{/if}}
+                          {{#if slot.trait.carryingCapacity}}<span>Нагрузка {{slot.trait.carryingCapacity}}</span>{{/if}}
                         </div>
                         {{#if slot.trait.children.length}}
                           <div class="hkrpg-trait-card__subtraits" data-trait-child-dropzone="{{slot.trait.id}}">
@@ -402,34 +400,71 @@
             </footer>
           </section>
 
-          <details class="hkrpg-panel hkrpg-trait-library" open>
+          <details class="hkrpg-panel hkrpg-trait-library">
             <summary class="hkrpg-trait-library__summary">
               <span>Библиотека черт</span>
               <strong>{{traitLibraryCount}}</strong>
             </summary>
-            {{#if traitLibraryGroups.length}}
-              {{#each traitLibraryGroups as |group|}}
-                <details class="hkrpg-trait-library__category">
-                  <summary><span>{{group.label}}</span><small>{{group.items.length}}</small></summary>
-                  <div class="hkrpg-trait-library__items">
-                    {{#each group.items as |trait|}}
-                      <article class="hkrpg-trait-library-item hkrpg-trait-library-item--{{trait.kind}}"
-                               draggable="true" data-trait-library-id="{{trait.id}}">
-                        <div class="hkrpg-trait-library-item__heading">
-                          <strong>{{trait.name}}</strong>
-                          <small>{{trait.kindLabel}}</small>
+            <p class="hkrpg-trait-library__hint">Готовые черты из книги. Добавляйте основные черты, затем выбирайте подходящие подчерты внутри их карточек.</p>
+            {{#each traitLibraryGroups as |group|}}
+              <details class="hkrpg-trait-library__category">
+                <summary><span>{{group.label}}</span><small>{{group.items.length}}</small></summary>
+                <div class="hkrpg-trait-library__items">
+                  {{#each group.items as |trait|}}
+                    <article class="hkrpg-trait-library-item">
+                      <div class="hkrpg-trait-library-item__heading">
+                        <strong>{{trait.name}}</strong>
+                        <span>Голод {{trait.hunger}}</span>
+                      </div>
+                      <p>{{trait.description}}</p>
+                      {{#if trait.modifiers.might}}<small>Мощь {{trait.modifiers.might}}</small>{{/if}}
+                      {{#if trait.modifiers.insight}}<small>Проницательность {{trait.modifiers.insight}}</small>{{/if}}
+                      {{#if trait.modifiers.shell}}<small>Панцирь {{trait.modifiers.shell}}</small>{{/if}}
+                      {{#if trait.modifiers.grace}}<small>Грация {{trait.modifiers.grace}}</small>{{/if}}
+                      {{#if trait.modifiers.heartMax}}<small>Макс. Сердце {{trait.modifiers.heartMax}}</small>{{/if}}
+                      {{#if trait.modifiers.cute}}<small>Привлекательность {{trait.modifiers.cute}}</small>{{/if}}
+                      {{#if trait.modifiers.spook}}<small>Жуть {{trait.modifiers.spook}}</small>{{/if}}
+                      {{#if trait.modifiers.speed}}<small>Скорость {{trait.modifiers.speed}}</small>{{/if}}
+                      {{#if trait.modifiers.carryingCapacity}}<small>Нагрузка {{trait.modifiers.carryingCapacity}}</small>{{/if}}
+                      <button type="button" data-add-library-trait="{{trait.id}}" {{#unless trait.canAdd}}disabled{{/unless}}>
+                        {{#if trait.canAdd}}{{#if trait.added}}Добавить ещё{{else}}Добавить черту{{/if}}{{else}}{{#if trait.added}}Уже добавлена{{else}}{{#if trait.limitReached}}Лимит 7/7{{else}}Недоступно{{/if}}{{/if}}{{/if}}
+                      </button>
+                      {{#if trait.children.length}}
+                        <div class="hkrpg-trait-library-item__children">
+                          {{#each trait.children as |child|}}
+                            <article class="hkrpg-trait-library-child">
+                              <div class="hkrpg-trait-library-item__heading">
+                                <strong>{{child.name}}</strong>
+                                <span>Голод {{child.hunger}}</span>
+                              </div>
+                              <p>{{child.description}}</p>
+                              {{#if child.modifierSummary}}<small class="hkrpg-trait-library-child__modifiers">{{child.modifierSummary}}</small>{{/if}}
+                              <button type="button" data-add-library-trait="{{child.id}}" data-library-parent="{{trait.actorItemId}}" {{#unless child.canAdd}}disabled{{/unless}}>
+                                {{#if child.added}}Уже добавлена{{else}}{{#if child.canAdd}}Добавить подчерту{{else}}Сначала добавьте родителя{{/if}}{{/if}}
+                              </button>
+                              {{#if child.children.length}}
+                                <div class="hkrpg-trait-library-child__nested">
+                                  {{#each child.children as |grandchild|}}
+                                    <div class="hkrpg-trait-library-grandchild">
+                                      <strong>{{grandchild.name}}</strong>
+                                      <p>{{grandchild.description}}</p>
+                                      {{#if grandchild.modifierSummary}}<small class="hkrpg-trait-library-child__modifiers">{{grandchild.modifierSummary}}</small>{{/if}}
+                                      <button type="button" data-add-library-trait="{{grandchild.id}}" data-library-parent="{{child.actorItemId}}" {{#unless grandchild.canAdd}}disabled{{/unless}}>
+                                        {{#if grandchild.added}}Уже добавлена{{else}}{{#if grandchild.canAdd}}Добавить подчерту II{{else}}Сначала добавьте родителя{{/if}}{{/if}}
+                                      </button>
+                                    </div>
+                                  {{/each}}
+                                </div>
+                              {{/if}}
+                            </article>
+                          {{/each}}
                         </div>
-                        {{#if trait.parentName}}<small class="hkrpg-trait-library-item__parent">Для: {{trait.parentName}}</small>{{/if}}
-                        {{#if trait.description}}<p>{{trait.description}}</p>{{/if}}
-                        <span class="hkrpg-trait-library-item__hunger">Голод: {{trait.hunger}}</span>
-                      </article>
-                    {{/each}}
-                  </div>
-                </details>
-              {{/each}}
-            {{else}}
-              <p class="hkrpg-empty">Каталог пока не создан. Войдите в мир от имени Мастера и перезагрузите его.</p>
-            {{/if}}
+                      {{/if}}
+                    </article>
+                  {{/each}}
+                </div>
+              </details>
+            {{/each}}
           </details>
 
           {{#if legacyTraits.length}}

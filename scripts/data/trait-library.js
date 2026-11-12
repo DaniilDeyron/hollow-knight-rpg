@@ -178,3 +178,153 @@ export function flattenTraitLibrary(entries = HK_TRAIT_LIBRARY, parentId = "", d
  }
  return output;
 }
+
+
+/** Numeric effects that can be applied directly by the character rules engine. */
+export const HK_TRAIT_MODIFIERS = {
+  "irritating-bristles": { cute: 0.5 },
+  spiked: { spook: 0.5 },
+  pincers: { spook: 0.5 },
+  "huge-pincers": { cute: -0.5, spook: 0.5 },
+  dazzling: { cute: 1 },
+  dull: { insight: -1 },
+  fragile: { shell: -1 },
+  graceful: { grace: 1 },
+  heartful: { heartMax: 1 },
+  frail: { heartMax: -1 },
+  insightful: { insight: 1 },
+  mighty: { might: 1 },
+  slow: { speed: -1 },
+  weak: { might: -1 },
+  clumsy: { grace: -1 },
+  spooky: { spook: 1 },
+  sturdy: { shell: 0.5 },
+  fast: { speed: 1 },
+  dreamer: { cute: 0.5 },
+  disadvantaged: { spook: 0.5 },
+  intimidating: { spook: 1 },
+  "incorporeal": { spook: 1 },
+  "pale-fluff": { cute: 0.5 },
+  "soft-body": { heartMax: 4 },
+  wild: { insight: -1, soulMax: -1 },
+  hauler: { carryingCapacity: 1 },
+  "legless-extra": { carryingCapacity: 1 },
+  "one-eye-flaw": { spook: 0.5 }
+};
+
+export function getTraitModifiers(id) {
+  return { ...(HK_TRAIT_MODIFIERS[id] ?? {}) };
+}
+
+export function buildTraitItemData(entry, parentId = "", slot = 0) {
+  const modifiers = getTraitModifiers(entry.id);
+  return {
+    name: entry.name,
+    type: "trait",
+    img: "icons/svg/upgrade.svg",
+    system: {
+      kind: entry.kind,
+      parentId,
+      selected: true,
+      libraryId: entry.id,
+      parentLibraryId: entry.parentId ?? "",
+      group: entry.category,
+      slot,
+      category: entry.category,
+      hunger: Number(entry.hunger ?? 0),
+      cute: Number(modifiers.cute ?? 0),
+      spook: Number(modifiers.spook ?? 0),
+      might: Number(modifiers.might ?? 0),
+      insight: Number(modifiers.insight ?? 0),
+      shell: Number(modifiers.shell ?? 0),
+      grace: Number(modifiers.grace ?? 0),
+      heartMax: Number(modifiers.heartMax ?? 0),
+      staminaMax: Number(modifiers.staminaMax ?? 0),
+      soulMax: Number(modifiers.soulMax ?? 0),
+      satietyMax: Number(modifiers.satietyMax ?? 0),
+      speed: Number(modifiers.speed ?? 0),
+      carryingCapacity: Number(modifiers.carryingCapacity ?? 0),
+      description: entry.description,
+      effects: ""
+    }
+  };
+}
+
+const TRAIT_CATEGORY_LABELS = {
+  naturalWeapon: "Природное оружие",
+  characteristics: "Черты характеристик",
+  mind: "Черты разума",
+  physiological: "Физиологические черты",
+  senses: "Черты чувств",
+  mystical: "Мистические черты",
+  body: "Черты тела",
+  movement: "Черты движения",
+  naturalDefense: "Черты природной защиты"
+};
+
+export function buildTraitLibraryGroups(actorItems = []) {
+  const entries = flattenTraitLibrary();
+  const byParent = new Map();
+  for (const entry of entries) {
+    const list = byParent.get(entry.parentId) ?? [];
+    list.push(entry);
+    byParent.set(entry.parentId, list);
+  }
+  const findActorItem = (entry, parentActorId = "") => actorItems.find((item) =>
+    item.type === "trait" &&
+    item.system?.libraryId === entry.id &&
+    String(item.system?.parentId ?? "") === String(parentActorId)
+  );
+  const buildNode = (entry, parentActorId = "") => {
+    const actorItem = findActorItem(entry, parentActorId);
+    const parentActorItem = parentActorId ? actorItems.find((item) => item.id === parentActorId) : null;
+    const existingCount = actorItems.filter((item) =>
+      item.type === "trait" &&
+      item.system?.libraryId === entry.id &&
+      String(item.system?.parentId ?? "") === String(parentActorId)
+    ).length;
+    const repeatable = /можно (?:взять|брать) (?:дважды|несколько раз)/i.test(entry.description ?? "");
+    const isMain = entry.kind === "main";
+    const mainCount = actorItems.filter((item) => item.type === "trait" && item.system?.kind === "main").length;
+    const modifiers = getTraitModifiers(entry.id);
+    const modifierNames = {
+      might: "Мощь", insight: "Проницательность", shell: "Панцирь", grace: "Грация",
+      heartMax: "Сердце", staminaMax: "Выносливость", soulMax: "Душа",
+      satietyMax: "Сытость", cute: "Привлекательность", spook: "Жуть",
+      speed: "Скорость", carryingCapacity: "Нагрузка"
+    };
+    const modifierSummary = Object.entries(modifiers)
+      .filter(([, value]) => Number(value) !== 0)
+      .map(([key, value]) => `${modifierNames[key] ?? key} ${Number(value) > 0 ? "+" : ""}${value}`)
+      .join(" · ");
+    return {
+      id: entry.id,
+      name: entry.name,
+      category: entry.category,
+      description: entry.description,
+      hunger: Number(entry.hunger ?? 0),
+      kind: entry.kind,
+      kindLabel: isMain ? "Основная черта" : entry.kind === "subtrait" ? "Подчерта" : "Подчерта II",
+      parentId: entry.parentId,
+      actorItemId: actorItem?.id ?? "",
+      added: Boolean(actorItem),
+      canAdd: isMain
+        ? (existingCount === 0 || (repeatable && existingCount < 2)) && mainCount < 7
+        : Boolean(parentActorItem && parentActorItem.system?.selected !== false) &&
+          (existingCount === 0 || (repeatable && existingCount < 2)),
+      limitReached: isMain && mainCount >= 7,
+      parentMissing: !isMain && !parentActorItem,
+      modifiers,
+      modifierSummary,
+      children: (byParent.get(entry.id) ?? []).map((child) => buildNode(child, actorItem?.id ?? ""))
+    };
+  };
+
+  return Object.entries(TRAIT_CATEGORY_LABELS).map(([id, label]) => ({
+    id,
+    label,
+    items: (byParent.get("") ?? [])
+      .filter((entry) => entry.category === id)
+      .map((entry) => buildNode(entry))
+  })).filter((group) => group.items.length > 0);
+}

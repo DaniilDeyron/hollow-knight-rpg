@@ -98,6 +98,7 @@ export function buildTraitTree(items = []) {
     shell: numeric(item.system?.shell), grace: numeric(item.system?.grace),
     heartMax: numeric(item.system?.heartMax), staminaMax: numeric(item.system?.staminaMax),
     soulMax: numeric(item.system?.soulMax), satietyMax: numeric(item.system?.satietyMax), speed: numeric(item.system?.speed),
+    carryingCapacity: numeric(item.system?.carryingCapacity),
     hungerLabel: formatSigned(item.system?.hunger),
     cuteLabel: formatSigned(item.system?.cute),
     spookLabel: formatSigned(item.system?.spook),
@@ -155,9 +156,9 @@ export function buildTraitTree(items = []) {
       shell: sum.shell + trait.shell, grace: sum.grace + trait.grace,
       heartMax: sum.heartMax + trait.heartMax, staminaMax: sum.staminaMax + trait.staminaMax,
       soulMax: sum.soulMax + trait.soulMax, satietyMax: sum.satietyMax + trait.satietyMax,
-      speed: sum.speed + trait.speed
+      speed: sum.speed + trait.speed, carryingCapacity: sum.carryingCapacity + trait.carryingCapacity
     };
-  }, { hunger: 0, cute: 0, spook: 0, might: 0, insight: 0, shell: 0, grace: 0, heartMax: 0, staminaMax: 0, soulMax: 0, satietyMax: 0, speed: 0 });
+  }, { hunger: 0, cute: 0, spook: 0, might: 0, insight: 0, shell: 0, grace: 0, heartMax: 0, staminaMax: 0, soulMax: 0, satietyMax: 0, speed: 0, carryingCapacity: 0 });
 
   return {
     roots,
