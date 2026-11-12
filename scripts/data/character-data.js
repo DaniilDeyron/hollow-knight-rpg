@@ -170,7 +170,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         soul: valueField(),
         soulMax: valueField(),
         soulTemp: valueField(),
-        hunger: valueField(),
+        hunger: new fields.NumberField({ required: true, nullable: false, initial: 0, min: -99, max: 999, integer: false }),
         satiety: valueField(),
         satietyMaxOverride: new fields.NumberField({
           required: false,
@@ -227,6 +227,9 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
       pathRanks,
       notchBonus: this.resources.notchesBonus
     });
-    Object.assign(this.derived, derived, { traitBonuses: calculateTraitBonuses(this.parent?.items?.contents ?? []) });
+    const traitBonuses = calculateTraitBonuses(this.parent?.items?.contents ?? []);
+    Object.assign(this.derived, derived, { traitBonuses });
+    this.derived.satietyMax = Math.max(0, derived.satietyMax + traitBonuses.satietyMax);
+    this.derived.effectiveHunger = Number(this.resources.hunger ?? 0) + traitBonuses.hunger;
   }
 }
