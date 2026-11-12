@@ -33,6 +33,7 @@ export class HKTraitData extends foundry.abstract.TypeDataModel {
       parentId: textField(),
       selected: booleanField(true),
       libraryId: textField(),
+      parentLibraryId: textField(),
       group: textField(),
       might: signedModifierField(),
       insight: signedModifierField(),
