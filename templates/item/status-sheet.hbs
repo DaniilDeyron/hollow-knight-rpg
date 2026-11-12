@@ -1,0 +1,33 @@
+<section class="hkrpg-status-sheet">
+  <header class="hkrpg-status-sheet__header">
+    <img src="{{item.img}}" alt="" />
+    <div>
+      <span class="hkrpg-status-sheet__eyebrow">БОЕВОЕ СОСТОЯНИЕ · ПРАВИЛА</span>
+      <h1>{{item.name}}</h1>
+    </div>
+  </header>
+
+  {{#if system.summary}}
+    <section class="hkrpg-status-sheet__section">
+      <h2>Кратко</h2>
+      <p>{{system.summary}}</p>
+    </section>
+  {{/if}}
+
+  <section class="hkrpg-status-sheet__section hkrpg-status-sheet__rules">
+    <h2>Правила</h2>
+    <p>{{system.rules}}</p>
+  </section>
+
+  {{#if system.duration}}
+    <section class="hkrpg-status-sheet__section">
+      <h2>Длительность</h2>
+      <p>{{system.duration}}</p>
+    </section>
+  {{/if}}
+
+  <footer class="hkrpg-status-sheet__footer">
+    <span>{{system.source}}</span>
+    <p>Это справочный предмет. Включение и отключение состояния выполняется в окне статусов токена.</p>
+  </footer>
+</section>
