@@ -26,7 +26,7 @@ export function calculateTraitBonuses(items = []) {
     return sum;
   }, {
     might:0, insight:0, shell:0, grace:0, heartMax:0,
-    staminaMax:0, soulMax:0, satietyMax:0, hunger:0, cute:0, spook:0, speed:0
+    staminaMax:0, soulMax:0, satietyMax:0, hunger:0, cute:0, spook:0, speed:0, carryingCapacity:0
   });
 }
 
