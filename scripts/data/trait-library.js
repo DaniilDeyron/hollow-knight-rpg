@@ -221,7 +221,7 @@ export function buildTraitItemData(entry, parentId = "", slot = 0) {
   return {
     name: entry.name,
     type: "trait",
-    img: "icons/svg/upgrade.svg",
+    img: "icons/commodities/biological/antenna-insect-green.webp",
     system: {
       kind: entry.kind,
       parentId,
@@ -250,7 +250,7 @@ export function buildTraitItemData(entry, parentId = "", slot = 0) {
   };
 }
 
-const TRAIT_CATEGORY_LABELS = {
+export const HK_TRAIT_CATEGORY_LABELS = {
   naturalWeapon: "Природное оружие",
   characteristics: "Черты характеристик",
   mind: "Черты разума",
@@ -259,72 +259,54 @@ const TRAIT_CATEGORY_LABELS = {
   mystical: "Мистические черты",
   body: "Черты тела",
   movement: "Черты движения",
-  naturalDefense: "Черты природной защиты"
+  naturalDefense: "Природная защита"
 };
 
-export function buildTraitLibraryGroups(actorItems = []) {
-  const entries = flattenTraitLibrary();
-  const byParent = new Map();
-  for (const entry of entries) {
-    const list = byParent.get(entry.parentId) ?? [];
-    list.push(entry);
-    byParent.set(entry.parentId, list);
-  }
-  const findActorItem = (entry, parentActorId = "") => actorItems.find((item) =>
-    item.type === "trait" &&
-    item.system?.libraryId === entry.id &&
-    String(item.system?.parentId ?? "") === String(parentActorId)
-  );
-  const buildNode = (entry, parentActorId = "") => {
-    const actorItem = findActorItem(entry, parentActorId);
-    const parentActorItem = parentActorId ? actorItems.find((item) => item.id === parentActorId) : null;
-    const existingCount = actorItems.filter((item) =>
-      item.type === "trait" &&
-      item.system?.libraryId === entry.id &&
-      String(item.system?.parentId ?? "") === String(parentActorId)
-    ).length;
-    const repeatable = /можно (?:взять|брать) (?:дважды|несколько раз)/i.test(entry.description ?? "");
-    const isMain = entry.kind === "main";
-    const mainCount = actorItems.filter((item) => item.type === "trait" && item.system?.kind === "main").length;
-    const modifiers = getTraitModifiers(entry.id);
-    const modifierNames = {
-      might: "Мощь", insight: "Проницательность", shell: "Панцирь", grace: "Грация",
-      heartMax: "Сердце", staminaMax: "Выносливость", soulMax: "Душа",
-      satietyMax: "Сытость", cute: "Привлекательность", spook: "Жуть",
-      speed: "Скорость", carryingCapacity: "Нагрузка"
-    };
-    const modifierSummary = Object.entries(modifiers)
-      .filter(([, value]) => Number(value) !== 0)
-      .map(([key, value]) => `${modifierNames[key] ?? key} ${Number(value) > 0 ? "+" : ""}${value}`)
-      .join(" · ");
-    return {
-      id: entry.id,
-      name: entry.name,
-      category: entry.category,
-      description: entry.description,
-      hunger: Number(entry.hunger ?? 0),
-      kind: entry.kind,
-      kindLabel: isMain ? "Основная черта" : entry.kind === "subtrait" ? "Подчерта" : "Подчерта II",
-      parentId: entry.parentId,
-      actorItemId: actorItem?.id ?? "",
-      added: Boolean(actorItem),
-      canAdd: isMain
-        ? (existingCount === 0 || (repeatable && existingCount < 2)) && mainCount < 7
-        : Boolean(parentActorItem && parentActorItem.system?.selected !== false) &&
-          (existingCount === 0 || (repeatable && existingCount < 2)),
-      limitReached: isMain && mainCount >= 7,
-      parentMissing: !isMain && !parentActorItem,
-      modifiers,
-      modifierSummary,
-      children: (byParent.get(entry.id) ?? []).map((child) => buildNode(child, actorItem?.id ?? ""))
-    };
-  };
+/**
+ * Builds the real Foundry Item Directory layout for the built-in library.
+ * Main traits live in category folders; their subtraits live in a child folder
+ * belonging to that parent. Nested options repeat the same pattern.
+ */
+export function buildTraitLibraryLayout(entries = flattenTraitLibrary()) {
+  const folders = [{
+    key: "root",
+    name: "HKRPG — Библиотека черт",
+    parentKey: null,
+    kind: "root"
+  }];
+  const items = [];
+  const categories = Object.entries(HK_TRAIT_CATEGORY_LABELS);
 
-  return Object.entries(TRAIT_CATEGORY_LABELS).map(([id, label]) => ({
-    id,
-    label,
-    items: (byParent.get("") ?? [])
-      .filter((entry) => entry.category === id)
-      .map((entry) => buildNode(entry))
-  })).filter((group) => group.items.length > 0);
+  for (const [categoryId, label] of categories) {
+    const categoryKey = `category:${categoryId}`;
+    folders.push({
+      key: categoryKey,
+      name: `${String(categories.findIndex(([id]) => id === categoryId) + 1).padStart(2, "0")} · ${label}`,
+      parentKey: "root",
+      kind: "category",
+      categoryId
+    });
+
+    const visit = (entry, parentFolderKey) => {
+      items.push({ entry, folderKey: parentFolderKey });
+      const children = entries.filter((candidate) => candidate.parentId === entry.id);
+      if (!children.length) return;
+
+      const childrenFolderKey = `children:${entry.id}`;
+      folders.push({
+        key: childrenFolderKey,
+        name: `Подчерты — ${entry.name}`,
+        parentKey: parentFolderKey,
+        kind: "children",
+        parentLibraryId: entry.id
+      });
+      for (const child of children) visit(child, childrenFolderKey);
+    };
+
+    for (const entry of entries.filter((candidate) =>
+      candidate.kind === "main" && candidate.category === categoryId
+    )) visit(entry, categoryKey);
+  }
+
+  return { rootName: "HKRPG — Библиотека черт", folders, items };
 }

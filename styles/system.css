@@ -5629,313 +5629,6 @@
   }
 }
 
-/* Visible in-sheet trait catalogue; entries remain draggable into trait slots. */
-.hkrpg.sheet.actor .hkrpg-trait-library {
-  min-width: 0;
-  margin-top: 10px;
-  padding: 10px 11px;
-  border: 1px solid #405673;
-  border-radius: 5px;
-  background: linear-gradient(180deg, rgb(22 37 58 / 97%), rgb(11 22 38 / 98%));
-  color: #e8effa;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__summary,
-.hkrpg.sheet.actor .hkrpg-trait-library__category > summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  color: #f0f5fd;
-  cursor: pointer;
-  list-style: none;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__summary {
-  padding-bottom: 7px;
-  border-bottom: 1px solid #506b8b;
-  font-size: .95rem;
-  font-weight: 800;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__summary strong,
-.hkrpg.sheet.actor .hkrpg-trait-library__category > summary small {
-  padding: 2px 7px;
-  border: 1px solid #526d8d;
-  border-radius: 4px;
-  color: #d9e4f2;
-  font-size: .72rem;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__category {
-  margin-top: 7px;
-  border: 1px solid rgb(82 109 141 / 55%);
-  border-radius: 4px;
-  background: rgb(6 16 29 / 35%);
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__category > summary {
-  padding: 7px 9px;
-  font-size: .8rem;
-  font-weight: 700;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__items {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  max-height: 330px;
-  overflow: auto;
-  padding: 0 7px 7px;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item {
-  min-width: 0;
-  padding: 7px 9px;
-  border: 1px solid #405a78;
-  border-radius: 4px;
-  background: linear-gradient(145deg, #182b42, #101e31);
-  cursor: grab;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item:active {
-  cursor: grabbing;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item--subtrait {
-  margin-left: 14px;
-  border-left: 3px solid #8e7953;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item--subtrait2 {
-  margin-left: 28px;
-  border-left: 3px solid #607f9f;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item__heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item__heading strong {
-  color: #f0dfb9;
-  font-size: .82rem;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item__heading small,
-.hkrpg.sheet.actor .hkrpg-trait-library-item__hunger {
-  color: #9fb3cc;
-  font-size: .66rem;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item p {
-  margin: 4px 0;
-  color: #c1cee0;
-  font-size: .72rem;
-  line-height: 1.35;
-}
-
-.hkrpg.sheet.actor .hkrpg-spell-reference {
-  margin-top: 0;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item__parent {
-  display: block;
-  margin-top: 2px;
-  color: #c7b184;
-  font-size: .66rem;
-}
-
-
-/* Compact the header's middle column without changing the portrait dimensions. */
-.hkrpg.sheet.actor .hkrpg-header-main {
-  justify-content: flex-start;
-  align-self: start;
-  gap: 7px;
-}
-
-.hkrpg.sheet.actor .hkrpg-size-display {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 3px;
-  min-width: 0;
-  min-height: 35px;
-}
-
-.hkrpg.sheet.actor .hkrpg-size-display > span {
-  color: #aebfd5;
-  font-size: .74rem;
-}
-
-.hkrpg.sheet.actor .hkrpg-size-display > strong {
-  display: flex;
-  align-items: center;
-  min-height: 27px;
-  padding: 3px 8px;
-  border: 1px solid #607b99;
-  border-radius: 3px;
-  background: rgb(6 16 28 / 82%);
-  color: #f1eee6;
-  font-size: .9rem;
-  font-weight: 600;
-}
-
-/* Built-in trait library. It is backed by system data, not world Item folders. */
-.hkrpg.sheet.actor .hkrpg-trait-library {
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px solid #405673;
-  border-radius: 5px;
-  background: linear-gradient(180deg, rgb(22 37 58 / 97%), rgb(11 22 38 / 98%));
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__summary,
-.hkrpg.sheet.actor .hkrpg-trait-library__category > summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  color: #f0f5fd;
-  cursor: pointer;
-  list-style: none;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__summary {
-  padding-bottom: 7px;
-  border-bottom: 1px solid #506b8b;
-  font-weight: 800;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__summary strong,
-.hkrpg.sheet.actor .hkrpg-trait-library__category > summary small {
-  padding: 2px 7px;
-  border: 1px solid #526d8d;
-  border-radius: 4px;
-  color: #d9e4f2;
-  font-size: .72rem;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__hint {
-  margin: 7px 0;
-  color: #aebfd5;
-  font-size: .72rem;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__category {
-  margin-top: 6px;
-  border: 1px solid rgb(82 109 141 / 55%);
-  border-radius: 4px;
-  background: rgb(6 16 29 / 35%);
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__category > summary {
-  padding: 7px 9px;
-  font-size: .8rem;
-  font-weight: 700;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library__items {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 480px;
-  overflow: auto;
-  padding: 0 7px 7px;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item,
-.hkrpg.sheet.actor .hkrpg-trait-library-child,
-.hkrpg.sheet.actor .hkrpg-trait-library-grandchild {
-  min-width: 0;
-  padding: 8px 9px;
-  border: 1px solid #405a78;
-  border-radius: 4px;
-  background: linear-gradient(145deg, #182b42, #101e31);
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item__heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item__heading strong,
-.hkrpg.sheet.actor .hkrpg-trait-library-grandchild > strong {
-  color: #f0dfb9;
-  font-size: .82rem;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item__heading span {
-  flex: 0 0 auto;
-  color: #c7b184;
-  font-size: .68rem;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item p,
-.hkrpg.sheet.actor .hkrpg-trait-library-child p,
-.hkrpg.sheet.actor .hkrpg-trait-library-grandchild p {
-  margin: 4px 0 6px;
-  color: #c1cee0;
-  font-size: .72rem;
-  line-height: 1.35;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item > small {
-  display: inline-block;
-  margin: 0 6px 5px 0;
-  color: #a9c1db;
-  font-size: .67rem;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item button,
-.hkrpg.sheet.actor .hkrpg-trait-library-child button,
-.hkrpg.sheet.actor .hkrpg-trait-library-grandchild button {
-  min-height: 25px;
-  padding: 2px 8px;
-  font-size: .7rem;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item button:disabled,
-.hkrpg.sheet.actor .hkrpg-trait-library-child button:disabled,
-.hkrpg.sheet.actor .hkrpg-trait-library-grandchild button:disabled {
-  opacity: .62;
-  cursor: not-allowed;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-item__children {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-top: 7px;
-  padding-left: 12px;
-  border-left: 2px solid #8e7953;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-child {
-  padding: 7px 8px;
-  border-left: 3px solid #8e7953;
-  background: rgb(7 17 30 / 58%);
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-child__nested {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 6px 0 0 12px;
-  padding-left: 9px;
-  border-left: 1px solid #607f9f;
-}
-
-.hkrpg.sheet.actor .hkrpg-trait-library-grandchild {
-  padding: 6px 8px;
-  border-color: #405a78;
-  background: rgb(17 31 48 / 72%);
-}
-
 /* Compact feature-item editor: the icon must never stretch to fill the form. */
 .hkrpg.sheet.item .hkrpg-feature-item-form {
   display: flex;
@@ -6083,9 +5776,53 @@
   font-size: .78rem;
 }
 
-.hkrpg.sheet.actor .hkrpg-trait-library-child__modifiers {
+
+/* Portrait-first actor header — match the taller reference composition. */
+.hkrpg.sheet.actor .hkrpg-sheet-header {
+  grid-template-columns: 176px minmax(0, 1fr) 154px;
+  align-items: start;
+  gap: 12px;
+}
+
+.hkrpg.sheet.actor .hkrpg-portrait {
   display: block;
-  margin: 0 0 5px;
-  color: #c7b184;
-  font-size: .66rem;
+  align-self: start;
+  width: 176px;
+  height: 240px;
+  min-height: 240px;
+  max-height: 240px;
+  aspect-ratio: auto;
+  object-fit: cover;
+  object-position: center center;
+  box-sizing: border-box;
+}
+
+.hkrpg.sheet.actor .hkrpg-header-main {
+  justify-content: flex-start;
+  align-self: start;
+  gap: 7px;
+}
+
+@media (max-width: 760px) {
+  .hkrpg.sheet.actor .hkrpg-sheet-header {
+    grid-template-columns: 128px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .hkrpg.sheet.actor .hkrpg-portrait {
+    width: 128px;
+    height: 190px;
+    min-height: 190px;
+    max-height: 190px;
+  }
+}
+
+/* The trait catalogue lives in the Foundry Items Directory, not the actor sheet. */
+
+
+.hkrpg.sheet.actor .hkrpg-trait-library-note {
+  margin: 4px 0 0;
+  color: #aebfd5;
+  font-size: .7rem;
+  line-height: 1.35;
 }
