@@ -101,11 +101,11 @@ export const HK_TRAIT_LIBRARY = [
  ])
 ];
 
-export function flattenTraitLibrary(entries = HK_TRAIT_LIBRARY, parentId = "") {
+export function flattenTraitLibrary(entries = HK_TRAIT_LIBRARY, parentId = "", depth = 0) {
  const output = [];
  for (const entry of entries) {
-  output.push({ ...entry, parentId, kind: parentId ? "subtrait" : "main" });
-  output.push(...flattenTraitLibrary(entry.options ?? [], entry.id));
+  output.push({ ...entry, parentId, kind: depth === 0 ? "main" : depth === 1 ? "subtrait" : "subtrait2" });
+  output.push(...flattenTraitLibrary(entry.options ?? [], entry.id, depth + 1));
  }
  return output;
 }
