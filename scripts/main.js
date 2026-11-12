@@ -11,6 +11,7 @@ import { HKStatusData } from "./data/status-data.js";
 import { HKStatusSheet } from "./sheets/status-sheet.js";
 import { buildStatusItemData } from "./rules/status-items.js";
 import { planCatalogEffectDeduplication } from "./rules/effects-sheet.js";
+import { activateAttributeRollControls } from "./rolls/chat-reroll.js";
 
 Hooks.once("init", () => {
   console.log("Hollow Knight RPG | Initializing system");
@@ -152,6 +153,11 @@ Hooks.once("ready", async () => {
   }
   console.log(`Hollow Knight RPG | Ready (v${game.system.version})`);
 });
+// Add selective reroll controls to attribute-check chat cards.
+Hooks.on("renderChatMessageHTML", (message, html) => {
+  activateAttributeRollControls(message, html);
+});
+
 // Add full rules summaries to the native Token HUD status-icon tooltips.
 Hooks.on("renderTokenHUD", (app, html) => {
   const root = html?.[0] ?? html;
