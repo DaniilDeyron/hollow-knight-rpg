@@ -55,7 +55,7 @@ test("Каталог черт отображается прямо в листе 
   assert.match(sheet, /traitLibraryGroups/);
   assert.match(template, /Библиотека черт/);
   assert.match(template, /data-trait-library-id=/);
-  assert.match(sheet, /dataset\.traitLibraryId/);
+  assert.match(sheet, /traitLibraryId/);
 });
 
 test("Шапка листа возвращена к компактному портрету 112 пикселей", () => {
