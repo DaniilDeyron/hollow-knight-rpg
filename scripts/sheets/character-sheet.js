@@ -106,6 +106,7 @@ export class HKCharacterSheet extends ActorSheet {
     const libraryTraits = (game.items?.contents ?? []).filter((item) =>
       item.type === "trait" && item.getFlag?.("hkrpg", "traitLibraryId")
     );
+    const libraryByKey = new Map(libraryTraits.map((item) => [item.system.libraryId, item]));
     context.traitLibraryGroups = Object.entries(traitLibraryCategoryLabels).map(([id, label]) => ({
       id, label,
       items: libraryTraits.filter((item) => item.system.category === id)
@@ -115,6 +116,7 @@ export class HKCharacterSheet extends ActorSheet {
           kind: item.system.kind,
           kindLabel: item.system.kind === "main" ? "Основная черта" :
             item.system.kind === "subtrait" ? "Подчерта" : "Подподчерта",
+          parentName: libraryByKey.get(item.system.parentLibraryId)?.name ?? "",
           hunger: item.system.hunger
         }))
     })).filter((group) => group.items.length > 0);
