@@ -169,6 +169,29 @@ async function ensureTraitLibrary() {
   }
 
   if (missing.length) await Item.implementation.createDocuments(missing);
+
+  // Remove only empty, obsolete subfolders created by the previous seeder.
+  // Preserve folders containing user-created Items or any remaining subfolders.
+  const obsoleteFolders = managedFolders.filter((folder) =>
+    folder.getFlag?.("hkrpg", "traitLibraryFolder") &&
+    !folder.getFlag?.("hkrpg", "traitLibraryFolderKey")
+  );
+  const folderDepth = (folder) => {
+    let depth = 0;
+    let parent = folder.folder;
+    while (parent && depth < 32) {
+      depth += 1;
+      parent = parent.folder;
+    }
+    return depth;
+  };
+  obsoleteFolders.sort((a, b) => folderDepth(b) - folderDepth(a));
+  for (const folder of obsoleteFolders) {
+    const containsItems = game.items.contents.some((item) => item.folder?.id === folder.id);
+    const containsFolders = game.folders.some((child) => child.folder?.id === folder.id);
+    if (!containsItems && !containsFolders) await folder.delete();
+  }
+
   console.log(`Hollow Knight RPG | Trait library ready (${layout.items.length} Items, ${layout.folders.length} folders)`);
 }
 
