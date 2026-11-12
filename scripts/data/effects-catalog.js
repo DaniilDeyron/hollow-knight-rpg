@@ -10,7 +10,7 @@ export const HK_EFFECT_CATEGORIES = [
 
 export const HK_EFFECT_CATALOG = [
   {
-    id: "hkrpg-grappled", category: "combat", name: "Схвачен", coreStatusId: "grappled",
+    id: "hkrpg-grappled", category: "combat", name: "Схвачен", coreStatusId: "grappled", page: 117,
     icon: "icons/svg/net.svg",
     summary: "Существо удерживается противником и не может свободно перемещаться.",
     rules: "Схваченный жук получает −1 к броскам атаки и защиты и не может перемещаться по своей воле. В свой ход он может потратить 1 Выносливость и попытаться вырваться проверкой Мощи или Грации. Схвативший сопротивляется проверкой Мощи с бонусами захвата от природного оружия и придатков; обе стороны могут вкладывать Выносливость.",
@@ -18,7 +18,7 @@ export const HK_EFFECT_CATALOG = [
     source: "Книга, с. 117"
   },
   {
-    id: "hkrpg-off-balance", category: "combat", name: "Дисбаланс",
+    id: "hkrpg-off-balance", category: "combat", name: "Дисбаланс", page: 119,
     icon: "icons/svg/daze.svg",
     summary: "Нарушает равновесие и уменьшает восстановление Выносливости.",
     rules: "За каждую единицу Дисбаланса жук получает на 1 Выносливость меньше при восстановлении в начале хода. Максимум — 3. После восстановления Выносливости в начале хода жук теряет 1 Дисбаланс. В свой ход он также может потратить Выносливость, чтобы убрать соответствующее количество Дисбаланса.",
@@ -26,7 +26,7 @@ export const HK_EFFECT_CATALOG = [
     source: "Книга, с. 119–120"
   },
   {
-    id: "hkrpg-deaths-door", category: "combat", name: "Врата Смерти",
+    id: "hkrpg-deaths-door", category: "combat", name: "Врата Смерти", page: 120,
     icon: "icons/svg/skull.svg",
     summary: "Сердце существа опустилось до 0, но оно ещё не погибло.",
     rules: "Когда Сердце падает до 0, жук оказывается у Врат Смерти. При первом таком случае после Отдыха он восстанавливает всю Выносливость. Весь последующий урон наносится Выносливости вместо Сердца, а Выносливость перестаёт восстанавливаться естественным образом. Если Выносливость падает до 0, жук умирает. После окончания сражения жук у Врат Смерти теряет сознание.",
@@ -34,7 +34,7 @@ export const HK_EFFECT_CATALOG = [
     source: "Книга, с. 120"
   },
   {
-    id: "hkrpg-unconscious", category: "combat", name: "Потеря сознания", coreStatusId: "unconscious",
+    id: "hkrpg-unconscious", category: "combat", name: "Потеря сознания", coreStatusId: "unconscious", page: 120,
     icon: "icons/svg/unconscious.svg",
     summary: "Существо не может самостоятельно двигаться или предпринимать действия.",
     rules: "Когда Сердце падает до 0, жук может добровольно потерять сознание. Это делает его менее приоритетной целью и полностью восстанавливает Выносливость, даже если он уже был у Врат Смерти после последнего Отдыха. Бессознательный жук не может двигаться или предпринимать действия своими силами. Получаемый урон наносится Выносливости, которая не восстанавливается естественным образом. При падении Выносливости до 0 жук умирает.",
@@ -42,7 +42,7 @@ export const HK_EFFECT_CATALOG = [
     source: "Книга, с. 120"
   },
   {
-    id: "hkrpg-suffocation", category: "combat", name: "Удушение",
+    id: "hkrpg-suffocation", category: "combat", name: "Удушение", page: 120,
     icon: "systems/hollow-knight-rpg/assets/icons/status/suffocation.svg",
     summary: "Существо находится в среде, где не может дышать.",
     rules: "Каждый ход удушения уменьшает максимум Выносливости жука на 1. Когда максимум Выносливости падает до 0, удушение начинает наносить урон Сердцу.",
@@ -50,7 +50,7 @@ export const HK_EFFECT_CATALOG = [
     source: "Книга, с. 120"
   },
   {
-    id: "hkrpg-dot", category: "combat", name: "Отложенный урон (ОУ)",
+    id: "hkrpg-dot", category: "combat", name: "Отложенный урон (ОУ)", page: 120,
     icon: "icons/svg/blood.svg",
     summary: "Накопленный урон срабатывает постепенно в начале хода.",
     rules: "В начале своего хода жук получает природный урон, равный текущему значению ОУ; после этого значение ОУ уменьшается на 1. Сам ОУ не считается нанесением урона, но его срабатывание — считается. В свой ход жук может потратить Выносливость, чтобы убрать равное количество ОУ. ОУ игнорирует Понижение Урона, если оно прямо не защищает от постепенного урона. ОУ одного типа не складывается: применяется большее значение. ОУ разных типов может действовать одновременно.",
@@ -58,7 +58,7 @@ export const HK_EFFECT_CATALOG = [
     source: "Книга, с. 120"
   },
   {
-    id: "hkrpg-invisible", category: "combat", name: "Невидимость", coreStatusId: "invisible",
+    id: "hkrpg-invisible", category: "combat", name: "Невидимость", coreStatusId: "invisible", page: 121,
     icon: "icons/svg/invisible.svg",
     summary: "Существо невидимо для тех, кто не способен его обнаружить.",
     rules: "Атаки и защита против невидимого жука получают штраф −2. Если противник не знает о невидимом жуке, он не может уклониться или парировать его первую атаку. Невидимые жуки не провоцируют атаки.",
@@ -111,4 +111,32 @@ export function getEffectStatuses(existingStatuses = []) {
       description: [summary, rules, `Длительность: ${duration}`, source].join("\n\n"),
       flags: { hkrpg: { catalogId: id } }
     }));
+}
+
+
+/**
+ * Put the seven core HKRPG combat effects first in the Token HUD status picker.
+ * When Foundry already provides the same condition, its native entry is reused
+ * instead of registering a second icon.
+ */
+export function getOrderedEffectStatuses(existingStatuses = []) {
+  const nativeStatuses = statusEntries(existingStatuses)
+    .filter((status) => status?.id && !String(status.id).startsWith("hkrpg-"));
+  const uniqueNative = [...new Map(nativeStatuses.map((status) => [status.id, status])).values()];
+  const nativeById = new Map(uniqueNative.map((status) => [status.id, status]));
+  const additions = getEffectStatuses(uniqueNative);
+  const additionsById = new Map(additions.map((status) => [status.id, status]));
+
+  const primary = HK_EFFECT_CATALOG.map((entry) =>
+    (entry.coreStatusId ? nativeById.get(entry.coreStatusId) : null) ??
+    additionsById.get(entry.id) ??
+    nativeById.get(entry.id)
+  ).filter(Boolean);
+
+  const primaryIds = new Set(primary.map((status) => status.id));
+  return [
+    ...primary,
+    ...uniqueNative.filter((status) => !primaryIds.has(status.id)),
+    ...additions.filter((status) => !primaryIds.has(status.id))
+  ];
 }
