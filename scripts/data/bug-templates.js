@@ -36,7 +36,7 @@ export function buildBugActorDefaults(type) {
       size: template.size,
       attributes: foundry.utils.deepClone(template.attributes),
       resources: foundry.utils.deepClone(template.resources),
-      social: foundry.utils.deepClone(template.social)
+      social: { ...foundry.utils.deepClone(template.social), bonus: template.bonus }
     },
     prototypeToken: {
       width: template.token.width,
