@@ -5504,3 +5504,95 @@
     flex: 1 1 auto;
   }
 }
+
+
+/* Book-derived bug sizes and nested trait-library cards. */
+.hkrpg-trait-card {
+  position: relative;
+  border: 1px solid #526d8d;
+  border-radius: 6px;
+  background: linear-gradient(150deg, #1b2e46, #0d1a2b 78%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%), 0 5px 14px rgb(0 0 0 / 18%);
+}
+
+.hkrpg-trait-card__identity strong {
+  color: #ead8b3;
+  letter-spacing: .02em;
+}
+
+.hkrpg-trait-card__modifiers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 9px;
+  color: #b7c8dc;
+  font-size: .68rem;
+}
+
+.hkrpg-trait-card__modifiers span {
+  padding: 2px 5px;
+  border: 1px solid rgb(104 131 163 / 30%);
+  border-radius: 3px;
+  background: rgb(6 17 30 / 45%);
+}
+
+.hkrpg-trait-card__subtraits {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 32px;
+  padding: 7px;
+  border: 1px dashed #526d8d;
+  border-radius: 4px;
+  background: rgb(7 17 29 / 42%);
+}
+
+.hkrpg-trait-card__subtraits-hint {
+  color: #839bb8;
+  font-size: .66rem;
+  font-style: italic;
+}
+
+.hkrpg-trait-choice {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 7px;
+  border: 1px solid #405a78;
+  border-radius: 4px;
+  background: #14253a;
+  color: #cbd8e7;
+  font-size: .75rem;
+  cursor: pointer;
+}
+
+.hkrpg-trait-choice.is-selected {
+  border-color: #9d8758;
+  background: linear-gradient(90deg, rgb(109 88 49 / 25%), #17283b);
+  color: #f0dfb9;
+}
+
+.hkrpg-trait-choice input {
+  margin: 0;
+  accent-color: #c5a66a;
+}
+
+.hkrpg-trait-choice small {
+  color: #aabbd0;
+  font-size: .65rem;
+}
+
+.hkrpg-trait-choice__nested {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-left: 16px;
+  padding-left: 8px;
+  border-left: 1px solid #8b754e;
+}
+
+.hkrpg.sheet.actor[data-actor-type="largeBug"] .window-content,
+.hkrpg.sheet.actor[data-actor-type="mediumBug"] .window-content,
+.hkrpg.sheet.actor[data-actor-type="smallBug"] .window-content {
+  scrollbar-color: #6c83a0 #0c1929;
+}
