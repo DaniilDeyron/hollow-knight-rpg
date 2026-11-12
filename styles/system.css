@@ -5788,12 +5788,12 @@
   display: block;
   align-self: start;
   width: 176px;
-  height: auto;
-  min-height: 0;
+  height: 240px;
+  min-height: 240px;
   max-height: 240px;
   aspect-ratio: auto;
-  object-fit: contain;
-  object-position: center top;
+  object-fit: cover;
+  object-position: center center;
   box-sizing: border-box;
 }
 
@@ -5811,8 +5811,8 @@
 
   .hkrpg.sheet.actor .hkrpg-portrait {
     width: 128px;
-    height: auto;
-    min-height: 0;
+    height: 190px;
+    min-height: 190px;
     max-height: 190px;
   }
 }
