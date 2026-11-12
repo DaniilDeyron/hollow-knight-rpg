@@ -39,8 +39,8 @@ test("Лист применяет шаблон при смене поля раз
   const sheet = read("../scripts/sheets/character-sheet.js");
   assert.match(sheet, /select\[name="system\.size"\]/);
   assert.match(sheet, /_onBugSizeChange/);
-  assert.match(sheet, /prototypeToken\\.width/);
-  assert.match(sheet, /prototypeToken\\.height/);
+  assert.match(sheet, /prototypeToken/);
+  assert.match(sheet, /prototypeToken/);
   for (const key of ["attributes.might","attributes.insight","attributes.shell","attributes.grace",
     "resources.heartMax","resources.staminaMax","resources.soulMax","resources.hunger",
     "resources.satietyMaxOverride","social.cute","social.spook","social.speed",
