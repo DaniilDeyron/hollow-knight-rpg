@@ -221,7 +221,7 @@ export function buildTraitItemData(entry, parentId = "", slot = 0) {
   return {
     name: entry.name,
     type: "trait",
-    img: "icons/svg/upgrade.svg",
+    img: "icons/commodities/biological/antenna-insect-green.webp",
     system: {
       kind: entry.kind,
       parentId,
