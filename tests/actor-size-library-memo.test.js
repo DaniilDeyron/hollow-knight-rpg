@@ -65,11 +65,11 @@ test("Шапка листа возвращена к компактному по�
 test("Памятка содержит справочник эффектов и модификации заклинаний без верхней панели активных эффектов", () => {
   const template = read("../templates/actor/character-sheet.hbs");
   const ru = JSON.parse(read("../lang/ru.json"));
-  const memoStart = template.indexOf('data-tab="effects"');
-  const memoEnd = template.indexOf('data-tab="journal"');
+  const memoStart = template.indexOf('<section class="tab hkrpg-effects-tab"');
+  const memoEnd = template.indexOf('<section class="tab hkrpg-journal-tab"', memoStart);
   const memo = template.slice(memoStart, memoEnd);
-  const featuresStart = template.indexOf('data-tab="features"');
-  const featuresEnd = template.indexOf('data-tab="charms"');
+  const featuresStart = template.indexOf('<section class="tab hkrpg-features-tab"');
+  const featuresEnd = template.indexOf('<section class="tab hkrpg-charms-tab"', featuresStart);
   const features = template.slice(featuresStart, featuresEnd);
   assert.equal(ru.HKRPG.Tabs.Memo, "Памятка");
   assert.match(memo, /hkrpg-effects-reference-panel/);
