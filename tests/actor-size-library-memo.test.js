@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { HK_BUG_TEMPLATES, buildBugActorDefaults, getBugTemplate } from "../scripts/data/bug-templates.js";
 import { flattenTraitLibrary, buildTraitLibraryGroups, buildTraitItemData } from "../scripts/data/trait-library.js";
+import { calculateTraitBonuses } from "../scripts/rules/trait-bonuses.js";
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
 
@@ -77,6 +78,12 @@ test("Встроенные черты содержат игровые модиф
   assert.equal(graceful.system.grace, 1);
   assert.equal(softBody.system.heartMax, 4);
   assert.equal(hauler.system.carryingCapacity, 1);
+  const automatic = calculateTraitBonuses([
+    { id: "trait-dazzling", type: "trait", system: dazzling.system },
+    { id: "trait-hauler", type: "trait", system: hauler.system }
+  ]);
+  assert.equal(automatic.cute, 1);
+  assert.equal(automatic.carryingCapacity, 1);
   const rules = read("../scripts/rules/trait-bonuses.js");
   const model = read("../scripts/data/character-data.js");
   assert.match(rules, /carryingCapacity/);
