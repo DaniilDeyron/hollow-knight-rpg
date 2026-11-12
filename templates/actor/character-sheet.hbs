@@ -331,6 +331,12 @@
                           <span>Голод {{slot.trait.hungerLabel}}</span>
                           <span>Прив. {{slot.trait.cuteLabel}}</span>
                           <span>Жуть {{slot.trait.spookLabel}}</span>
+                          {{#if slot.trait.might}}<span>Мощь {{slot.trait.might}}</span>{{/if}}
+                          {{#if slot.trait.insight}}<span>Прониц. {{slot.trait.insight}}</span>{{/if}}
+                          {{#if slot.trait.shell}}<span>Панцирь {{slot.trait.shell}}</span>{{/if}}
+                          {{#if slot.trait.grace}}<span>Грация {{slot.trait.grace}}</span>{{/if}}
+                          {{#if slot.trait.heartMax}}<span>Сердце {{slot.trait.heartMax}}</span>{{/if}}
+                          {{#if slot.trait.satietyMax}}<span>Макс. сытость {{slot.trait.satietyMax}}</span>{{/if}}
                         </div>
                         {{#if slot.trait.children.length}}
                           <div class="hkrpg-trait-card__subtraits" data-trait-child-dropzone="{{slot.trait.id}}">
