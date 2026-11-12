@@ -16,6 +16,7 @@ import { buildEquipmentRows } from "../rules/equipment-sheet.js";
 import { buildEffectsSheetData } from "../rules/effects-sheet.js";
 import { HK_EFFECT_CATALOG } from "../data/effects-catalog.js";
 import { buildStatusItemData, findStatusReferenceItem } from "../rules/status-items.js";
+import { getBugTemplate } from "../data/bug-templates.js";
 
 export class HKCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -91,6 +92,34 @@ export class HKCharacterSheet extends ActorSheet {
     pathSummary.totalRanks += legacyPathRanks;
     const notchesMaximum = this._getNotchesMaximum();
 
+    const traitLibraryCategoryLabels = {
+      naturalWeapon: "Природное оружие",
+      characteristics: "Черты характеристик",
+      mind: "Черты разума",
+      physiological: "Физиологические черты",
+      senses: "Черты чувств",
+      mystical: "Мистические черты",
+      body: "Черты тела",
+      movement: "Черты движения",
+      naturalDefense: "Черты природной защиты"
+    };
+    const libraryTraits = (game.items?.contents ?? []).filter((item) =>
+      item.type === "trait" && item.getFlag?.("hkrpg", "traitLibraryId")
+    );
+    context.traitLibraryGroups = Object.entries(traitLibraryCategoryLabels).map(([id, label]) => ({
+      id, label,
+      items: libraryTraits.filter((item) => item.system.category === id)
+        .sort((a, b) => a.name.localeCompare(b.name, "ru"))
+        .map((item) => ({
+          id: item.id, name: item.name, description: item.system.description,
+          kind: item.system.kind,
+          kindLabel: item.system.kind === "main" ? "Основная черта" :
+            item.system.kind === "subtrait" ? "Подчерта" : "Подподчерта",
+          hunger: item.system.hunger
+        }))
+    })).filter((group) => group.items.length > 0);
+    context.traitLibraryCount = libraryTraits.length;
+
     context.itemGroups = {
       traits: traitItems,
       paths: pathItems,
@@ -138,7 +167,13 @@ export class HKCharacterSheet extends ActorSheet {
     );
     context.preparedTechniqueCount = context.techniqueSlots.filter((slot) => slot.item || slot.legacy).length;
     context.skillGroups = buildSkillGroups(this.actor.system.skillGroups);
-    Object.assign(context, buildEffectsSheetData(this.actor.effects, HK_EFFECT_CATALOG));
+    try {
+      Object.assign(context, buildEffectsSheetData(this.actor.effects, HK_EFFECT_CATALOG));
+    } catch (error) {
+      // A malformed or third-party ActiveEffect must never prevent opening a character sheet.
+      console.error("Hollow Knight RPG | Could not prepare effect reference data", error);
+      Object.assign(context, buildEffectsSheetData([], HK_EFFECT_CATALOG));
+    }
 
     return context;
   }
@@ -217,6 +252,18 @@ export class HKCharacterSheet extends ActorSheet {
       console.error("Hollow Knight RPG | Could not attach capture listener for resource pips", html);
     }
 
+    if (root?.addEventListener && root.dataset.hkrpgSizeTemplateCapture !== "true") {
+      root.dataset.hkrpgSizeTemplateCapture = "true";
+      root.addEventListener("change", async (event) => {
+        const input = event.target?.closest?.('select[name="system.size"]');
+        if (!input || !root.contains(input)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        await this._onBugSizeChange({ currentTarget: input });
+      }, true);
+    }
+
     if (root?.addEventListener && root.dataset.hkrpgTraitSelectionCapture !== "true") {
       root.dataset.hkrpgTraitSelectionCapture = "true";
       root.addEventListener("change", async (event) => {
@@ -284,6 +331,47 @@ export class HKCharacterSheet extends ActorSheet {
     // This temporary Item is a read-only preview and never changes actor effects.
     const preview = new Item(buildStatusItemData(definition), { temporary: true });
     preview.sheet.render(true);
+  }
+
+  async _onBugSizeChange(event) {
+    if (!this.isEditable) return;
+    const size = String(event.currentTarget?.value ?? "");
+    if (!["small", "medium", "large"].includes(size)) return;
+    const template = getBugTemplate(size);
+    const updates = {
+      "system.size": size,
+      "system.attributes.might": template.attributes.might,
+      "system.attributes.insight": template.attributes.insight,
+      "system.attributes.shell": template.attributes.shell,
+      "system.attributes.grace": template.attributes.grace,
+      "system.resources.heart": template.resources.heart,
+      "system.resources.heartMax": template.resources.heartMax,
+      "system.resources.heartTemp": 0,
+      "system.resources.stamina": template.resources.stamina,
+      "system.resources.staminaMax": template.resources.staminaMax,
+      "system.resources.staminaTemp": 0,
+      "system.resources.soul": template.resources.soul,
+      "system.resources.soulMax": template.resources.soulMax,
+      "system.resources.soulTemp": 0,
+      "system.resources.hunger": template.resources.hunger,
+      "system.resources.satiety": template.resources.satiety,
+      "system.resources.satietyMaxOverride": template.resources.satietyMaxOverride,
+      "system.social.cute": template.social.cute,
+      "system.social.spook": template.social.spook,
+      "system.social.speed": template.social.speed,
+      "system.social.bonus": template.bonus,
+      "system.social.maneuverabilityOverride": null,
+      "prototypeToken.width": template.token.width,
+      "prototypeToken.height": template.token.height
+    };
+    try {
+      await this.actor.update(updates);
+      ui.notifications.info(`Применён базовый шаблон: ${template.label}.`);
+      this.render(false);
+    } catch (error) {
+      console.error("Hollow Knight RPG | Failed to apply bug size template", error);
+      ui.notifications.error("Не удалось применить шаблон размера. Подробности — в консоли (F12).");
+    }
   }
 
   async _onTraitSelectionChange(event) {
@@ -752,11 +840,14 @@ export class HKCharacterSheet extends ActorSheet {
   }
 
   _onDragStart(event) {
+    const libraryId = event.currentTarget?.dataset?.traitLibraryId;
     const itemId = event.currentTarget?.dataset?.charmItemId
       ?? event.currentTarget?.dataset?.techniqueItemId
       ?? event.currentTarget?.dataset?.traitItemId
       ?? event.currentTarget?.dataset?.equipmentItemId;
-    const item = itemId ? this.actor.items.get(itemId) : null;
+    const item = libraryId
+      ? (game.items?.contents ?? []).find((entry) => entry.id === libraryId)
+      : itemId ? this.actor.items.get(itemId) : null;
     if (!item) return super._onDragStart(event);
     event.dataTransfer.setData("text/plain", JSON.stringify(item.toDragData()));
   }
@@ -805,6 +896,16 @@ export class HKCharacterSheet extends ActorSheet {
       }
       if (String(item.system.parentLibraryId ?? "") !== String(parent.system.libraryId ?? "")) {
         ui.notifications.warn("Эта подчерта относится к другой основной черте.");
+        return false;
+      }
+      const alreadyAdded = this.actor.items.find((entry) =>
+        entry.type === "trait" &&
+        entry.system.libraryId &&
+        entry.system.libraryId === item.system.libraryId &&
+        entry.system.parentId === parent.id
+      );
+      if (alreadyAdded) {
+        ui.notifications.info("Эта подчерта уже добавлена.");
         return false;
       }
       const itemData = item.toObject();
@@ -863,6 +964,14 @@ export class HKCharacterSheet extends ActorSheet {
 
   async _prepareDroppedTrait(sourceItem, slotValue = "auto") {
     if (sourceItem.system.kind !== "main") return false;
+    const alreadyAdded = this.actor.items.find((item) =>
+      item.type === "trait" && item.system.libraryId &&
+      item.system.libraryId === sourceItem.system.libraryId
+    );
+    if (alreadyAdded) {
+      ui.notifications.info("Эта основная черта уже есть у персонажа.");
+      return false;
+    }
 
     const allMainTraits = this.actor.items.filter((item) =>
       item.type === "trait" && item.system.kind === "main"
