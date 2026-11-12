@@ -74,7 +74,7 @@ test("Библиотека черт создаётся как папки и пр
   assert.match(main, /flags\.hkrpg\.traitLibraryId/);
   assert.match(main, /await ensureTraitLibrary\(\)/);
   assert.doesNotMatch(sheet, /buildTraitLibraryGroups|_onAddLibraryTrait/);
-  assert.doesNotMatch(template, /data-add-library-trait=|Библиотека черт/);
+  assert.doesNotMatch(template, /data-add-library-trait=|hkrpg-trait-library__items/);
   assert.match(template, /HKRPG — Библиотека черт/);
   assert.match(template, /data-trait-child-dropzone=/);
 });
