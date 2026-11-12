@@ -90,9 +90,14 @@ export function buildTraitTree(items = []) {
     parentId: String(item.system?.parentId ?? ""),
     slot: Math.max(0, Math.min(7, Math.floor(numeric(item.system?.slot)))),
     img: String(item.img ?? ""),
+    selected: item.system?.selected !== false,
     hunger: numeric(item.system?.hunger),
     cute: numeric(item.system?.cute),
     spook: numeric(item.system?.spook),
+    might: numeric(item.system?.might), insight: numeric(item.system?.insight),
+    shell: numeric(item.system?.shell), grace: numeric(item.system?.grace),
+    heartMax: numeric(item.system?.heartMax), staminaMax: numeric(item.system?.staminaMax),
+    soulMax: numeric(item.system?.soulMax), satietyMax: numeric(item.system?.satietyMax), speed: numeric(item.system?.speed),
     hungerLabel: formatSigned(item.system?.hunger),
     cuteLabel: formatSigned(item.system?.cute),
     spookLabel: formatSigned(item.system?.spook),
@@ -140,15 +145,23 @@ export function buildTraitTree(items = []) {
   };
   flatten(roots);
 
-  const totals = all.reduce((sum, trait) => ({
-    hunger: sum.hunger + trait.hunger,
-    cute: sum.cute + trait.cute,
-    spook: sum.spook + trait.spook
-  }), { hunger: 0, cute: 0, spook: 0 });
+  const totals = all.reduce((sum, trait) => {
+    if (!trait.selected) return sum;
+    return {
+      hunger: sum.hunger + trait.hunger,
+      cute: sum.cute + trait.cute,
+      spook: sum.spook + trait.spook,
+      might: sum.might + trait.might, insight: sum.insight + trait.insight,
+      shell: sum.shell + trait.shell, grace: sum.grace + trait.grace,
+      heartMax: sum.heartMax + trait.heartMax, staminaMax: sum.staminaMax + trait.staminaMax,
+      soulMax: sum.soulMax + trait.soulMax, satietyMax: sum.satietyMax + trait.satietyMax,
+      speed: sum.speed + trait.speed
+    };
+  }, { hunger: 0, cute: 0, spook: 0, might: 0, insight: 0, shell: 0, grace: 0, heartMax: 0, staminaMax: 0, soulMax: 0, satietyMax: 0, speed: 0 });
 
   return {
     roots,
-    count: nodes.filter((trait) => trait.kind === "main").length,
+    count: nodes.filter((trait) => trait.kind === "main" && trait.selected).length,
     total: all.length,
     totals: {
       ...totals,

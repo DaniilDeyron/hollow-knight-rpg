@@ -33,7 +33,7 @@
         <div class="hkrpg-header-resource hkrpg-header-resource--heart">
           <svg class="hkrpg-header-resource__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21.2 10.4 19.8C4.7 14.7 1 11.3 1 7.2 1 3.9 3.6 1.4 6.9 1.4c2 0 3.9.9 5.1 2.5 1.2-1.6 3.1-2.5 5.1-2.5C20.4 1.4 23 3.9 23 7.2c0 4.1-3.7 7.5-9.4 12.6L12 21.2Z"/></svg>
           <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Heart"}}</span>
-          <strong class="hkrpg-header-resource__value">{{system.resources.heart}} / {{system.resources.heartMax}}</strong>
+          <strong class="hkrpg-header-resource__value">{{system.resources.heart}} / {{effectiveMaxima.heart}}</strong>
           <div class="hkrpg-resource-pips">
             <div class="hkrpg-resource-pips__base">
               {{#each resourcePips.heart.base as |pip|}}
@@ -58,7 +58,7 @@
         <div class="hkrpg-header-resource hkrpg-header-resource--soul">
           <span class="hkrpg-header-resource__icon hkrpg-header-resource__icon--soul" aria-hidden="true"></span>
           <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Soul"}}</span>
-          <strong class="hkrpg-header-resource__value">{{system.resources.soul}} / {{system.resources.soulMax}}</strong>
+          <strong class="hkrpg-header-resource__value">{{system.resources.soul}} / {{effectiveMaxima.soul}}</strong>
           <div class="hkrpg-resource-pips">
             <div class="hkrpg-resource-pips__base">
               {{#each resourcePips.soul.base as |pip|}}
@@ -83,7 +83,7 @@
         <div class="hkrpg-header-resource hkrpg-header-resource--stamina">
           <svg class="hkrpg-header-resource__icon hkrpg-header-resource__icon--stamina" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 1 15.2 8.8 23 12l-7.8 3.2L12 23l-3.2-7.8L1 12l7.8-3.2L12 1Z"/></svg>
           <span class="hkrpg-header-resource__name">{{localize "HKRPG.Resource.Stamina"}}</span>
-          <strong class="hkrpg-header-resource__value">{{system.resources.stamina}} / {{system.resources.staminaMax}}</strong>
+          <strong class="hkrpg-header-resource__value">{{system.resources.stamina}} / {{effectiveMaxima.stamina}}</strong>
           <div class="hkrpg-resource-pips">
             <div class="hkrpg-resource-pips__base">
               {{#each resourcePips.stamina.base as |pip|}}
@@ -124,7 +124,8 @@
       </div>
       <label class="hkrpg-hunger-field">
         <span>{{localize "HKRPG.Resource.Hunger"}}</span>
-        <input name="system.resources.hunger" type="number" min="0" value="{{system.resources.hunger}}" />
+        <input name="system.resources.hunger" type="number" step="0.5" value="{{system.resources.hunger}}" />
+        <small class="hkrpg-effective-value">Голод с выбранными чертами: {{system.derived.effectiveHunger}}</small>
       </label>
 
       <section class="hkrpg-movement-summary">
@@ -133,6 +134,7 @@
           <label>
             <span>{{localize "HKRPG.Secondary.Speed"}}</span>
             <input name="system.social.speed" type="number" min="0" value="{{system.social.speed}}" {{#unless isEditable}}disabled{{/unless}} />
+            <small class="hkrpg-effective-value">Итого с чертами: {{effectiveSocial.speed}}</small>
           </label>
           <label>
             <span>{{localize "HKRPG.Derived.Maneuverability"}}</span>
@@ -166,6 +168,7 @@
                 <label class="hkrpg-attribute-score">
                   <span>{{localize "HKRPG.Attribute.Might"}}</span>
                   <input name="system.attributes.might" type="number" min="0" max="7" step="0.5" value="{{system.attributes.might}}" />
+                  <small class="hkrpg-effective-value">Итого с чертами: {{effectiveAttributes.might}}</small>
                 </label>
                 <label class="hkrpg-attribute-temporary">
                   <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
@@ -178,6 +181,7 @@
                 <label class="hkrpg-attribute-score">
                   <span>{{localize "HKRPG.Attribute.Insight"}}</span>
                   <input name="system.attributes.insight" type="number" min="0" max="7" step="0.5" value="{{system.attributes.insight}}" />
+                  <small class="hkrpg-effective-value">Итого с чертами: {{effectiveAttributes.insight}}</small>
                 </label>
                 <label class="hkrpg-attribute-temporary">
                   <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
@@ -190,6 +194,7 @@
                 <label class="hkrpg-attribute-score">
                   <span>{{localize "HKRPG.Attribute.Shell"}}</span>
                   <input name="system.attributes.shell" type="number" min="0" max="7" step="0.5" value="{{system.attributes.shell}}" />
+                  <small class="hkrpg-effective-value">Итого с чертами: {{effectiveAttributes.shell}}</small>
                 </label>
                 <label class="hkrpg-attribute-temporary">
                   <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
@@ -202,6 +207,7 @@
                 <label class="hkrpg-attribute-score">
                   <span>{{localize "HKRPG.Attribute.Grace"}}</span>
                   <input name="system.attributes.grace" type="number" min="0" max="7" step="0.5" value="{{system.attributes.grace}}" />
+                  <small class="hkrpg-effective-value">Итого с чертами: {{effectiveAttributes.grace}}</small>
                 </label>
                 <label class="hkrpg-attribute-temporary">
                   <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
@@ -219,6 +225,7 @@
                 <label>
                   <span>{{localize "HKRPG.Secondary.Spook"}}</span>
                   <input name="system.social.spook" type="number" min="0" step="0.5" value="{{system.social.spook}}" />
+                  <small class="hkrpg-effective-value">Итого с шаблоном и чертами: {{effectiveSocial.spook}}</small>
                 </label>
                 <button type="button" data-attribute-roll="spook" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
               </div>
@@ -226,6 +233,7 @@
                 <label>
                   <span>{{localize "HKRPG.Secondary.Cute"}}</span>
                   <input name="system.social.cute" type="number" min="0" step="0.5" value="{{system.social.cute}}" />
+                  <small class="hkrpg-effective-value">Итого с шаблоном и чертами: {{effectiveSocial.cute}}</small>
                 </label>
                 <button type="button" data-attribute-roll="cute" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
               </div>
@@ -331,12 +339,38 @@
                           <span>Голод {{slot.trait.hungerLabel}}</span>
                           <span>Прив. {{slot.trait.cuteLabel}}</span>
                           <span>Жуть {{slot.trait.spookLabel}}</span>
+                          {{#if slot.trait.might}}<span>Мощь {{slot.trait.might}}</span>{{/if}}
+                          {{#if slot.trait.insight}}<span>Прониц. {{slot.trait.insight}}</span>{{/if}}
+                          {{#if slot.trait.shell}}<span>Панцирь {{slot.trait.shell}}</span>{{/if}}
+                          {{#if slot.trait.grace}}<span>Грация {{slot.trait.grace}}</span>{{/if}}
+                          {{#if slot.trait.heartMax}}<span>Сердце {{slot.trait.heartMax}}</span>{{/if}}
+                          {{#if slot.trait.satietyMax}}<span>Макс. сытость {{slot.trait.satietyMax}}</span>{{/if}}
                         </div>
                         {{#if slot.trait.children.length}}
-                          <div class="hkrpg-trait-card__subtraits">
+                          <div class="hkrpg-trait-card__subtraits" data-trait-child-dropzone="{{slot.trait.id}}">
+                            <span class="hkrpg-trait-card__subtraits-hint">Подчерты · перетащите сюда подходящую ветвь</span>
                             {{#each slot.trait.children as |child|}}
-                              <span>{{child.name}}</span>
+                              <label class="hkrpg-trait-choice {{#if child.selected}}is-selected{{/if}}">
+                                <input type="checkbox" data-trait-select="{{child.id}}" {{#if child.selected}}checked{{/if}} />
+                                <span>{{child.name}}</span>
+                                <small>Голод {{child.hungerLabel}}</small>
+                              </label>
+                              {{#if child.children.length}}
+                                <div class="hkrpg-trait-choice__nested" data-trait-child-dropzone="{{child.id}}">
+                                  {{#each child.children as |grandchild|}}
+                                    <label class="hkrpg-trait-choice {{#if grandchild.selected}}is-selected{{/if}}">
+                                      <input type="checkbox" data-trait-select="{{grandchild.id}}" {{#if grandchild.selected}}checked{{/if}} />
+                                      <span>{{grandchild.name}}</span>
+                                      <small>Голод {{grandchild.hungerLabel}}</small>
+                                    </label>
+                                  {{/each}}
+                                </div>
+                              {{/if}}
                             {{/each}}
+                          </div>
+                        {{else}}
+                          <div class="hkrpg-trait-card__subtraits" data-trait-child-dropzone="{{slot.trait.id}}">
+                            <span class="hkrpg-trait-card__subtraits-hint">Перетащите сюда подчерту из соответствующей папки библиотеки</span>
                           </div>
                         {{/if}}
                         <div class="hkrpg-trait-card__controls">

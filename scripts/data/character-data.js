@@ -1,7 +1,10 @@
 import { calculateDerivedStats } from "../rules/derived.js";
 import { countPathRanks } from "../rules/charm-tracker.js";
+import { calculateTraitBonuses } from "../rules/trait-bonuses.js";
 
 const fields = foundry.data.fields;
+
+function signedTraitBonus() { return new fields.NumberField({ required: true, nullable: false, initial: 0, min: -99, max: 99, integer: false }); }
 
 function statField() {
   return new fields.NumberField({
@@ -145,6 +148,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
       social: new fields.SchemaField({
         cute: valueField({ integer: false }),
         spook: valueField({ integer: false }),
+        bonus: valueField({ integer: false }),
         speed: valueField(),
         maneuverabilityOverride: new fields.NumberField({
           required: false,
@@ -167,7 +171,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         soul: valueField(),
         soulMax: valueField(),
         soulTemp: valueField(),
-        hunger: valueField(),
+        hunger: new fields.NumberField({ required: true, nullable: false, initial: 0, min: -99, max: 999, integer: false }),
         satiety: valueField(),
         satietyMaxOverride: new fields.NumberField({
           required: false,
@@ -192,7 +196,13 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         techniqueSlots: valueField(),
         beltSize: valueField(),
         satietyMax: valueField(),
-        notchesMax: valueField()
+        notchesMax: valueField(),
+        effectiveHunger: signedTraitBonus(),
+        traitBonuses: new fields.SchemaField({
+          might: signedTraitBonus(), insight: signedTraitBonus(), shell: signedTraitBonus(), grace: signedTraitBonus(),
+          heartMax: signedTraitBonus(), staminaMax: signedTraitBonus(), soulMax: signedTraitBonus(), satietyMax: signedTraitBonus(),
+          hunger: signedTraitBonus(), cute: signedTraitBonus(), spook: signedTraitBonus(), speed: signedTraitBonus()
+        })
       }),
       featureSheet: new fields.SchemaField({
         traits: fixedRowSlots(traitSheetRowField, 10),
@@ -219,6 +229,9 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
       pathRanks,
       notchBonus: this.resources.notchesBonus
     });
-    Object.assign(this.derived, derived);
+    const traitBonuses = calculateTraitBonuses(this.parent?.items?.contents ?? []);
+    Object.assign(this.derived, derived, { traitBonuses });
+    this.derived.satietyMax = Math.max(0, derived.satietyMax + traitBonuses.satietyMax);
+    this.derived.effectiveHunger = Number(this.resources.hunger ?? 0) + traitBonuses.hunger;
   }
 }

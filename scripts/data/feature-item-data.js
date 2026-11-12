@@ -4,6 +4,8 @@ function textField(initial = "") {
   return new fields.StringField({ required: true, nullable: false, initial });
 }
 
+function booleanField(initial = false) { return new fields.BooleanField({ required: true, nullable: false, initial }); }
+
 function signedModifierField() {
   return new fields.NumberField({
     required: true,
@@ -29,6 +31,19 @@ export class HKTraitData extends foundry.abstract.TypeDataModel {
         }
       }),
       parentId: textField(),
+      selected: booleanField(true),
+      libraryId: textField(),
+      parentLibraryId: textField(),
+      group: textField(),
+      might: signedModifierField(),
+      insight: signedModifierField(),
+      shell: signedModifierField(),
+      grace: signedModifierField(),
+      heartMax: signedModifierField(),
+      staminaMax: signedModifierField(),
+      soulMax: signedModifierField(),
+      satietyMax: signedModifierField(),
+      speed: signedModifierField(),
       slot: new fields.NumberField({
         required: true,
         nullable: false,

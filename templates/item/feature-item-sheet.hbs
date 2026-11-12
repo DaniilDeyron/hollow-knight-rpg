@@ -69,6 +69,18 @@
           <input name="system.spook" type="number" step="0.5" value="{{system.spook}}" {{#unless isEditable}}disabled{{/unless}} />
         </label>
       </div>
+      <div class="hkrpg-feature-item-config__heading">Игровые модификаторы</div>
+      <div class="hkrpg-feature-item-modifiers hkrpg-feature-item-modifiers--stats">
+        <label><span>Мощь</span><input name="system.might" type="number" step="0.5" value="{{system.might}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+        <label><span>Проницательность</span><input name="system.insight" type="number" step="0.5" value="{{system.insight}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+        <label><span>Панцирь</span><input name="system.shell" type="number" step="0.5" value="{{system.shell}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+        <label><span>Грация</span><input name="system.grace" type="number" step="0.5" value="{{system.grace}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+        <label><span>Макс. Сердце</span><input name="system.heartMax" type="number" step="0.5" value="{{system.heartMax}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+        <label><span>Макс. Выносливость</span><input name="system.staminaMax" type="number" step="0.5" value="{{system.staminaMax}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+        <label><span>Макс. Душа</span><input name="system.soulMax" type="number" step="0.5" value="{{system.soulMax}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+        <label><span>Макс. Сытость</span><input name="system.satietyMax" type="number" step="0.5" value="{{system.satietyMax}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+        <label><span>Скорость</span><input name="system.speed" type="number" step="0.5" value="{{system.speed}}" {{#unless isEditable}}disabled{{/unless}} /></label>
+      </div>
     </section>
   {{/if}}
 

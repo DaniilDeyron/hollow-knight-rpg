@@ -31,6 +31,7 @@ export class HKCharacterSheet extends ActorSheet {
         { dragSelector: "[data-charm-item-id]", dropSelector: "[data-charm-dropzone]" },
         { dragSelector: "[data-technique-item-id]", dropSelector: "[data-technique-dropzone]" },
         { dragSelector: "[data-trait-item-id]", dropSelector: "[data-trait-dropzone]" },
+        { dragSelector: "[data-trait-library-id]", dropSelector: "[data-trait-child-dropzone]" },
         { dragSelector: "[data-equipment-item-id]", dropSelector: "[data-equipment-dropzone]" }
       ],
       tabs: [
@@ -50,10 +51,28 @@ export class HKCharacterSheet extends ActorSheet {
     context.isEditable = this.isEditable;
 
     const resources = this.actor.system.resources;
+    const traitBonuses = this.actor.system.derived.traitBonuses ?? {};
+    context.traitBonuses = traitBonuses;
+    context.effectiveAttributes = Object.fromEntries(
+      ["might", "insight", "shell", "grace"].map((key) => [
+        key, Number(this.actor.system.attributes[key] ?? 0) + Number(traitBonuses[key] ?? 0)
+      ])
+    );
+    context.effectiveSocial = {
+      cute: Number(this.actor.system.social.cute ?? 0) + Number(this.actor.system.social.bonus ?? 0) + Number(traitBonuses.cute ?? 0),
+      spook: Number(this.actor.system.social.spook ?? 0) + Number(this.actor.system.social.bonus ?? 0) + Number(traitBonuses.spook ?? 0),
+      speed: Number(this.actor.system.social.speed ?? 0) + Number(traitBonuses.speed ?? 0)
+    };
+    context.effectiveMaxima = {
+      heart: Math.max(0, resources.heartMax + Number(traitBonuses.heartMax ?? 0)),
+      soul: Math.max(0, resources.soulMax + Number(traitBonuses.soulMax ?? 0)),
+      stamina: Math.max(0, resources.staminaMax + Number(traitBonuses.staminaMax ?? 0)),
+      satiety: this.actor.system.derived.satietyMax
+    };
     context.resourcePips = {
-      heart: buildResourcePips(resources.heartMax, resources.heart, resources.heartTemp),
-      soul: buildResourcePips(resources.soulMax, resources.soul, resources.soulTemp),
-      stamina: buildResourcePips(resources.staminaMax, resources.stamina, resources.staminaTemp)
+      heart: buildResourcePips(Math.max(0, resources.heartMax + traitBonuses.heartMax), resources.heart, resources.heartTemp),
+      soul: buildResourcePips(Math.max(0, resources.soulMax + traitBonuses.soulMax), resources.soul, resources.soulTemp),
+      stamina: buildResourcePips(Math.max(0, resources.staminaMax + traitBonuses.staminaMax), resources.stamina, resources.staminaTemp)
     };
 
     const items = this.actor.items.contents;
@@ -198,6 +217,18 @@ export class HKCharacterSheet extends ActorSheet {
       console.error("Hollow Knight RPG | Could not attach capture listener for resource pips", html);
     }
 
+    if (root?.addEventListener && root.dataset.hkrpgTraitSelectionCapture !== "true") {
+      root.dataset.hkrpgTraitSelectionCapture = "true";
+      root.addEventListener("change", async (event) => {
+        const input = event.target?.closest?.("[data-trait-select]");
+        if (!input || !root.contains(input)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        await this._onTraitSelectionChange({ currentTarget: input });
+      }, true);
+    }
+
     bind("[data-resource-field]", "change", this._onResourceFieldChange);
 
     // Mastery uses a capture-phase click handler so Foundry's form listeners
@@ -253,6 +284,21 @@ export class HKCharacterSheet extends ActorSheet {
     // This temporary Item is a read-only preview and never changes actor effects.
     const preview = new Item(buildStatusItemData(definition), { temporary: true });
     preview.sheet.render(true);
+  }
+
+  async _onTraitSelectionChange(event) {
+    if (!this.isEditable) return;
+    const input = event.currentTarget;
+    const item = this.actor.items.get(input.dataset.traitSelect);
+    if (!item || item.type !== "trait" || item.system.kind === "main") return;
+    const parent = this.actor.items.get(String(item.system.parentId ?? ""));
+    if (!parent || parent.type !== "trait" || parent.system.selected === false) {
+      input.checked = false;
+      ui.notifications.warn("Сначала выберите родительскую черту.");
+      return;
+    }
+    await item.update({ "system.selected": Boolean(input.checked) });
+    this.render(false);
   }
 
   async _onSkillMasteryChange(event) {
@@ -719,8 +765,9 @@ export class HKCharacterSheet extends ActorSheet {
     const charmDropzone = event.target?.closest?.("[data-charm-dropzone]");
     const techniqueDropzone = event.target?.closest?.("[data-technique-dropzone]");
     const traitDropzone = event.target?.closest?.("[data-trait-dropzone]");
+    const traitChildDropzone = event.target?.closest?.("[data-trait-child-dropzone]");
     const equipmentDropzone = event.target?.closest?.("[data-equipment-dropzone]");
-    if (!charmDropzone && !techniqueDropzone && !traitDropzone && !equipmentDropzone) return super._onDrop(event);
+    if (!charmDropzone && !techniqueDropzone && !traitDropzone && !traitChildDropzone && !equipmentDropzone) return super._onDrop(event);
     event.preventDefault();
     event.stopPropagation();
     if (!this.isEditable) return false;
@@ -745,6 +792,29 @@ export class HKCharacterSheet extends ActorSheet {
       return false;
     }
     if (!item || item.documentName !== "Item") return false;
+
+    if (traitChildDropzone) {
+      if (item.type !== "trait" || item.system.kind === "main") {
+        ui.notifications.warn("Сюда можно помещать только подчерты из библиотеки.");
+        return false;
+      }
+      const parent = this.actor.items.get(traitChildDropzone.dataset.traitChildDropzone);
+      if (!parent || parent.type !== "trait" || parent.system.selected === false) {
+        ui.notifications.warn("Сначала добавьте и выберите основную черту.");
+        return false;
+      }
+      if (String(item.system.parentLibraryId ?? "") !== String(parent.system.libraryId ?? "")) {
+        ui.notifications.warn("Эта подчерта относится к другой основной черте.");
+        return false;
+      }
+      const itemData = item.toObject();
+      delete itemData._id;
+      itemData.system.parentId = parent.id;
+      itemData.system.selected = true;
+      await this.actor.createEmbeddedDocuments("Item", [itemData]);
+      this.render(true);
+      return true;
+    }
 
     if (traitDropzone) {
       if (item.type !== "trait" || item.system.kind !== "main") {
