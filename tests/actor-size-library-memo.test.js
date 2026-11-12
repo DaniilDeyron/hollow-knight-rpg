@@ -77,6 +77,7 @@ test("Библиотека черт создаётся как папки и пр
   assert.doesNotMatch(template, /data-add-library-trait=|hkrpg-trait-library__items/);
   assert.match(template, /HKRPG — Библиотека черт/);
   assert.match(template, /data-trait-child-dropzone=/);
+  assert.match(sheet, /dropSelector: "\\[data-trait-dropzone\\], \\[data-trait-child-dropzone\\]"/);
 });
 
 test("Встроенные черты содержат игровые модификаторы, которые реально меняют персонажа", () => {
