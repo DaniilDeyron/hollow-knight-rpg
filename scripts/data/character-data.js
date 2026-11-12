@@ -196,6 +196,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         beltSize: valueField(),
         satietyMax: valueField(),
         notchesMax: valueField(),
+        effectiveHunger: signedTraitBonus(),
         traitBonuses: new fields.SchemaField({
           might: signedTraitBonus(), insight: signedTraitBonus(), shell: signedTraitBonus(), grace: signedTraitBonus(),
           heartMax: signedTraitBonus(), staminaMax: signedTraitBonus(), soulMax: signedTraitBonus(), satietyMax: signedTraitBonus(),
