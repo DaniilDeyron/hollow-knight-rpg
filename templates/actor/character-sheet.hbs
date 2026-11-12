@@ -731,15 +731,21 @@
           {{#if activeEffects.length}}
             <div class="hkrpg-effects-icon-grid hkrpg-effects-icon-grid--active">
               {{#each activeEffects as |effect|}}
-                <div class="hkrpg-effect-icon-wrap {{#if effect.disabled}}is-disabled{{/if}}">
-                  <button type="button" class="hkrpg-effect-icon" data-effect-document-toggle="{{effect.documentId}}"
-                    data-tooltip="{{effect.name}}&#10;{{effect.summary}}&#10;{{effect.rules}}"
-                    aria-label="{{effect.name}}">
-                    <img src="{{effect.icon}}" alt="" />
-                    <span class="hkrpg-effect-icon__toggle">{{#if effect.disabled}}○{{else}}●{{/if}}</span>
-                  </button>
-                  <button type="button" class="hkrpg-effect-icon__remove" data-effect-delete="{{effect.documentId}}"
-                    aria-label="{{localize "HKRPG.Effects.Remove"}}" title="{{localize "HKRPG.Effects.Remove"}}">×</button>
+                <div class="hkrpg-effect-icon-wrap {{#if effect.disabled}}is-disabled{{else}}is-active{{/if}}">
+                  {{#if effect.catalogId}}
+                    <button type="button" class="hkrpg-effect-icon" data-open-status-id="{{effect.catalogId}}"
+                      data-tooltip="{{effect.name}}&#10;{{effect.summary}}&#10;{{effect.rules}}"
+                      aria-label="Открыть описание: {{effect.name}}">
+                      <img src="{{effect.icon}}" alt="" />
+                      <span class="hkrpg-effect-icon__toggle">{{#if effect.disabled}}○{{else}}●{{/if}}</span>
+                    </button>
+                  {{else}}
+                    <div class="hkrpg-effect-icon hkrpg-effect-icon--readonly"
+                      data-tooltip="{{effect.name}}&#10;{{effect.summary}}&#10;{{effect.rules}}">
+                      <img src="{{effect.icon}}" alt="" />
+                      <span class="hkrpg-effect-icon__toggle">{{#if effect.disabled}}○{{else}}●{{/if}}</span>
+                    </div>
+                  {{/if}}
                   <span class="hkrpg-effect-icon__name">{{effect.name}}</span>
                 </div>
               {{/each}}
@@ -763,9 +769,9 @@
               <div class="hkrpg-effects-icon-grid">
                 {{#each group.effects as |effect|}}
                   <div class="hkrpg-effect-icon-wrap {{#if effect.isActive}}is-active{{/if}} {{#if effect.isDisabled}}is-disabled{{/if}}">
-                    <button type="button" class="hkrpg-effect-icon" data-effect-catalog-toggle="{{effect.id}}"
+                    <button type="button" class="hkrpg-effect-icon" data-open-status-id="{{effect.id}}"
                       data-tooltip="{{effect.name}}&#10;{{effect.summary}}&#10;{{effect.rules}}&#10;Длительность: {{effect.duration}}&#10;{{effect.source}}"
-                      aria-label="{{effect.name}}">
+                      aria-label="Открыть описание: {{effect.name}}">
                       <img src="{{effect.icon}}" alt="" />
                       {{#if effect.isActive}}<span class="hkrpg-effect-icon__toggle">●</span>{{/if}}
                       {{#if effect.isDisabled}}<span class="hkrpg-effect-icon__toggle">○</span>{{/if}}
