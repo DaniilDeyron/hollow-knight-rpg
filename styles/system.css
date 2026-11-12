@@ -5776,13 +5776,6 @@
   font-size: .78rem;
 }
 
-.hkrpg.sheet.actor .hkrpg-trait-library-child__modifiers {
-  display: block;
-  margin: 0 0 5px;
-  color: #c7b184;
-  font-size: .66rem;
-}
-
 
 /* Portrait-first actor header — match the taller reference composition. */
 .hkrpg.sheet.actor .hkrpg-sheet-header {
