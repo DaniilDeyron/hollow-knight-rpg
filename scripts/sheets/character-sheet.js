@@ -51,10 +51,12 @@ export class HKCharacterSheet extends ActorSheet {
     context.isEditable = this.isEditable;
 
     const resources = this.actor.system.resources;
+    const traitBonuses = this.actor.system.derived.traitBonuses ?? {};
+    context.traitBonuses = traitBonuses;
     context.resourcePips = {
-      heart: buildResourcePips(resources.heartMax, resources.heart, resources.heartTemp),
-      soul: buildResourcePips(resources.soulMax, resources.soul, resources.soulTemp),
-      stamina: buildResourcePips(resources.staminaMax, resources.stamina, resources.staminaTemp)
+      heart: buildResourcePips(Math.max(0, resources.heartMax + traitBonuses.heartMax), resources.heart, resources.heartTemp),
+      soul: buildResourcePips(Math.max(0, resources.soulMax + traitBonuses.soulMax), resources.soul, resources.soulTemp),
+      stamina: buildResourcePips(Math.max(0, resources.staminaMax + traitBonuses.staminaMax), resources.stamina, resources.staminaTemp)
     };
 
     const items = this.actor.items.contents;
