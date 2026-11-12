@@ -20,7 +20,7 @@ export function calculateTraitBonuses(items = []) {
   const active = resolveActiveTraitItems(items);
   return active.reduce((sum, item) => {
     const system = item.system ?? {};
-    for (const key of ["might","insight","shell","grace","heartMax","staminaMax","soulMax","satietyMax","hunger","cute","spook","speed"]) {
+    for (const key of ["might","insight","shell","grace","heartMax","staminaMax","soulMax","satietyMax","hunger","cute","spook","speed","carryingCapacity"]) {
       sum[key] += number(system[key]);
     }
     return sum;
