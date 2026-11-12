@@ -44,6 +44,7 @@ export class HKTraitData extends foundry.abstract.TypeDataModel {
       soulMax: signedModifierField(),
       satietyMax: signedModifierField(),
       speed: signedModifierField(),
+      carryingCapacity: signedModifierField(),
       slot: new fields.NumberField({
         required: true,
         nullable: false,
