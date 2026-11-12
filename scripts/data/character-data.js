@@ -199,7 +199,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         traitBonuses: new fields.SchemaField({
           might: signedTraitBonus(), insight: signedTraitBonus(), shell: signedTraitBonus(), grace: signedTraitBonus(),
           heartMax: signedTraitBonus(), staminaMax: signedTraitBonus(), soulMax: signedTraitBonus(), satietyMax: signedTraitBonus(),
-          hunger: signedTraitBonus(), cute: signedTraitBonus(), spook: signedTraitBonus()
+          hunger: signedTraitBonus(), cute: signedTraitBonus(), spook: signedTraitBonus(), speed: signedTraitBonus()
         })
       }),
       featureSheet: new fields.SchemaField({
