@@ -238,6 +238,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
     const traitBonuses = calculateTraitBonuses(this.parent?.items?.contents ?? []);
     Object.assign(this.derived, derived, { traitBonuses });
     this.derived.satietyMax = Math.max(0, derived.satietyMax + traitBonuses.satietyMax);
+    this.derived.carryingCapacity = Math.max(0, derived.carryingCapacity + traitBonuses.carryingCapacity);
     this.derived.effectiveHunger = Number(this.resources.hunger ?? 0) + traitBonuses.hunger;
   }
 }
