@@ -96,37 +96,36 @@ async function ensureTraitLibrary() {
     .map((item) => [item.getFlag("hkrpg", "traitLibraryId"), item]));
   const itemMap = new Map(existing);
   const folders = new Map();
-  const queue = [];
   for (const entry of flattenTraitLibrary()) {
     let categoryFolder = folders.get(entry.category);
     if (!categoryFolder) {
       categoryFolder = await getFolder(categoryNames[entry.category] ?? "Черты · Прочее");
       folders.set(entry.category, categoryFolder);
     }
-    const parent = itemMap.get(entry.parentId);
+    const parentFolder = entry.parentId ? folders.get(entry.parentId) : null;
     const folder = entry.kind === "main" ? categoryFolder :
-      await getFolder(entry.name, parent?.folder ?? categoryFolder);
+      await getFolder(entry.name, parentFolder ?? categoryFolder);
+    folders.set(entry.id, folder);
     const system = {
       kind: entry.kind, parentId: "", parentLibraryId: entry.parentId ?? "",
       libraryId: entry.id, group: entry.category, slot: 0, category: entry.category,
       selected: entry.kind === "main", hunger: entry.hunger, cute: 0, spook: 0,
       description: entry.description, effects: entry.description
     };
-    const prior = existing.get(entry.id);
+    const prior = itemMap.get(entry.id);
     if (prior) {
-      await prior.update({name:entry.name,folder:folder.id,system,
-        "flags.hkrpg.traitLibraryVersion":1});
+      await prior.update({ name: entry.name, folder: folder.id, system,
+        "flags.hkrpg.traitLibraryVersion": 1 });
       itemMap.set(entry.id, prior);
     } else {
-      queue.push({name:entry.name,type:"trait",
-        img:"icons/commodities/biological/antenna-insect-green.webp",
-        folder:folder.id,system,
-        flags:{hkrpg:{traitLibraryId:entry.id,traitLibraryVersion:1}}});
+      const [created] = await Item.implementation.createDocuments([{
+        name: entry.name, type: "trait",
+        img: "icons/commodities/biological/antenna-insect-green.webp",
+        folder: folder.id, system,
+        flags: { hkrpg: { traitLibraryId: entry.id, traitLibraryVersion: 1 } }
+      }]);
+      itemMap.set(entry.id, created);
     }
-  }
-  if (queue.length) {
-    const created = await Item.implementation.createDocuments(queue);
-    for (const item of created) itemMap.set(item.system.libraryId,item);
   }
 }
 
