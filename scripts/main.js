@@ -12,17 +12,6 @@ import { HKStatusSheet } from "./sheets/status-sheet.js";
 import { buildStatusItemData } from "./rules/status-items.js";
 import { planCatalogEffectDeduplication } from "./rules/effects-sheet.js";
 
-function statusEffectEntries(statusEffects = []) {
-  if (Array.isArray(statusEffects)) return statusEffects;
-  if (statusEffects && typeof statusEffects.values === "function") {
-    return Array.from(statusEffects.values());
-  }
-  if (statusEffects && typeof statusEffects[Symbol.iterator] === "function") {
-    return Array.from(statusEffects);
-  }
-  return Object.values(statusEffects ?? {});
-}
-
 Hooks.once("init", () => {
   console.log("Hollow Knight RPG | Initializing system");
 
