@@ -1,4 +1,6 @@
 import { HKCharacterData } from "./data/character-data.js";
+import { buildBugActorDefaults } from "./data/bug-templates.js";
+import { flattenTraitLibrary } from "./data/trait-library.js";
 import { HKCharacterSheet } from "./sheets/character-sheet.js";
 import { HKCharmData } from "./data/charm-data.js";
 import { HKCharmSheet } from "./sheets/charm-sheet.js";
@@ -21,6 +23,9 @@ Hooks.once("init", () => {
   CONFIG.statusEffects = getOrderedEffectStatuses(CONFIG.statusEffects ?? []);
 
   CONFIG.Actor.dataModels.character = HKCharacterData;
+  CONFIG.Actor.dataModels.largeBug = HKCharacterData;
+  CONFIG.Actor.dataModels.mediumBug = HKCharacterData;
+  CONFIG.Actor.dataModels.smallBug = HKCharacterData;
   CONFIG.Item.dataModels.charm = HKCharmData;
   CONFIG.Item.dataModels.trait = HKTraitData;
   CONFIG.Item.dataModels.path = HKPathData;
@@ -50,13 +55,80 @@ Hooks.once("init", () => {
   });
 
   Actors.registerSheet("hollow-knight-rpg", HKCharacterSheet, {
-    types: ["character"],
+    types: ["character", "largeBug", "mediumBug", "smallBug"],
     makeDefault: true,
     label: "HKRPG.Sheets.Character"
   });
 
 });
 
+
+const BUG_ACTOR_TYPES = ["largeBug", "mediumBug", "smallBug"];
+Hooks.on("preCreateActor", (actor) => {
+  if (BUG_ACTOR_TYPES.includes(actor.type)) actor.updateSource(buildBugActorDefaults(actor.type));
+});
+
+async function ensureTraitLibrary() {
+  if (!game.user?.isGM || !game.items) return;
+  const folderCache = new Map();
+  const getFolder = async (name, parent = null) => {
+    const key = `${parent?.id ?? "root"}:${name}`;
+    if (folderCache.has(key)) return folderCache.get(key);
+    let folder = game.folders.find((entry) => entry.type === "Item" &&
+      entry.name === name && (entry.folder?.id ?? null) === (parent?.id ?? null) &&
+      entry.getFlag?.("hkrpg", "traitLibraryFolder"));
+    if (!folder) folder = await Folder.implementation.create({
+      name, type: "Item", folder: parent?.id ?? null,
+      flags: { hkrpg: { traitLibraryFolder: true } }
+    });
+    folderCache.set(key, folder);
+    return folder;
+  };
+  const categoryNames = {
+    naturalWeapon:"01 · Природное оружие", characteristics:"02 · Черты характеристик",
+    mind:"03 · Черты разума", physiological:"04 · Физиологические черты",
+    senses:"05 · Черты чувств", mystical:"06 · Мистические черты",
+    body:"07 · Черты тела", movement:"08 · Черты движения",
+    naturalDefense:"09 · Черты природной защиты"
+  };
+  const existing = new Map(game.items.contents
+    .filter((item) => item.type === "trait" && item.getFlag?.("hkrpg", "traitLibraryId"))
+    .map((item) => [item.getFlag("hkrpg", "traitLibraryId"), item]));
+  const itemMap = new Map(existing);
+  const folders = new Map();
+  const queue = [];
+  for (const entry of flattenTraitLibrary()) {
+    let categoryFolder = folders.get(entry.category);
+    if (!categoryFolder) {
+      categoryFolder = await getFolder(categoryNames[entry.category] ?? "Черты · Прочее");
+      folders.set(entry.category, categoryFolder);
+    }
+    const parent = itemMap.get(entry.parentId);
+    const folder = entry.kind === "main" ? categoryFolder :
+      await getFolder(entry.name, parent?.folder ?? categoryFolder);
+    const system = {
+      kind: entry.kind, parentId: "", parentLibraryId: entry.parentId ?? "",
+      libraryId: entry.id, group: entry.category, slot: 0, category: entry.category,
+      selected: entry.kind === "main", hunger: entry.hunger, cute: 0, spook: 0,
+      description: entry.description, effects: entry.description
+    };
+    const prior = existing.get(entry.id);
+    if (prior) {
+      await prior.update({name:entry.name,folder:folder.id,system,
+        "flags.hkrpg.traitLibraryVersion":1});
+      itemMap.set(entry.id, prior);
+    } else {
+      queue.push({name:entry.name,type:"trait",
+        img:"icons/commodities/biological/antenna-insect-green.webp",
+        folder:folder.id,system,
+        flags:{hkrpg:{traitLibraryId:entry.id,traitLibraryVersion:1}}});
+    }
+  }
+  if (queue.length) {
+    const created = await Item.implementation.createDocuments(queue);
+    for (const item of created) itemMap.set(item.system.libraryId,item);
+  }
+}
 
 async function ensureStatusReferenceItems() {
   if (!game.user?.isGM || !game.items) return;
@@ -119,6 +191,7 @@ async function ensureStatusReferenceItems() {
 Hooks.once("ready", async () => {
   try {
     await ensureStatusReferenceItems();
+    await ensureTraitLibrary();
   } catch (error) {
     console.error("Hollow Knight RPG | Could not prepare status reference Items", error);
   }
