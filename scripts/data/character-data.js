@@ -4,6 +4,8 @@ import { calculateTraitBonuses } from "../rules/trait-bonuses.js";
 
 const fields = foundry.data.fields;
 
+function signedTraitBonus() { return new fields.NumberField({ required: true, nullable: false, initial: 0, min: -99, max: 99, integer: false }); }
+
 function statField() {
   return new fields.NumberField({
     required: true,
@@ -195,9 +197,9 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         satietyMax: valueField(),
         notchesMax: valueField(),
         traitBonuses: new fields.SchemaField({
-          might: statField(), insight: statField(), shell: statField(), grace: statField(),
-          heartMax: statField(), staminaMax: statField(), soulMax: statField(), satietyMax: statField(),
-          hunger: statField(), cute: statField(), spook: statField()
+          might: signedTraitBonus(), insight: signedTraitBonus(), shell: signedTraitBonus(), grace: signedTraitBonus(),
+          heartMax: signedTraitBonus(), staminaMax: signedTraitBonus(), soulMax: signedTraitBonus(), satietyMax: signedTraitBonus(),
+          hunger: signedTraitBonus(), cute: signedTraitBonus(), spook: signedTraitBonus()
         })
       }),
       featureSheet: new fields.SchemaField({
