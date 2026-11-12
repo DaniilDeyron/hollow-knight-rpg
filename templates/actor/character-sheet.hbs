@@ -419,6 +419,7 @@
                           <strong>{{trait.name}}</strong>
                           <small>{{trait.kindLabel}}</small>
                         </div>
+                        {{#if trait.parentName}}<small class="hkrpg-trait-library-item__parent">Для: {{trait.parentName}}</small>{{/if}}
                         {{#if trait.description}}<p>{{trait.description}}</p>{{/if}}
                         <span class="hkrpg-trait-library-item__hunger">Голод: {{trait.hunger}}</span>
                       </article>
