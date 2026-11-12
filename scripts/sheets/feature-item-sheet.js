@@ -3,8 +3,8 @@ export class HKFeatureItemSheet extends ItemSheet {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["hkrpg", "sheet", "item", "feature-item"],
       template: "systems/hollow-knight-rpg/templates/item/feature-item-sheet.hbs",
-      width: 560,
-      height: 650,
+      width: 520,
+      height: 610,
       resizable: true,
       submitOnChange: true,
       tabs: [
