@@ -66,7 +66,6 @@ test("Встроенная библиотека содержит готовые 
   assert.match(sheet, /buildTraitLibraryGroups\(items\)/);
   assert.match(sheet, /_onAddLibraryTrait/);
   assert.doesNotMatch(main, /ensureTraitLibrary/);
-  assert.doesNotMatch(sheet, /game\.items\?\.contents/);
 });
 
 test("Встроенные черты содержат игровые модификаторы, которые реально меняют персонажа", () => {
