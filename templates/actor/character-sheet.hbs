@@ -427,7 +427,7 @@
                       {{#if trait.modifiers.speed}}<small>Скорость {{trait.modifiers.speed}}</small>{{/if}}
                       {{#if trait.modifiers.carryingCapacity}}<small>Нагрузка {{trait.modifiers.carryingCapacity}}</small>{{/if}}
                       <button type="button" data-add-library-trait="{{trait.id}}" {{#unless trait.canAdd}}disabled{{/unless}}>
-                        {{#if trait.canAdd}}{{#if trait.added}}Добавить ещё{{else}}Добавить черту{{/if}}{{else}}{{#if trait.added}}Уже добавлена{{else}}Лимит или нет родителя{{/if}}{{/if}}
+                        {{#if trait.canAdd}}{{#if trait.added}}Добавить ещё{{else}}Добавить черту{{/if}}{{else}}{{#if trait.added}}Уже добавлена{{else}}{{#if trait.limitReached}}Лимит 7/7{{else}}Недоступно{{/if}}{{/if}}{{/if}}
                       </button>
                       {{#if trait.children.length}}
                         <div class="hkrpg-trait-library-item__children">
@@ -438,6 +438,7 @@
                                 <span>Голод {{child.hunger}}</span>
                               </div>
                               <p>{{child.description}}</p>
+                              {{#if child.modifierSummary}}<small class="hkrpg-trait-library-child__modifiers">{{child.modifierSummary}}</small>{{/if}}
                               <button type="button" data-add-library-trait="{{child.id}}" data-library-parent="{{trait.actorItemId}}" {{#unless child.canAdd}}disabled{{/unless}}>
                                 {{#if child.added}}Уже добавлена{{else}}{{#if child.canAdd}}Добавить подчерту{{else}}Сначала добавьте родителя{{/if}}{{/if}}
                               </button>
@@ -447,6 +448,7 @@
                                     <div class="hkrpg-trait-library-grandchild">
                                       <strong>{{grandchild.name}}</strong>
                                       <p>{{grandchild.description}}</p>
+                                      {{#if grandchild.modifierSummary}}<small class="hkrpg-trait-library-child__modifiers">{{grandchild.modifierSummary}}</small>{{/if}}
                                       <button type="button" data-add-library-trait="{{grandchild.id}}" data-library-parent="{{child.actorItemId}}" {{#unless grandchild.canAdd}}disabled{{/unless}}>
                                         {{#if grandchild.added}}Уже добавлена{{else}}{{#if grandchild.canAdd}}Добавить подчерту II{{else}}Сначала добавьте родителя{{/if}}{{/if}}
                                       </button>
