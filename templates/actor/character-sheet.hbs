@@ -333,10 +333,30 @@
                           <span>Жуть {{slot.trait.spookLabel}}</span>
                         </div>
                         {{#if slot.trait.children.length}}
-                          <div class="hkrpg-trait-card__subtraits">
+                          <div class="hkrpg-trait-card__subtraits" data-trait-child-dropzone="{{slot.trait.id}}">
+                            <span class="hkrpg-trait-card__subtraits-hint">Подчерты · перетащите сюда подходящую ветвь</span>
                             {{#each slot.trait.children as |child|}}
-                              <span>{{child.name}}</span>
+                              <label class="hkrpg-trait-choice {{#if child.selected}}is-selected{{/if}}">
+                                <input type="checkbox" data-trait-select="{{child.id}}" {{#if child.selected}}checked{{/if}} />
+                                <span>{{child.name}}</span>
+                                <small>Голод {{child.hungerLabel}}</small>
+                              </label>
+                              {{#if child.children.length}}
+                                <div class="hkrpg-trait-choice__nested">
+                                  {{#each child.children as |grandchild|}}
+                                    <label class="hkrpg-trait-choice {{#if grandchild.selected}}is-selected{{/if}}">
+                                      <input type="checkbox" data-trait-select="{{grandchild.id}}" {{#if grandchild.selected}}checked{{/if}} />
+                                      <span>{{grandchild.name}}</span>
+                                      <small>Голод {{grandchild.hungerLabel}}</small>
+                                    </label>
+                                  {{/each}}
+                                </div>
+                              {{/if}}
                             {{/each}}
+                          </div>
+                        {{else}}
+                          <div class="hkrpg-trait-card__subtraits" data-trait-child-dropzone="{{slot.trait.id}}">
+                            <span class="hkrpg-trait-card__subtraits-hint">Перетащите сюда подчерту из соответствующей папки библиотеки</span>
                           </div>
                         {{/if}}
                         <div class="hkrpg-trait-card__controls">
