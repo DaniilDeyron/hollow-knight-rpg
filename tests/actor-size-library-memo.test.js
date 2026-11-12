@@ -116,7 +116,7 @@ test("Вложенные папки сохраняют иерархию подч
 test("Шапка листа использует высокий портрет и компактные поля справа", () => {
   const css = read("../styles/system.css");
   assert.match(css, /grid-template-columns: 176px minmax\(0, 1fr\) 154px/);
-  assert.match(css, /width: 176px;\s*height: auto;\s*min-height: 0;\s*max-height: 240px/);
+  assert.match(css, /width: 176px;\s*height: 240px;\s*min-height: 240px;\s*max-height: 240px/);
   assert.match(css, /hkrpg-header-main\s*\{\s*justify-content: flex-start/);
   assert.match(css, /object-fit: contain/);
 });
