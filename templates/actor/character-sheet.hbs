@@ -353,7 +353,7 @@
                                 <small>Голод {{child.hungerLabel}}</small>
                               </label>
                               {{#if child.children.length}}
-                                <div class="hkrpg-trait-choice__nested">
+                                <div class="hkrpg-trait-choice__nested" data-trait-child-dropzone="{{child.id}}">
                                   {{#each child.children as |grandchild|}}
                                     <label class="hkrpg-trait-choice {{#if grandchild.selected}}is-selected{{/if}}">
                                       <input type="checkbox" data-trait-select="{{grandchild.id}}" {{#if grandchild.selected}}checked{{/if}} />
