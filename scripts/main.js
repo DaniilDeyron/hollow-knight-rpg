@@ -79,7 +79,7 @@ async function ensureStatusReferenceItems() {
     if (byStatusId.has(statusId)) duplicates.push(item.id);
     else byStatusId.set(statusId, item);
   }
-  if (duplicates.length) await Item.deleteDocuments(duplicates);
+  if (duplicates.length) await Item.implementation.deleteDocuments(duplicates);
 
   const missing = [];
   const observer = CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2;
@@ -112,7 +112,7 @@ async function ensureStatusReferenceItems() {
     });
   }
 
-  if (missing.length) await Item.createDocuments(missing);
+  if (missing.length) await Item.implementation.createDocuments(missing);
 }
 
 Hooks.once("ready", async () => {
