@@ -78,7 +78,7 @@ test("Режим выбора превращает кости в кнопки и
   });
   assert.equal((html.match(/data-hkrpg-reroll-index=/g) ?? []).length, 4);
   assert.match(html, /is-selected/);
-  assert.match(html, /Выберите до <strong>2<\/strong>/);
+  assert.match(html, /Выберите не более <strong>2<\/strong>/);
   assert.match(html, /data-hkrpg-roll-action="confirm"/);
   assert.match(html, /data-hkrpg-roll-action="cancel"/);
 });
