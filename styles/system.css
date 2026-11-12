@@ -5740,3 +5740,10 @@
 .hkrpg.sheet.actor .hkrpg-spell-reference {
   margin-top: 0;
 }
+
+.hkrpg.sheet.actor .hkrpg-trait-library-item__parent {
+  display: block;
+  margin-top: 2px;
+  color: #c7b184;
+  font-size: .66rem;
+}
