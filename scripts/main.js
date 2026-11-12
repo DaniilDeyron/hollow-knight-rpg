@@ -76,9 +76,6 @@ async function ensureTraitLibrary() {
 
   const layout = buildTraitLibraryLayout();
   const folderByKey = new Map();
-  const legacyCategoryNames = new Set(layout.folders
-    .filter((folder) => folder.kind === "category")
-    .map((folder) => folder.name));
   const managedFolders = game.folders.filter((folder) =>
     folder.type === "Item" && folder.getFlag?.("hkrpg", "traitLibraryFolder")
   );
