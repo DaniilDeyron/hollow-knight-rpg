@@ -1,16 +1,17 @@
 import { calculateDerivedStats } from "../rules/derived.js";
 import { countPathRanks } from "../rules/charm-tracker.js";
 import { calculateTraitBonuses } from "../rules/trait-bonuses.js";
+import { getBugTemplate } from "./bug-templates.js";
 
 const fields = foundry.data.fields;
 
 function signedTraitBonus() { return new fields.NumberField({ required: true, nullable: false, initial: 0, min: -99, max: 99, integer: false }); }
 
-function statField() {
+function statField(initial = 0) {
   return new fields.NumberField({
     required: true,
     nullable: false,
-    initial: 0,
+    initial,
     min: 0,
     max: 7,
     integer: false
@@ -114,12 +115,16 @@ function fixedRowSlots(factory, count) {
 }
 
 export class HKCharacterData extends foundry.abstract.TypeDataModel {
+  static get bugTemplateKey() { return null; }
+
   static defineSchema() {
+    const template = this.bugTemplateKey ? getBugTemplate(this.bugTemplateKey) : null;
+    const initial = (key, fallback = 0) => Number(template?.resources?.[key] ?? fallback);
     return {
       size: new fields.StringField({
         required: true,
         nullable: false,
-        initial: "medium",
+        initial: template?.size ?? "medium",
         choices: {
           small: "HKRPG.Size.Small",
           medium: "HKRPG.Size.Medium",
@@ -134,10 +139,10 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         description: textField()
       }),
       attributes: new fields.SchemaField({
-        might: statField(),
-        insight: statField(),
-        shell: statField(),
-        grace: statField()
+        might: statField(template?.attributes.might ?? 0),
+        insight: statField(template?.attributes.insight ?? 0),
+        shell: statField(template?.attributes.shell ?? 0),
+        grace: statField(template?.attributes.grace ?? 0)
       }),
       attributeTemps: new fields.SchemaField({
         might: valueField({ max: 100, integer: false }),
@@ -146,10 +151,10 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         grace: valueField({ max: 100, integer: false })
       }),
       social: new fields.SchemaField({
-        cute: valueField({ integer: false }),
-        spook: valueField({ integer: false }),
-        bonus: valueField({ integer: false }),
-        speed: valueField(),
+        cute: valueField({ initial: template?.social.cute ?? 0, integer: false }),
+        spook: valueField({ initial: template?.social.spook ?? 0, integer: false }),
+        bonus: valueField({ initial: template?.bonus ?? 0, integer: false }),
+        speed: valueField({ initial: template?.social.speed ?? 0 }),
         maneuverabilityOverride: new fields.NumberField({
           required: false,
           nullable: true,
@@ -162,21 +167,21 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
       resources: new fields.SchemaField({
         notchesBonus: valueField({ max: 99 }),
         techniqueSlotsBonus: valueField({ max: 99 }),
-        heart: valueField(),
-        heartMax: valueField(),
+        heart: valueField({ initial: initial("heart") }),
+        heartMax: valueField({ initial: initial("heartMax") }),
         heartTemp: valueField(),
-        stamina: valueField(),
-        staminaMax: valueField(),
+        stamina: valueField({ initial: initial("stamina") }),
+        staminaMax: valueField({ initial: initial("staminaMax") }),
         staminaTemp: valueField(),
-        soul: valueField(),
-        soulMax: valueField(),
+        soul: valueField({ initial: initial("soul") }),
+        soulMax: valueField({ initial: initial("soulMax") }),
         soulTemp: valueField(),
-        hunger: new fields.NumberField({ required: true, nullable: false, initial: 0, min: -99, max: 999, integer: false }),
-        satiety: valueField(),
+        hunger: new fields.NumberField({ required: true, nullable: false, initial: initial("hunger"), min: -99, max: 999, integer: false }),
+        satiety: valueField({ initial: initial("satiety") }),
         satietyMaxOverride: new fields.NumberField({
           required: false,
           nullable: true,
-          initial: null,
+          initial: template?.resources.satietyMaxOverride ?? null,
           min: 0,
           max: 999,
           integer: true
@@ -201,6 +206,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         traitBonuses: new fields.SchemaField({
           might: signedTraitBonus(), insight: signedTraitBonus(), shell: signedTraitBonus(), grace: signedTraitBonus(),
           heartMax: signedTraitBonus(), staminaMax: signedTraitBonus(), soulMax: signedTraitBonus(), satietyMax: signedTraitBonus(),
+          carryingCapacity: signedTraitBonus(),
           hunger: signedTraitBonus(), cute: signedTraitBonus(), spook: signedTraitBonus(), speed: signedTraitBonus()
         })
       }),
@@ -234,4 +240,16 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
     this.derived.satietyMax = Math.max(0, derived.satietyMax + traitBonuses.satietyMax);
     this.derived.effectiveHunger = Number(this.resources.hunger ?? 0) + traitBonuses.hunger;
   }
+}
+
+export class HKSmallBugData extends HKCharacterData {
+  static get bugTemplateKey() { return "small"; }
+}
+
+export class HKMediumBugData extends HKCharacterData {
+  static get bugTemplateKey() { return "medium"; }
+}
+
+export class HKLargeBugData extends HKCharacterData {
+  static get bugTemplateKey() { return "large"; }
 }
