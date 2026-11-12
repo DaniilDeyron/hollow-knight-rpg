@@ -18,8 +18,7 @@ function canControlMessage(message) {
   const authorId = message?.author?.id
     ?? (typeof message?.user === "string" ? message.user : message?.user?.id)
     ?? message?._source?.user;
-  if (authorId && authorId === currentUser?.id) return true;
-  return Boolean(message?.canUserModify?.(currentUser, "update"));
+  return Boolean(authorId && authorId === currentUser?.id);
 }
 
 function cloneData(value) {
