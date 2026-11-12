@@ -5284,3 +5284,112 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Read-only status reference Items opened from the actor sheet. */
+.hkrpg.sheet.item.status .window-content {
+  padding: 16px;
+  overflow-y: auto;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(61 87 121 / 14%), transparent 62%),
+    #0b1727;
+  color: #dce6f2;
+}
+
+.hkrpg-status-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  font-family: "Palatino Linotype", "Book Antiqua", Georgia, serif;
+}
+
+.hkrpg-status-sheet__header {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #526e90;
+}
+
+.hkrpg-status-sheet__header img {
+  display: block;
+  width: 64px;
+  height: 64px;
+  padding: 5px;
+  object-fit: contain;
+  border: 1px solid #607b99;
+  border-radius: 5px;
+  background: radial-gradient(circle, #253b58, #081525);
+}
+
+.hkrpg-status-sheet__eyebrow {
+  color: #c6ad7b;
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.hkrpg-status-sheet__header h1 {
+  margin: 4px 0 0;
+  color: #f0e2c3;
+  font-size: 1.35rem;
+  line-height: 1.15;
+}
+
+.hkrpg-status-sheet__section {
+  padding: 10px 12px;
+  border: 1px solid #405a78;
+  border-radius: 4px;
+  background: linear-gradient(145deg, rgb(24 42 64 / 91%), rgb(13 26 43 / 96%));
+}
+
+.hkrpg-status-sheet__section h2 {
+  margin: 0 0 6px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgb(105 132 164 / 50%);
+  color: #e3c88f;
+  font-size: .92rem;
+}
+
+.hkrpg-status-sheet__section p {
+  margin: 0;
+  color: #d3dfed;
+  font-size: .84rem;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.hkrpg-status-sheet__rules p {
+  color: #e1e8f1;
+}
+
+.hkrpg-status-sheet__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 3px;
+  color: #9eb2ca;
+  font-size: .68rem;
+  line-height: 1.4;
+}
+
+.hkrpg-status-sheet__footer p {
+  margin: 0;
+  color: #c4d2e2;
+  font-style: italic;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-icon--readonly {
+  cursor: default;
+  box-shadow: none;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-icon--readonly .hkrpg-effect-icon__toggle {
+  pointer-events: none;
+}
+
+.hkrpg.sheet.actor .hkrpg-effect-icon[data-open-status-id] {
+  cursor: pointer;
+}

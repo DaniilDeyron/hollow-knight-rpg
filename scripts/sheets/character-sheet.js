@@ -14,7 +14,8 @@ import {
 import { buildCharmNotchState, evaluateCharmEquip } from "../rules/charm-tracker.js";
 import { buildEquipmentRows } from "../rules/equipment-sheet.js";
 import { buildEffectsSheetData } from "../rules/effects-sheet.js";
-import { HK_EFFECT_CATALOG, getEffectStatusId } from "../data/effects-catalog.js";
+import { HK_EFFECT_CATALOG } from "../data/effects-catalog.js";
+import { buildStatusItemData, findStatusReferenceItem } from "../rules/status-items.js";
 
 export class HKCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -199,21 +200,6 @@ export class HKCharacterSheet extends ActorSheet {
 
     bind("[data-resource-field]", "change", this._onResourceFieldChange);
 
-    // Capture effect clicks before Foundry form handlers process them.
-    if (root?.addEventListener && root.dataset.hkrpgEffectCapture !== "true") {
-      root.dataset.hkrpgEffectCapture = "true";
-      root.addEventListener("click", async (event) => {
-        const control = event.target?.closest?.(
-          "[data-effect-catalog-toggle], [data-effect-document-toggle], [data-effect-delete]"
-        );
-        if (!control || !root.contains(control)) return;
-        event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-        await this._onEffectAction({ currentTarget: control });
-      }, true);
-    }
-
     // Mastery uses a capture-phase click handler so Foundry's form listeners
     // cannot swallow the checkbox interaction before the actor update.
     if (root?.addEventListener && root.dataset.hkrpgMasteryCapture !== "true") {
@@ -232,6 +218,7 @@ export class HKCharacterSheet extends ActorSheet {
     }
     bind("[data-create-equipment-row]", "click", this._onCreateEquipmentRow);
     bind("[data-equipment-field]", "change", this._onEquipmentFieldChange);
+    bind("[data-open-status-id]", "click", this._onOpenStatusItem);
     bind("[data-delete-equipment-item]", "click", this._onDeleteEquipmentItem);
     bind("[data-create-trait]", "click", this._onCreateTrait);
     bind("[data-create-subtrait]", "click", this._onCreateSubtrait);
@@ -250,55 +237,22 @@ export class HKCharacterSheet extends ActorSheet {
   }
 
 
-  async _onEffectAction(event) {
-    if (!this.isEditable) return;
-    const control = event.currentTarget;
-    const catalogId = control.dataset.effectCatalogToggle;
-    const documentId = control.dataset.effectDocumentToggle ?? control.dataset.effectDelete;
+  async _onOpenStatusItem(event) {
+    event.preventDefault();
+    const statusId = String(event.currentTarget?.dataset?.openStatusId ?? "");
+    const definition = HK_EFFECT_CATALOG.find((effect) => effect.id === statusId);
+    if (!definition) return;
 
-    try {
-      if (catalogId) {
-        const definition = HK_EFFECT_CATALOG.find((effect) => effect.id === catalogId);
-        if (!definition) return;
-        const statusId = getEffectStatusId(definition, CONFIG.statusEffects ?? []);
-        const existing = this.actor.effects.find((effect) => {
-          const statuses = effect.statuses instanceof Set
-            ? [...effect.statuses]
-            : Array.isArray(effect.statuses) ? effect.statuses : [];
-          return effect.getFlag?.("hkrpg", "catalogId") === catalogId ||
-            statuses.includes(statusId) || statuses.includes(catalogId);
-        });
-        if (existing) {
-          await existing.update({ disabled: !existing.disabled });
-        } else {
-          await this.actor.createEmbeddedDocuments("ActiveEffect", [{
-            name: definition.name,
-            img: definition.icon,
-            statuses: [statusId],
-            origin: this.actor.uuid,
-            disabled: false,
-            flags: {
-              hkrpg: {
-                catalogId: definition.id,
-                source: definition.source,
-                description: definition.rules
-              }
-            }
-          }]);
-        }
-      } else if (control.dataset.effectDocumentToggle) {
-        const effect = this.actor.effects.get(documentId);
-        if (effect) await effect.update({ disabled: !effect.disabled });
-      } else if (control.dataset.effectDelete) {
-        if (this.actor.effects.get(documentId)) {
-          await this.actor.deleteEmbeddedDocuments("ActiveEffect", [documentId]);
-        }
-      }
-      this.render(false);
-    } catch (error) {
-      console.error("Hollow Knight RPG | Effect update failed", error);
-      ui.notifications.error("Не удалось изменить эффект. Подробности — в консоли (F12).");
+    const statusItem = findStatusReferenceItem(game.items, statusId);
+    if (statusItem?.sheet) {
+      statusItem.sheet.render(true);
+      return;
     }
+
+    // Players may open the reference before a GM has seeded the world Items.
+    // This temporary Item is a read-only preview and never changes actor effects.
+    const preview = new Item(buildStatusItemData(definition), { temporary: true });
+    preview.sheet.render(true);
   }
 
   async _onSkillMasteryChange(event) {
