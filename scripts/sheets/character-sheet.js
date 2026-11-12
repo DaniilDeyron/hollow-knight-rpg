@@ -217,6 +217,18 @@ export class HKCharacterSheet extends ActorSheet {
       console.error("Hollow Knight RPG | Could not attach capture listener for resource pips", html);
     }
 
+    if (root?.addEventListener && root.dataset.hkrpgTraitSelectionCapture !== "true") {
+      root.dataset.hkrpgTraitSelectionCapture = "true";
+      root.addEventListener("change", async (event) => {
+        const input = event.target?.closest?.("[data-trait-select]");
+        if (!input || !root.contains(input)) return;
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        await this._onTraitSelectionChange({ currentTarget: input });
+      }, true);
+    }
+
     bind("[data-resource-field]", "change", this._onResourceFieldChange);
 
     // Mastery uses a capture-phase click handler so Foundry's form listeners
@@ -245,7 +257,6 @@ export class HKCharacterSheet extends ActorSheet {
     bind("[data-edit-feature-item]", "click", this._onEditFeatureItem);
     bind("[data-delete-feature-item]", "click", this._onDeleteFeatureItem);
     bind("[data-path-rank]", "change", this._onPathRankChange);
-    bind("[data-trait-select]", "change", this._onTraitSelectionChange);
     bind("[data-migrate-legacy-features]", "click", this._onMigrateLegacyFeatures);
     bind("[data-create-charm]", "click", this._onCreateCharm);
     bind("[data-edit-charm]", "click", this._onEditCharm);
