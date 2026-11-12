@@ -16,7 +16,6 @@ import { buildEquipmentRows } from "../rules/equipment-sheet.js";
 import { buildEffectsSheetData } from "../rules/effects-sheet.js";
 import { HK_EFFECT_CATALOG } from "../data/effects-catalog.js";
 import { buildStatusItemData, findStatusReferenceItem } from "../rules/status-items.js";
-import { flattenTraitLibrary, buildTraitLibraryGroups, buildTraitItemData } from "../data/trait-library.js";
 
 export class HKCharacterSheet extends ActorSheet {
   static get defaultOptions() {
@@ -32,7 +31,6 @@ export class HKCharacterSheet extends ActorSheet {
         { dragSelector: "[data-charm-item-id]", dropSelector: "[data-charm-dropzone]" },
         { dragSelector: "[data-technique-item-id]", dropSelector: "[data-technique-dropzone]" },
         { dragSelector: "[data-trait-item-id]", dropSelector: "[data-trait-dropzone]" },
-        { dragSelector: "[data-trait-library-id]", dropSelector: "[data-trait-child-dropzone]" },
         { dragSelector: "[data-equipment-item-id]", dropSelector: "[data-equipment-dropzone]" }
       ],
       tabs: [
@@ -92,8 +90,6 @@ export class HKCharacterSheet extends ActorSheet {
     pathSummary.totalRanks += legacyPathRanks;
     const notchesMaximum = this._getNotchesMaximum();
 
-    context.traitLibraryGroups = buildTraitLibraryGroups(items);
-    context.traitLibraryCount = flattenTraitLibrary().length;
     const bugSizeLabels = {
       smallBug: game.i18n.localize("HKRPG.Size.Small"),
       mediumBug: game.i18n.localize("HKRPG.Size.Medium"),
@@ -268,7 +264,6 @@ export class HKCharacterSheet extends ActorSheet {
     bind("[data-equipment-field]", "change", this._onEquipmentFieldChange);
     bind("[data-open-status-id]", "click", this._onOpenStatusItem);
     bind("[data-delete-equipment-item]", "click", this._onDeleteEquipmentItem);
-    bind("[data-add-library-trait]", "click", this._onAddLibraryTrait);
     bind("[data-create-trait]", "click", this._onCreateTrait);
     bind("[data-create-subtrait]", "click", this._onCreateSubtrait);
     bind("[data-create-path]", "click", this._onCreatePath);
@@ -551,52 +546,6 @@ export class HKCharacterSheet extends ActorSheet {
     }
   }
 
-  async _onAddLibraryTrait(event) {
-    event.preventDefault();
-    if (!this.isEditable) return;
-    const libraryId = String(event.currentTarget?.dataset?.addLibraryTrait ?? "");
-    const entry = flattenTraitLibrary().find((trait) => trait.id === libraryId);
-    if (!entry) return;
-    const parentId = String(event.currentTarget?.dataset?.libraryParent ?? "");
-
-    if (entry.kind === "main") {
-      const itemData = buildTraitItemData(entry);
-      const sourceItem = {
-        id: `library-${entry.id}`,
-        parent: null,
-        system: itemData.system,
-        toObject: () => foundry.utils.deepClone(itemData)
-      };
-      await this._prepareDroppedTrait(sourceItem, "auto");
-      return;
-    }
-
-    const parent = this.actor.items.get(parentId);
-    const expectedParentKind = entry.kind === "subtrait" ? "main" : "subtrait";
-    if (!parent || parent.type !== "trait" || parent.system.kind !== expectedParentKind ||
-        parent.system.selected === false || parent.system.libraryId !== entry.parentId) {
-      ui.notifications.warn("Сначала добавьте соответствующую родительскую черту.");
-      return;
-    }
-
-    const duplicates = this.actor.items.filter((item) =>
-      item.type === "trait" && item.system.libraryId === entry.id && item.system.parentId === parent.id
-    );
-    const repeatable = /можно (?:взять|брать) (?:дважды|несколько раз)/i.test(entry.description ?? "");
-    if (duplicates.length && (!repeatable || duplicates.length >= 2)) {
-      ui.notifications.info("Эта подчерта уже добавлена.");
-      return;
-    }
-
-    try {
-      await this.actor.createEmbeddedDocuments("Item", [buildTraitItemData(entry, parent.id)]);
-      this.render(true);
-    } catch (error) {
-      console.error("Hollow Knight RPG | Failed to add trait from built-in library", error);
-      ui.notifications.error("Не удалось добавить черту из библиотеки. Подробности — в консоли (F12).");
-    }
-  }
-
   async _onCreateTrait(event) {
     event.preventDefault();
     if (!this.isEditable) return;
@@ -816,14 +765,11 @@ export class HKCharacterSheet extends ActorSheet {
   }
 
   _onDragStart(event) {
-    const libraryId = event.currentTarget?.dataset?.traitLibraryId;
     const itemId = event.currentTarget?.dataset?.charmItemId
       ?? event.currentTarget?.dataset?.techniqueItemId
       ?? event.currentTarget?.dataset?.traitItemId
       ?? event.currentTarget?.dataset?.equipmentItemId;
-    const item = libraryId
-      ? (game.items?.contents ?? []).find((entry) => entry.id === libraryId)
-      : itemId ? this.actor.items.get(itemId) : null;
+    const item = itemId ? this.actor.items.get(itemId) : null;
     if (!item) return super._onDragStart(event);
     event.dataTransfer.setData("text/plain", JSON.stringify(item.toDragData()));
   }
