@@ -9,6 +9,10 @@ export class HKStatusSheet extends ItemSheet {
     });
   }
 
+  get isEditable() {
+    return false;
+  }
+
   getData(options = {}) {
     const context = super.getData(options);
     context.system = this.item.system;
