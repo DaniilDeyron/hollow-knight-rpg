@@ -31,7 +31,10 @@
   ],
   "documentTypes": {
     "Actor": {
-      "character": {}
+      "character": {},
+      "largeBug": {},
+      "mediumBug": {},
+      "smallBug": {}
     },
     "Item": {
       "trait": {},
