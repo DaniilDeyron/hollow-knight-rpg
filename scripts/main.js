@@ -106,10 +106,31 @@ async function ensureTraitLibrary() {
     const folder = entry.kind === "main" ? categoryFolder :
       await getFolder(entry.name, parentFolder ?? categoryFolder);
     folders.set(entry.id, folder);
+    const modifiers = {
+      "characteristic-bookworm": { insight: 1, might: -1 },
+      dazzling: { cute: 1 },
+      dull: { insight: -1 },
+      fragile: { shell: -1 },
+      graceful: { grace: 1 },
+      heartful: { heartMax: 1 },
+      frail: { heartMax: -1 },
+      insightful: { insight: 1 },
+      mighty: { might: 1 },
+      slow: { speed: -1 },
+      weak: { might: -1 },
+      clumsy: { grace: -1 },
+      spooky: { spook: 1 },
+      "big-strike": { might: 1 }
+    }[entry.id] ?? {};
     const system = {
       kind: entry.kind, parentId: "", parentLibraryId: entry.parentId ?? "",
       libraryId: entry.id, group: entry.category, slot: 0, category: entry.category,
-      selected: entry.kind === "main", hunger: entry.hunger, cute: 0, spook: 0,
+      selected: entry.kind === "main", hunger: entry.hunger, cute: modifiers.cute ?? 0,
+      spook: modifiers.spook ?? 0, might: modifiers.might ?? 0,
+      insight: modifiers.insight ?? 0, shell: modifiers.shell ?? 0,
+      grace: modifiers.grace ?? 0, heartMax: modifiers.heartMax ?? 0,
+      staminaMax: modifiers.staminaMax ?? 0, soulMax: modifiers.soulMax ?? 0,
+      satietyMax: modifiers.satietyMax ?? 0, speed: modifiers.speed ?? 0,
       description: entry.description, effects: entry.description
     };
     const prior = itemMap.get(entry.id);
