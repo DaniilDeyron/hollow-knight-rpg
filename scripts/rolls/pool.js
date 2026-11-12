@@ -221,7 +221,8 @@ export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
   if (!characteristic) throw new Error("Неизвестная характеристика.");
 
   const storedValue = actor.system[characteristic.group]?.[attributeKey] ?? 0;
-  const value = Number(overrides.attributeValue ?? storedValue);
+  const traitBonus = Number(actor.system.derived?.traitBonuses?.[attributeKey] ?? 0);
+  const value = Number(overrides.attributeValue ?? (storedValue + traitBonus));
   const storedTemporary = characteristic.temporary
     ? actor.system.attributeTemps?.[attributeKey] ?? 0
     : 0;
