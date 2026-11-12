@@ -148,6 +148,7 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
       social: new fields.SchemaField({
         cute: valueField({ integer: false }),
         spook: valueField({ integer: false }),
+        bonus: valueField({ integer: false }),
         speed: valueField(),
         maneuverabilityOverride: new fields.NumberField({
           required: false,
