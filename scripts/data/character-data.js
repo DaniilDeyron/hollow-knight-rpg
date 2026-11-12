@@ -1,5 +1,6 @@
 import { calculateDerivedStats } from "../rules/derived.js";
 import { countPathRanks } from "../rules/charm-tracker.js";
+import { calculateTraitBonuses } from "../rules/trait-bonuses.js";
 
 const fields = foundry.data.fields;
 
@@ -192,7 +193,12 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
         techniqueSlots: valueField(),
         beltSize: valueField(),
         satietyMax: valueField(),
-        notchesMax: valueField()
+        notchesMax: valueField(),
+        traitBonuses: new fields.SchemaField({
+          might: statField(), insight: statField(), shell: statField(), grace: statField(),
+          heartMax: statField(), staminaMax: statField(), soulMax: statField(), satietyMax: statField(),
+          hunger: statField(), cute: statField(), spook: statField()
+        })
       }),
       featureSheet: new fields.SchemaField({
         traits: fixedRowSlots(traitSheetRowField, 10),
@@ -219,6 +225,6 @@ export class HKCharacterData extends foundry.abstract.TypeDataModel {
       pathRanks,
       notchBonus: this.resources.notchesBonus
     });
-    Object.assign(this.derived, derived);
+    Object.assign(this.derived, derived, { traitBonuses: calculateTraitBonuses(this.parent?.items?.contents ?? []) });
   }
 }
