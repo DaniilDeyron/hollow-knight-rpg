@@ -201,6 +201,7 @@ export const HK_TRAIT_MODIFIERS = {
   sturdy: { shell: 0.5 },
   fast: { speed: 1 },
   dreamer: { cute: 0.5 },
+  disadvantaged: { spook: 0.5 },
   intimidating: { spook: 1 },
   "incorporeal": { spook: 1 },
   "pale-fluff": { cute: 0.5 },
