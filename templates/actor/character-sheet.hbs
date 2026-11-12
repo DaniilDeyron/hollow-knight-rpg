@@ -134,6 +134,7 @@
           <label>
             <span>{{localize "HKRPG.Secondary.Speed"}}</span>
             <input name="system.social.speed" type="number" min="0" value="{{system.social.speed}}" {{#unless isEditable}}disabled{{/unless}} />
+            <small class="hkrpg-effective-value">Итого с чертами: {{effectiveSocial.speed}}</small>
           </label>
           <label>
             <span>{{localize "HKRPG.Derived.Maneuverability"}}</span>
@@ -224,6 +225,7 @@
                 <label>
                   <span>{{localize "HKRPG.Secondary.Spook"}}</span>
                   <input name="system.social.spook" type="number" min="0" step="0.5" value="{{system.social.spook}}" />
+                  <small class="hkrpg-effective-value">Итого с шаблоном и чертами: {{effectiveSocial.spook}}</small>
                 </label>
                 <button type="button" data-attribute-roll="spook" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
               </div>
@@ -231,6 +233,7 @@
                 <label>
                   <span>{{localize "HKRPG.Secondary.Cute"}}</span>
                   <input name="system.social.cute" type="number" min="0" step="0.5" value="{{system.social.cute}}" />
+                  <small class="hkrpg-effective-value">Итого с шаблоном и чертами: {{effectiveSocial.cute}}</small>
                 </label>
                 <button type="button" data-attribute-roll="cute" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
               </div>
