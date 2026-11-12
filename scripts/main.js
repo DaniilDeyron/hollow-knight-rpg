@@ -136,6 +136,7 @@ async function ensureTraitLibrary() {
     const prior = itemMap.get(entry.id);
     if (prior) {
       await prior.update({ name: entry.name, folder: folder.id, system,
+        ownership: { default: CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2 },
         "flags.hkrpg.traitLibraryVersion": 1 });
       itemMap.set(entry.id, prior);
     } else {
@@ -143,6 +144,7 @@ async function ensureTraitLibrary() {
         name: entry.name, type: "trait",
         img: "icons/commodities/biological/antenna-insect-green.webp",
         folder: folder.id, system,
+        ownership: { default: CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2 },
         flags: { hkrpg: { traitLibraryId: entry.id, traitLibraryVersion: 1 } }
       }]);
       itemMap.set(entry.id, created);
