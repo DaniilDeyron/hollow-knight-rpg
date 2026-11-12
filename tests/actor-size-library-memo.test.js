@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { HK_BUG_TEMPLATES, buildBugActorDefaults, getBugTemplate } from "../scripts/data/bug-templates.js";
-import { flattenTraitLibrary, buildTraitLibraryGroups, buildTraitItemData } from "../scripts/data/trait-library.js";
+import { flattenTraitLibrary, buildTraitLibraryLayout, buildTraitItemData } from "../scripts/data/trait-library.js";
 import { calculateTraitBonuses } from "../scripts/rules/trait-bonuses.js";
 
 const read = (path) => readFileSync(new URL(path, import.meta.url), "utf8");
@@ -54,19 +54,29 @@ test("Шаблоны применяются моделью выбранного 
   assert.match(main, /preCreateActor/);
 });
 
-test("Встроенная библиотека содержит готовые черты и не зависит от папок мира", () => {
-  const groups = buildTraitLibraryGroups();
+test("Библиотека черт создаётся как папки и предметы в каталоге Foundry", () => {
+  const layout = buildTraitLibraryLayout();
   const all = flattenTraitLibrary();
   const main = read("../scripts/main.js");
   const sheet = read("../scripts/sheets/character-sheet.js");
   const template = read("../templates/actor/character-sheet.hbs");
   assert.ok(all.length > 130);
-  assert.equal(groups.length, 9);
-  assert.ok(groups.some((group) => group.items.some((trait) => trait.id === "crushing-jaws")));
-  assert.match(template, /data-add-library-trait=/);
-  assert.match(sheet, /buildTraitLibraryGroups\(items\)/);
-  assert.match(sheet, /_onAddLibraryTrait/);
-  assert.doesNotMatch(main, /ensureTraitLibrary/);
+  assert.equal(layout.folders.filter((folder) => folder.kind === "category").length, 9);
+  assert.equal(layout.items.length, all.length);
+  assert.equal(layout.rootName, "HKRPG — Библиотека черт");
+  const jawsFolder = layout.folders.find((folder) => folder.key === "children:crushing-jaws");
+  assert.equal(jawsFolder.parentKey, "category:naturalWeapon");
+  const jawsOption = layout.items.find((record) => record.entry.id === "huge-jaws");
+  assert.equal(jawsOption.folderKey, "children:crushing-jaws");
+  assert.match(main, /async function ensureTraitLibrary/);
+  assert.match(main, /Folder\.implementation\.create/);
+  assert.match(main, /buildTraitLibraryLayout\(\)/);
+  assert.match(main, /flags\.hkrpg\.traitLibraryId/);
+  assert.match(main, /await ensureTraitLibrary\(\)/);
+  assert.doesNotMatch(sheet, /buildTraitLibraryGroups|_onAddLibraryTrait/);
+  assert.doesNotMatch(template, /data-add-library-trait=|Библиотека черт/);
+  assert.match(template, /HKRPG — Библиотека черт/);
+  assert.match(template, /data-trait-child-dropzone=/);
 });
 
 test("Встроенные черты содержат игровые модификаторы, которые реально меняют персонажа", () => {
@@ -90,25 +100,24 @@ test("Встроенные черты содержат игровые модиф
   assert.match(model, /derived\.carryingCapacity = Math\.max/);
 });
 
-test("Подчерты в библиотеке связаны с родительскими чертами", () => {
-  const group = buildTraitLibraryGroups().find((entry) => entry.id === "naturalWeapon");
-  const jaws = group.items.find((trait) => trait.id === "crushing-jaws");
-  assert.ok(jaws.children.some((trait) => trait.id === "huge-jaws"));
-  const actorItems = [{
-    id: "actor-jaws", type: "trait",
-    system: { kind: "main", libraryId: "crushing-jaws", parentId: "", selected: true }
-  }];
-  const withParent = buildTraitLibraryGroups(actorItems).find((entry) => entry.id === "naturalWeapon");
-  const addedJaws = withParent.items.find((trait) => trait.id === "crushing-jaws");
-  assert.ok(addedJaws.children.find((trait) => trait.id === "huge-jaws").canAdd);
+test("Вложенные папки сохраняют иерархию подчерты и подчерты II", () => {
+  const layout = buildTraitLibraryLayout();
+  const folders = new Map(layout.folders.map((folder) => [folder.key, folder]));
+  const firstLevel = folders.get("children:crushing-jaws");
+  const secondLevel = folders.get("children:huge-jaws");
+  assert.equal(firstLevel.parentKey, "category:naturalWeapon");
+  assert.equal(secondLevel.parentKey, "children:crushing-jaws");
+  assert.ok(layout.items.some((record) =>
+    record.entry.id === "exotic-poison-jaws" && record.folderKey === "children:huge-jaws"
+  ));
 });
 
-test("Шапка листа возвращена к компактному портрету 112 пикселей", () => {
+test("Шапка листа использует высокий портрет и компактные поля справа", () => {
   const css = read("../styles/system.css");
-  assert.match(css, /grid-template-columns: 112px minmax\(0, 1fr\) 154px/);
-  assert.match(css, /width: 112px;\s*height: 112px;\s*min-height: 112px/);
+  assert.match(css, /grid-template-columns: 176px minmax\(0, 1fr\) 154px/);
+  assert.match(css, /width: 176px;\s*height: auto;\s*min-height: 0;\s*max-height: 240px/);
   assert.match(css, /hkrpg-header-main\s*\{\s*justify-content: flex-start/);
-  assert.match(css, /hkrpg-size-display/);
+  assert.match(css, /object-fit: contain/);
 });
 
 test("Памятка содержит справочник эффектов и модификации заклинаний без верхней панели активных эффектов", () => {
