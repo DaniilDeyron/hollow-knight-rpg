@@ -32,21 +32,15 @@ export function getBugTemplate(type) {
 export function buildBugActorDefaults(type) {
   const template = getBugTemplate(type);
   return {
-    "system.size": template.size,
-    "system.attributes": foundry.utils.deepClone(template.attributes),
-    "system.resources.heart": template.resources.heart,
-    "system.resources.heartMax": template.resources.heartMax,
-    "system.resources.stamina": template.resources.stamina,
-    "system.resources.staminaMax": template.resources.staminaMax,
-    "system.resources.soul": template.resources.soul,
-    "system.resources.soulMax": template.resources.soulMax,
-    "system.resources.hunger": template.resources.hunger,
-    "system.resources.satiety": template.resources.satiety,
-    "system.resources.satietyMaxOverride": template.resources.satietyMaxOverride,
-    "system.social.cute": template.social.cute,
-    "system.social.spook": template.social.spook,
-    "system.social.speed": template.social.speed,
-    "prototypeToken.width": template.token.width,
-    "prototypeToken.height": template.token.height
+    system: {
+      size: template.size,
+      attributes: foundry.utils.deepClone(template.attributes),
+      resources: foundry.utils.deepClone(template.resources),
+      social: foundry.utils.deepClone(template.social)
+    },
+    prototypeToken: {
+      width: template.token.width,
+      height: template.token.height
+    }
   };
 }
