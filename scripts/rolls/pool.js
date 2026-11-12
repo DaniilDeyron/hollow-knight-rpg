@@ -167,7 +167,7 @@ export function renderAttributeRollCardContent(state = {}) {
     if (selecting) {
       controls = `
         <div class="hkrpg-roll__reroll-panel">
-          <p class="hkrpg-roll__note">Выберите до <strong>${available}</strong> ${pluralizeRussian(available, ["кость", "кости", "костей"])}. Засчитывается лучший результат из двух.</p>
+          <p class="hkrpg-roll__note">Выберите не более <strong>${available}</strong> ${available === 1 ? "кости" : "костей"}. Засчитывается лучший результат из двух.</p>
           <div class="hkrpg-roll__actions">
             <button type="button" class="hkrpg-roll__action hkrpg-roll__action--primary" data-hkrpg-roll-action="confirm" ${selected.length ? "" : "disabled"}>Перебросить выбранные (${selected.length}/${available})</button>
             <button type="button" class="hkrpg-roll__action" data-hkrpg-roll-action="cancel">Отмена</button>
