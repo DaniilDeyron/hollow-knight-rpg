@@ -62,3 +62,14 @@ test("Числовые бонусы включают Голод, характе�
   assert.equal(bonuses.heartMax, 1);
   assert.equal(bonuses.speed, -1);
 });
+
+
+test("Папки библиотеки черт доступны игрокам с правами наблюдателя", async () => {
+  const { readFileSync } = await import("node:fs");
+  const source = readFileSync(new URL("../scripts/main.js", import.meta.url), "utf8");
+  const start = source.indexOf("async function ensureTraitLibrary()");
+  const end = source.indexOf("async function ensureCombatEquipmentLibrary()", start);
+  const seeder = source.slice(start, end);
+  assert.match(seeder, /ownership: \{ default: observer \}/);
+  assert.match(seeder, /traitLibraryFolderKey/);
+});
