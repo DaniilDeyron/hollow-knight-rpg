@@ -147,6 +147,13 @@ test("Редактор предмета черты использует комп
   assert.match(template, /применяются к персонажу автоматически/);
 });
 
+test("Бросок характеристики использует итоговые бонусы от черт и шаблона", () => {
+  const sheet = read("../scripts/sheets/character-sheet.js");
+  assert.match(sheet, /const traitBonus = Number\(this\.actor\.system\.derived\?\.traitBonuses\?\.\[attributeKey\]/);
+  assert.match(sheet, /const effectiveValue = baseValue \+ traitBonus \+ templateSocialBonus/);
+  assert.match(sheet, /attributeValue: effectiveValue/);
+});
+
 test("Подготовка памятки не должна блокировать лист из-за некорректного ActiveEffect", () => {
   const sheet = read("../scripts/sheets/character-sheet.js");
   assert.match(sheet, /Could not prepare effect reference data/);
