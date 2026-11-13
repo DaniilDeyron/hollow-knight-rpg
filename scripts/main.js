@@ -12,6 +12,8 @@ import { HK_EFFECT_CATALOG, getOrderedEffectStatuses } from "./data/effects-cata
 import { HKStatusData } from "./data/status-data.js";
 import { HKStatusSheet } from "./sheets/status-sheet.js";
 import { buildStatusItemData } from "./rules/status-items.js";
+import { buildCombatEquipmentLibrary, buildCombatEquipmentItemData } from "./data/combat-equipment-library.js";
+import { HKInventoryItemSheet } from "./sheets/inventory-item-sheet.js";
 import { planCatalogEffectDeduplication } from "./rules/effects-sheet.js";
 import { activateAttributeRollControls } from "./rolls/chat-reroll.js";
 
@@ -40,6 +42,12 @@ Hooks.once("init", () => {
     types: ["trait", "path", "technique"],
     makeDefault: true,
     label: "HKRPG.Sheets.FeatureItem"
+  });
+
+  Items.registerSheet("hollow-knight-rpg", HKInventoryItemSheet, {
+    types: ["weapon", "shield", "armor"],
+    makeDefault: true,
+    label: "HKRPG.Sheets.InventoryItem"
   });
 
   Items.registerSheet("hollow-knight-rpg", HKCharmSheet, {
@@ -195,6 +203,95 @@ async function ensureTraitLibrary() {
   console.log(`Hollow Knight RPG | Trait library ready (${layout.items.length} Items, ${layout.folders.length} folders)`);
 }
 
+async function ensureCombatEquipmentLibrary() {
+  if (!game.user?.isGM || !game.items) return;
+
+  const layout = buildCombatEquipmentLibrary();
+  const folderByKey = new Map();
+
+  for (const definition of layout.folders) {
+    const parent = definition.parentKey ? folderByKey.get(definition.parentKey) : null;
+    if (definition.parentKey && !parent) {
+      throw new Error(`Missing parent folder ${definition.parentKey} for ${definition.key}`);
+    }
+
+    let folder = game.folders.find((entry) =>
+      entry.type === "Item" &&
+      entry.getFlag?.("hkrpg", "combatEquipmentLibraryFolderKey") === definition.key
+    );
+    const update = {
+      name: definition.name,
+      folder: parent?.id ?? null,
+      "flags.hkrpg.combatEquipmentLibraryFolder": true,
+      "flags.hkrpg.combatEquipmentLibraryFolderKey": definition.key
+    };
+
+    if (folder) {
+      await folder.update(update);
+    } else {
+      folder = await Folder.implementation.create({
+        name: definition.name,
+        type: "Item",
+        folder: parent?.id ?? null,
+        flags: {
+          hkrpg: {
+            combatEquipmentLibraryFolder: true,
+            combatEquipmentLibraryFolderKey: definition.key
+          }
+        }
+      });
+    }
+    folderByKey.set(definition.key, folder);
+  }
+
+  const byLibraryId = new Map();
+  const duplicates = [];
+  for (const item of game.items.contents) {
+    const libraryId = item.getFlag?.("hkrpg", "combatEquipmentLibraryId");
+    if (!libraryId || !["weapon", "shield", "armor"].includes(item.type)) continue;
+    if (byLibraryId.has(libraryId)) duplicates.push(item.id);
+    else byLibraryId.set(libraryId, item);
+  }
+  if (duplicates.length) await Item.implementation.deleteDocuments(duplicates);
+
+  const observer = CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2;
+  const missing = [];
+  for (const record of layout.items) {
+    const data = buildCombatEquipmentItemData(record.entry);
+    const folder = folderByKey.get(record.folderKey);
+    if (!folder) throw new Error(`Missing destination folder ${record.folderKey}`);
+
+    const existing = byLibraryId.get(record.entry.id);
+    if (!existing) {
+      missing.push({
+        ...data,
+        folder: folder.id,
+        ownership: { default: observer },
+        flags: {
+          hkrpg: {
+            combatEquipmentLibraryId: record.entry.id,
+            combatEquipmentLibraryVersion: 1
+          }
+        }
+      });
+      continue;
+    }
+
+    await existing.update({
+      name: data.name,
+      img: data.img,
+      folder: folder.id,
+      ownership: { default: observer },
+      system: data.system,
+      "flags.hkrpg.combatEquipmentLibraryId": record.entry.id,
+      "flags.hkrpg.combatEquipmentLibraryVersion": 1
+    });
+  }
+
+  if (missing.length) await Item.implementation.createDocuments(missing);
+  console.log(`Hollow Knight RPG | Combat equipment library ready (${layout.items.length} Items, ${layout.folders.length} folders)`);
+}
+
 async function ensureStatusReferenceItems() {
   if (!game.user?.isGM || !game.items) return;
 
@@ -258,6 +355,12 @@ Hooks.once("ready", async () => {
     await ensureStatusReferenceItems();
   } catch (error) {
     console.error("Hollow Knight RPG | Could not prepare status reference Items", error);
+  }
+
+  try {
+    await ensureCombatEquipmentLibrary();
+  } catch (error) {
+    console.error("Hollow Knight RPG | Could not prepare combat equipment library", error);
   }
 
   try {

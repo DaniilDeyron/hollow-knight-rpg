@@ -1,0 +1,100 @@
+<form class="{{cssClass}} hkrpg-inventory-item-form" autocomplete="off">
+  <header class="hkrpg-inventory-item-header">
+    <img src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+    <div class="hkrpg-inventory-item-heading">
+      <span>{{categoryLabel}}</span>
+      <input name="name" type="text" value="{{item.name}}" {{#unless isEditable}}disabled{{/unless}} />
+    </div>
+  </header>
+
+  <section class="hkrpg-inventory-item-stats">
+    {{#if isWeapon}}
+      <div class="hkrpg-inventory-item-stats__grid">
+        <div><small>Тип оружия</small><strong>{{system.weaponTypes}}</strong></div>
+        <div><small>Урон</small><strong>{{system.damage}}</strong></div>
+        <div><small>Дальность</small><strong>{{system.range}}</strong></div>
+        <div><small>Хватка</small><strong>{{system.grip}}</strong></div>
+        <div><small>Вес</small><strong>{{weightDisplay}}</strong></div>
+        <div><small>Цена</small><strong>{{costDisplay}}</strong></div>
+      </div>
+    {{/if}}
+    {{#if isShield}}
+      <div class="hkrpg-inventory-item-stats__grid">
+        <div><small>Качество</small><strong>{{system.quality}}</strong></div>
+        <div><small>Вес</small><strong>{{weightDisplay}}</strong></div>
+        <div><small>Цена</small><strong>{{costDisplay}}</strong></div>
+        {{#if system.durability}}<div><small>Прочность</small><strong>{{system.durability}}</strong></div>{{/if}}
+        {{#if system.absorption}}<div><small>Поглощение</small><strong>{{system.absorption}}</strong></div>{{/if}}
+      </div>
+      <p class="hkrpg-inventory-item-note">Щит всегда удерживается одной рукой. Удар щитом: парная атака качества 0, базовый урон 2. Без модификации «Сбалансированный» успехи не добавляются к урону.</p>
+    {{/if}}
+    {{#if isArmor}}
+      <div class="hkrpg-inventory-item-stats__grid">
+        <div><small>Прочность</small><strong>{{system.durability}}</strong></div>
+        <div><small>Понижение урона</small><strong>{{system.damageReduction}}</strong></div>
+        <div><small>Бонус Впитывания</small><strong>+{{system.soakBonus}}</strong></div>
+        {{#if system.soakRerolls}}<div><small>Повторный бросок Впитывания</small><strong>+{{system.soakRerolls}}</strong></div>{{/if}}
+        <div><small>Вес</small><strong>{{weightDisplay}}</strong></div>
+        <div><small>Цена</small><strong>{{costDisplay}}</strong></div>
+      </div>
+    {{/if}}
+    {{#if isEditable}}
+      <details class="hkrpg-inventory-item-edit">
+        <summary>Изменить параметры</summary>
+        {{#if isWeapon}}
+          <div class="hkrpg-inventory-item-edit__grid">
+            <label>Типы оружия<input name="system.weaponTypes" value="{{system.weaponTypes}}" /></label>
+            <label>Урон<input name="system.damage" value="{{system.damage}}" /></label>
+            <label>Дальность<input name="system.range" value="{{system.range}}" /></label>
+            <label>Хватка<input name="system.grip" value="{{system.grip}}" /></label>
+            <label>Вес<input name="system.weight" type="number" min="0" step="0.1" value="{{system.weight}}" /></label>
+            <label>Отображение веса<input name="system.weightLabel" value="{{system.weightLabel}}" /></label>
+            <label>Цена (Гео)<input name="system.cost" type="number" min="0" value="{{system.cost}}" /></label>
+            <label>Цена в каталоге<input name="system.costLabel" value="{{system.costLabel}}" /></label>
+          </div>
+        {{/if}}
+        {{#if isShield}}
+          <div class="hkrpg-inventory-item-edit__grid">
+            <label>Качество<input name="system.quality" type="number" min="0" value="{{system.quality}}" /></label>
+            <label>Вес<input name="system.weight" type="number" min="0" step="0.1" value="{{system.weight}}" /></label>
+            <label>Отображение веса<input name="system.weightLabel" value="{{system.weightLabel}}" /></label>
+            <label>Цена (Гео)<input name="system.cost" type="number" min="0" value="{{system.cost}}" /></label>
+            <label>Цена в каталоге<input name="system.costLabel" value="{{system.costLabel}}" /></label>
+            <label>Прочность<input name="system.durability" type="number" min="0" value="{{system.durability}}" /></label>
+            <label>Поглощение<input name="system.absorption" type="number" min="0" value="{{system.absorption}}" /></label>
+            <label>Впитывание<input name="system.protection" value="{{system.protection}}" /></label>
+          </div>
+        {{/if}}
+        {{#if isArmor}}
+          <div class="hkrpg-inventory-item-edit__grid">
+            <label>Прочность<input name="system.durability" type="number" min="0" value="{{system.durability}}" /></label>
+            <label>Понижение урона<input name="system.damageReduction" type="number" min="0" value="{{system.damageReduction}}" /></label>
+            <label>Бонус Впитывания<input name="system.soakBonus" type="number" min="0" value="{{system.soakBonus}}" /></label>
+            <label>Повторные броски<input name="system.soakRerolls" type="number" min="0" value="{{system.soakRerolls}}" /></label>
+            <label>Вес<input name="system.weight" type="number" min="0" step="0.1" value="{{system.weight}}" /></label>
+            <label>Цена (Гео)<input name="system.cost" type="number" min="0" value="{{system.cost}}" /></label>
+          </div>
+        {{/if}}
+      </details>
+    {{/if}}
+  </section>
+
+  <section class="hkrpg-inventory-item-section">
+    <h3>Описание</h3>
+    <textarea name="system.description" rows="3" {{#unless isEditable}}disabled{{/unless}}>{{system.description}}</textarea>
+  </section>
+
+  <section class="hkrpg-inventory-item-section">
+    <h3>Боевые правила</h3>
+    <textarea name="system.rules" rows="4" {{#unless isEditable}}disabled{{/unless}}>{{system.rules}}</textarea>
+  </section>
+
+  <details class="hkrpg-inventory-item-section hkrpg-inventory-item-modifications">
+    <summary>Модификации и улучшения</summary>
+    <textarea name="system.modificationNotes" rows="4" {{#unless isEditable}}disabled{{/unless}}>{{system.modificationNotes}}</textarea>
+  </details>
+
+  <footer class="hkrpg-inventory-item-source">
+    Источник: The Unofficial Hollow Knight RPG, русская версия 1.8, с. {{system.sourcePage}}
+  </footer>
+</form>

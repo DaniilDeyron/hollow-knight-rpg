@@ -5826,3 +5826,187 @@
   font-size: .7rem;
   line-height: 1.35;
 }
+
+
+/* Compact reference sheets for the combat equipment catalogue. */
+.hkrpg.sheet.item.inventory-item .window-content {
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-header {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-height: 78px;
+  padding: 7px 9px;
+  border: 1px solid #435b78;
+  border-radius: 5px;
+  background: linear-gradient(145deg, #1a2e47, #0d1a2b);
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-header > img {
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  max-width: 60px;
+  min-height: 60px;
+  max-height: 60px;
+  padding: 6px;
+  object-fit: contain;
+  border: 1px solid #506d8d;
+  border-radius: 4px;
+  background: #081525;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-heading > span {
+  color: #c7b184;
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-heading > input {
+  width: 100%;
+  min-width: 0;
+  height: 35px;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-stats,
+.hkrpg.sheet.item .hkrpg-inventory-item-section {
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid #405673;
+  border-radius: 4px;
+  background: rgb(13 26 43 / 88%);
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-stats__grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 6px 7px;
+  border: 1px solid rgb(82 109 141 / 50%);
+  border-radius: 3px;
+  background: rgb(6 16 29 / 52%);
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-stats__grid small {
+  color: #9fb3cc;
+  font-size: .66rem;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-stats__grid strong {
+  color: #f0dfb9;
+  font-size: .84rem;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-note {
+  margin: 7px 0 0;
+  padding-top: 6px;
+  border-top: 1px solid rgb(82 109 141 / 40%);
+  color: #bfccdc;
+  font-size: .7rem;
+  line-height: 1.4;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-section h3 {
+  margin: 0 0 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #405673;
+  color: #c7b184;
+  font-size: .78rem;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-section textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 58px;
+  height: auto;
+  padding: 6px 7px;
+  resize: vertical;
+  font-size: .74rem;
+  line-height: 1.4;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-section > textarea[name="system.rules"] {
+  min-height: 82px;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-edit {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid rgb(82 109 141 / 45%);
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-edit > summary,
+.hkrpg.sheet.item .hkrpg-inventory-item-modifications > summary {
+  color: #c7b184;
+  font-size: .72rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-edit__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 8px;
+  margin-top: 8px;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-edit__grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  color: #aebfd5;
+  font-size: .68rem;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-edit__grid input {
+  width: 100%;
+  min-width: 0;
+  min-height: 26px;
+  height: 26px;
+  padding: 2px 5px;
+  font-size: .74rem;
+}
+
+.hkrpg.sheet.item .hkrpg-inventory-item-source {
+  color: #8399b4;
+  font-size: .65rem;
+  text-align: right;
+}
+
+@media (max-width: 480px) {
+  .hkrpg.sheet.item .hkrpg-inventory-item-stats__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
