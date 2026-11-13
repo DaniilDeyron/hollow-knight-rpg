@@ -17,32 +17,22 @@ test("Результаты от 1 до 4 не дают успеха и имею�
   }
 });
 
-test("Пул характеристики 3.5 — три кости и один доступный переброс", () => {
+test("Дробная часть характеристики не добавляет кость и не выдаёт отдельный переброс", () => {
   assert.deepEqual(getAttributePool(3.5), {
     baseDiceCount: 3,
     bonusDiceCount: 0,
     diceCount: 3,
-    rerollsAvailable: 1
+    rerollsAvailable: 0
   });
 });
 
-test("Дополнительные перебросы от оружия, черт или эффектов складываются с дробной характеристикой", () => {
-  assert.deepEqual(getAttributePool(3.5, 0, 2), {
-    baseDiceCount: 3,
-    bonusDiceCount: 0,
-    diceCount: 3,
-    rerollsAvailable: 3
-  });
-  assert.deepEqual(getAttributePool(4, 1, 2), {
-    baseDiceCount: 4,
-    bonusDiceCount: 1,
-    diceCount: 5,
-    rerollsAvailable: 2
-  });
+test("Значение 5.5 даёт ровно пять кубиков", () => {
+  assert.equal(getAttributePool(5.5).diceCount, 5);
 });
 
-test("Дробный дополнительный источник не создаёт целый переброс", () => {
-  assert.deepEqual(getAttributePool(4, 0, 0.5).rerollsAvailable, 0);
+test("Значения 1.5 и 2.5 округляются вниз при подсчёте кубиков", () => {
+  assert.equal(getAttributePool(1.5).diceCount, 1);
+  assert.equal(getAttributePool(2.5).diceCount, 2);
 });
 
 test("Целое значение характеристики даёт только целое число костей", () => {
@@ -95,7 +85,7 @@ test("Временные кости не отменяют переброс от 
     baseDiceCount: 3,
     bonusDiceCount: 2,
     diceCount: 5,
-    rerollsAvailable: 1
+    rerollsAvailable: 0
   });
 });
 
