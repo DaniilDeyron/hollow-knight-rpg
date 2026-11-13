@@ -2,27 +2,23 @@
  * Shared d6 dice-pool helpers.
  *
  * Core rule: a result of 5 or 6 is a success.
- * Attribute .5 values grant a reroll; they do not add a full die.
+ * Fractional characteristic ranks never add a die: 5.5 is a five-die pool.
+ * The card-level reroll action is universal and is not calculated here.
  */
-export function getAttributePool(attributeValue, temporaryValue = 0, rerollBonus = 0) {
+export function getAttributePool(attributeValue, temporaryValue = 0) {
   const value = Number(attributeValue);
   const temporary = Number(temporaryValue);
-  const bonus = Number(rerollBonus);
   const safeValue = Number.isFinite(value) ? Math.max(0, value) : 0;
   const safeTemporary = Number.isFinite(temporary) ? Math.max(0, temporary) : 0;
-  const safeRerollBonus = Number.isFinite(bonus) ? Math.max(0, Math.floor(bonus)) : 0;
 
-  // A half-rank in the effective base attribute grants one reroll.
-  // Temporary whole-dice bonuses and explicit reroll sources are independent.
   const baseDiceCount = Math.floor(safeValue);
   const bonusDiceCount = Math.floor(safeTemporary);
-  const fraction = safeValue - baseDiceCount;
 
   return {
     baseDiceCount,
     bonusDiceCount,
     diceCount: baseDiceCount + bonusDiceCount,
-    rerollsAvailable: (fraction >= 0.5 ? 1 : 0) + safeRerollBonus
+    rerollsAvailable: 0
   };
 }
 
@@ -49,8 +45,8 @@ export function summarizeD6Results(values = []) {
 }
 
 /**
- * Apply a single post-roll selection. Each chosen die keeps the better of
- * its original result and the new d6 result, exactly as the core rule states.
+ * Replace exactly the selected dice with their new results.
+ * A card allows one reroll action; the player may select any number of dice.
  */
 export function resolveD6Rerolls(originalResults, selectedIndices, rerolledResults, maximumRerolls) {
   const originals = Array.isArray(originalResults) ? [...originalResults] : [];
@@ -84,13 +80,12 @@ export function resolveD6Rerolls(originalResults, selectedIndices, rerolledResul
     const nextValue = Number(rerolled[index]);
     classifyD6Result(nextValue);
     const previousValue = originals[dieIndex];
-    const keptValue = Math.max(previousValue, nextValue);
-    originals[dieIndex] = keptValue;
+    originals[dieIndex] = nextValue;
     history.push({
       index: dieIndex,
       previous: previousValue,
       rolled: nextValue,
-      kept: keptValue
+      kept: nextValue
     });
   }
 
@@ -158,9 +153,9 @@ export function renderD6RollCardContent(state = {}) {
   const results = Array.isArray(state.results) ? state.results : [];
   const summary = summarizeD6Results(results);
   const successesLabel = pluralizeRussian(summary.successes, ["успех", "успеха", "успехов"]);
-  const available = Math.max(0, Math.floor(Number(state.rerollsAvailable) || 0));
+  const available = results.length;
   const selected = Array.isArray(state.selectedIndices) ? state.selectedIndices : [];
-  const selecting = Boolean(state.selecting && !state.rerollsUsed && available > 0);
+  const selecting = Boolean(state.selecting && !state.rerollsUsed && results.length > 0);
   const label = escapeHtml(state.label ?? "Проверка");
   const formula = escapeHtml(state.formula ?? `${results.length}d6`);
 
@@ -169,7 +164,7 @@ export function renderD6RollCardContent(state = {}) {
     if (selecting) {
       controls = `
         <div class="hkrpg-roll__reroll-panel">
-          <p class="hkrpg-roll__note">Выберите не более <strong>${available}</strong> ${available === 1 ? "кости" : "костей"}. Засчитывается лучший результат из двух.</p>
+          <p class="hkrpg-roll__note">Выберите любые кости, которые хотите перебросить. Новые результаты заменят старые.</p>
           <div class="hkrpg-roll__actions">
             <button type="button" class="hkrpg-roll__action hkrpg-roll__action--primary" data-hkrpg-roll-action="confirm" ${selected.length ? "" : "disabled"}>Перебросить выбранные (${selected.length}/${available})</button>
             <button type="button" class="hkrpg-roll__action" data-hkrpg-roll-action="cancel">Отмена</button>
@@ -178,7 +173,7 @@ export function renderD6RollCardContent(state = {}) {
     } else {
       controls = `
         <div class="hkrpg-roll__reroll-panel">
-          <span class="hkrpg-roll__note">Доступно перебросов: <strong>${available}</strong></span>
+          <span class="hkrpg-roll__note">Можно перебросить любые кости один раз.</span>
           <button type="button" class="hkrpg-roll__action hkrpg-roll__action--primary" data-hkrpg-roll-action="start">Переброс</button>
         </div>`;
     }
@@ -186,7 +181,7 @@ export function renderD6RollCardContent(state = {}) {
     controls = `
       <div class="hkrpg-roll__note hkrpg-roll__reroll-used">
         Переброс потрачен: ${state.rerollHistory.map((entry) =>
-          `кость ${Number(entry.index) + 1}: ${Number(entry.previous)} → ${Number(entry.rolled)}, оставлено ${Number(entry.kept)}`
+          `кость ${Number(entry.index) + 1}: ${Number(entry.previous)} → ${Number(entry.kept)}`
         ).join("; ")}
       </div>`;
   }
@@ -205,7 +200,7 @@ export function renderD6RollCardContent(state = {}) {
         <strong>${summary.successes}</strong>
         <span class="hkrpg-roll__plural">${successesLabel}</span>
       </footer>
-      ${controls || '<div class="hkrpg-roll__note hkrpg-roll__reroll-unavailable">Дополнительных перебросов нет.</div>'}
+      ${controls}
     </section>
   `;
 }
@@ -265,7 +260,7 @@ export async function rollD6Check(actor, {
     label: String(label),
     formula: formula ? String(formula) : `${count}d6`,
     results,
-    rerollsAvailable: Math.min(rerolls, results.length),
+    rerollsAvailable: results.length,
     rerollsUsed: false,
     selecting: false,
     selectedIndices: [],
@@ -302,7 +297,7 @@ export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
     bonusDiceCount,
     diceCount,
     rerollsAvailable
-  } = getAttributePool(value, temporaryValue, overrides.rerollsBonus ?? 0);
+  } = getAttributePool(value, temporaryValue);
   const { roll, results } = await rollD6Pool(diceCount);
   const label = game.i18n.localize(characteristic.localizationKey);
   const formula = bonusDiceCount > 0
@@ -315,7 +310,7 @@ export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
     label,
     formula,
     results,
-    rerollsAvailable: Math.min(rerollsAvailable, results.length),
+    rerollsAvailable: results.length,
     rerollsUsed: false,
     selecting: false,
     selectedIndices: [],
