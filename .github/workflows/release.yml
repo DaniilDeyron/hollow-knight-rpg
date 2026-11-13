@@ -68,7 +68,7 @@ jobs:
           node -e "JSON.parse(require('node:fs').readFileSync('system.json', 'utf8'))"
           node -e "JSON.parse(require('node:fs').readFileSync('lang/ru.json', 'utf8'))"
           npm test
-          for file in scripts/main.js scripts/data/status-data.js scripts/data/bug-templates.js scripts/data/trait-library.js scripts/data/character-data.js scripts/data/charm-data.js scripts/data/feature-item-data.js scripts/data/technique-data.js scripts/data/inventory-item-data.js scripts/data/combat-equipment-library.js scripts/rules/equipment-sheet.js scripts/rules/derived.js scripts/rules/charm-tracker.js scripts/rules/feature-sheet.js scripts/rules/status-items.js scripts/rules/trait-bonuses.js scripts/sheets/status-sheet.js scripts/rolls/pool.js scripts/rolls/chat-reroll.js scripts/sheets/character-sheet.js scripts/sheets/charm-sheet.js scripts/sheets/feature-item-sheet.js; do
+          for file in scripts/main.js scripts/data/status-data.js scripts/data/bug-templates.js scripts/data/trait-library.js scripts/data/character-data.js scripts/data/charm-data.js scripts/data/feature-item-data.js scripts/data/technique-data.js scripts/data/inventory-item-data.js scripts/data/combat-equipment-library.js scripts/rules/equipment-sheet.js scripts/rules/derived.js scripts/rules/charm-tracker.js scripts/rules/feature-sheet.js scripts/rules/status-items.js scripts/rules/trait-bonuses.js scripts/sheets/status-sheet.js scripts/rolls/pool.js scripts/rolls/chat-reroll.js scripts/sheets/character-sheet.js scripts/sheets/charm-sheet.js scripts/sheets/feature-item-sheet.js scripts/sheets/inventory-item-sheet.js; do
             node --check "$file"
           done
 
