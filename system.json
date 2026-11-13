@@ -2,7 +2,7 @@
   "id": "hollow-knight-rpg",
   "title": "Hollow Knight RPG",
   "description": "A fan-made tabletop roleplaying game system for Foundry Virtual Tabletop, based on The Unofficial Hollow Knight RPG.",
-  "version": "0.1.93",
+  "version": "0.1.94",
   "compatibility": {
     "minimum": "13",
     "verified": "13"
@@ -14,7 +14,7 @@
   ],
   "url": "https://github.com/DaniilDeyron/hollow-knight-rpg",
   "manifest": "https://raw.githubusercontent.com/DaniilDeyron/hollow-knight-rpg/main/system.json",
-  "download": "https://raw.githubusercontent.com/DaniilDeyron/hollow-knight-rpg/main/dist/v0.1.93/hollow-knight-rpg.zip",
+  "download": "https://raw.githubusercontent.com/DaniilDeyron/hollow-knight-rpg/main/dist/v0.1.94/hollow-knight-rpg.zip",
   "esmodules": [
     "scripts/main.js"
   ],
