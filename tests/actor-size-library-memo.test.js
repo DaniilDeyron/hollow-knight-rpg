@@ -71,7 +71,7 @@ test("Библиотека черт создаётся как папки и пр
   assert.match(main, /async function ensureTraitLibrary/);
   assert.match(main, /Folder\.implementation\.create/);
   assert.match(main, /buildTraitLibraryLayout\(\)/);
-  assert.match(main, /flags\.hkrpg\.traitLibraryId/);
+  assert.match(main, /flags\.hollow-knight-rpg\.traitLibraryId/);
   assert.match(main, /await ensureTraitLibrary\(\)/);
   assert.doesNotMatch(sheet, /buildTraitLibraryGroups|_onAddLibraryTrait/);
   assert.doesNotMatch(template, /data-add-library-trait=|hkrpg-trait-library__items/);
