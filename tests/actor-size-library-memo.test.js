@@ -147,6 +147,11 @@ test("Редактор предмета черты использует комп
   assert.match(template, /применяются к персонажу автоматически/);
 });
 
+test("Лист персонажа не отображает автоматические строки «Итого» для характеристик", () => {
+  const template = read("../templates/actor/character-sheet.hbs");
+  assert.doesNotMatch(template, /hkrpg-effective-value|Итого с чертами|Итого с шаблоном/);
+});
+
 test("Бросок характеристики использует итоговые бонусы от черт и шаблона", () => {
   const sheet = read("../scripts/sheets/character-sheet.js");
   assert.match(sheet, /const traitBonus = Number\(this\.actor\.system\.derived\?\.traitBonuses\?\.\[attributeKey\]/);
