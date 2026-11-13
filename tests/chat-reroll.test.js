@@ -8,6 +8,7 @@ import {
 } from "../scripts/rolls/pool.js";
 import {
   processD6RollAction,
+  activateD6RollControls,
   replaceD6ResultsInRollData
 } from "../scripts/rolls/chat-reroll.js";
 
@@ -295,4 +296,49 @@ test("После отмены выбранные кости снимаются, 
   assert.equal(message.flags.hkrpg.d6Roll.selecting, false);
   assert.deepEqual(message.flags.hkrpg.d6Roll.selectedIndices, []);
   assert.match(message.content, /data-hkrpg-roll-action="start"/);
+});
+
+
+test("Кнопка переброса получает обработчик через корень сообщения чата", async () => {
+  const previousGame = globalThis.game;
+  globalThis.game = { user: { id: "gm", isGM: true } };
+
+  try {
+    const message = createMockMessage({
+      kind: "d6-check",
+      results: [2, 4, 6],
+      rerollsAvailable: 1,
+      rerollsUsed: false,
+      selecting: false,
+      selectedIndices: [],
+      rerollHistory: []
+    });
+
+    const button = actionControl("start");
+    const listeners = {};
+    const root = {
+      dataset: {},
+      querySelectorAll: () => [button],
+      contains: (element) => element === button,
+      addEventListener: (type, callback) => { listeners[type] = callback; }
+    };
+
+    activateD6RollControls(message, root);
+    assert.equal(typeof listeners.click, "function");
+
+    let prevented = false;
+    await listeners.click({
+      target: button,
+      preventDefault: () => { prevented = true; },
+      stopPropagation: () => {},
+      stopImmediatePropagation: () => {}
+    });
+
+    assert.equal(prevented, true);
+    assert.equal(message.flags.hkrpg.d6Roll.selecting, true);
+    assert.match(message.content, /data-hkrpg-roll-action="confirm"/);
+  } finally {
+    if (previousGame === undefined) delete globalThis.game;
+    else globalThis.game = previousGame;
+  }
 });
