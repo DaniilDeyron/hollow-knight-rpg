@@ -192,7 +192,7 @@ test("В системе есть общий вызов для будущих б�
   const source = readFileSync(new URL("../scripts/rolls/pool.js", import.meta.url), "utf8");
   assert.match(source, /export async function rollD6Check/);
   assert.match(source, /flagKey = "d6Roll"/);
-  assert.match(source, /rerollsAvailable = 0/);
+  assert.match(source, /rerollsAvailable = DEFAULT_D6_REROLLS/);
 });
 
 
