@@ -1097,14 +1097,8 @@ export class HKCharacterSheet extends ActorSheet {
       if (temporaryInput) updates[`system.attributeTemps.${attributeKey}`] = temporaryValue;
       if (Object.keys(updates).length) await this.actor.update(updates);
 
-      const traitBonus = Number(this.actor.system.derived?.traitBonuses?.[attributeKey] ?? 0);
-      const templateSocialBonus = group === "social"
-        ? Number(this.actor.system.social?.bonus ?? 0)
-        : 0;
-      const effectiveValue = baseValue + traitBonus + templateSocialBonus;
-
       await rollAttributeCheck(this.actor, attributeKey, {
-        attributeValue: effectiveValue,
+        baseAttributeValue: baseValue,
         temporaryValue
       });
     } catch (error) {
