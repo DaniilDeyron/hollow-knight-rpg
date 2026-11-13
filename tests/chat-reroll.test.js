@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
   renderAttributeRollCardContent,
   renderD6RollCardContent,
@@ -172,3 +173,11 @@ test("Универсальный обработчик не ограничен т
   assert.match(source, /hasGenericFlag/);
   assert.match(source, /export function activateD6RollControls/);
 });
+
+test("В системе есть общий вызов для будущих бросков навыков, атак и сопротивления", () => {
+  const source = readFileSync(new URL("../scripts/rolls/pool.js", import.meta.url), "utf8");
+  assert.match(source, /export async function rollD6Check/);
+  assert.match(source, /flagKey = "d6Roll"/);
+  assert.match(source, /rerollsAvailable = 0/);
+});
+
