@@ -26,6 +26,22 @@ export function getAttributePool(attributeValue, temporaryValue = 0, rerollBonus
   };
 }
 
+
+/**
+ * A characteristic's own fractional part never creates a die.
+ * Apply that rule before adding independent trait/template modifiers, so a
+ * .5 on the base characteristic cannot combine with a .5 bonus into +1 die.
+ */
+export function getEffectiveAttributeValue(attributeValue, ...modifiers) {
+  const rawBase = Number(attributeValue);
+  const base = Number.isFinite(rawBase) ? Math.max(0, rawBase) : 0;
+  const modifierTotal = modifiers.reduce((total, modifier) => {
+    const value = Number(modifier);
+    return total + (Number.isFinite(value) ? value : 0);
+  }, 0);
+  return Math.floor(base) + modifierTotal;
+}
+
 export function classifyD6Result(value) {
   const result = Number(value);
   if (!Number.isInteger(result) || result < 1 || result > 6) {
@@ -296,7 +312,8 @@ export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
   const storedValue = actor.system[characteristic.group]?.[attributeKey] ?? 0;
   const traitBonus = Number(actor.system.derived?.traitBonuses?.[attributeKey] ?? 0);
   const templateSocialBonus = characteristic.group === "social" ? Number(actor.system.social?.bonus ?? 0) : 0;
-  const value = Number(overrides.attributeValue ?? (storedValue + traitBonus + templateSocialBonus));
+  const baseAttributeValue = overrides.baseAttributeValue ?? overrides.attributeValue ?? storedValue;
+  const value = getEffectiveAttributeValue(baseAttributeValue, traitBonus, templateSocialBonus);
   const storedTemporary = characteristic.temporary
     ? actor.system.attributeTemps?.[attributeKey] ?? 0
     : 0;
