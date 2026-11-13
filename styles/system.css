@@ -6073,11 +6073,13 @@
 }
 .hkrpg.sheet.actor .hkrpg-equipment-subsection--armor .hkrpg-equipment-column-head {
   grid-template-columns: repeat(3, 50px);
-  grid-column: 3 / 6;
+  grid-column: 2 / 5;
 }
-.hkrpg.sheet.actor .hkrpg-equipment-subsection--weapons .hkrpg-equipment-add,
-.hkrpg.sheet.actor .hkrpg-equipment-subsection--armor .hkrpg-equipment-add {
+.hkrpg.sheet.actor .hkrpg-equipment-subsection--weapons .hkrpg-equipment-add {
   grid-column: 2 / 7;
+}
+.hkrpg.sheet.actor .hkrpg-equipment-subsection--armor .hkrpg-equipment-add {
+  grid-column: 2 / 6;
   grid-row: 2;
   justify-self: end;
 }
@@ -6094,7 +6096,7 @@
   }
   .hkrpg.sheet.actor .hkrpg-equipment-subsection--armor .hkrpg-equipment-column-head {
     grid-template-columns: repeat(3, 34px);
-    grid-column: 3 / 6;
+    grid-column: 2 / 5;
   }
 }
 
