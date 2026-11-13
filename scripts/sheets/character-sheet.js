@@ -1090,14 +1090,21 @@ export class HKCharacterSheet extends ActorSheet {
       const baseValue = Number.isFinite(parsedBase) ? Math.max(0, parsedBase) : 0;
       const temporaryValue = Number.isFinite(parsedTemporary) ? Math.max(0, parsedTemporary) : 0;
 
-      // Save the exact values used by the roll.
+      // Save the stored values, but roll with the effective value after
+      // active trait and bug-template modifiers have been applied.
       const updates = {};
       if (baseInput) updates[`system.${group}.${attributeKey}`] = baseValue;
       if (temporaryInput) updates[`system.attributeTemps.${attributeKey}`] = temporaryValue;
       if (Object.keys(updates).length) await this.actor.update(updates);
 
+      const traitBonus = Number(this.actor.system.derived?.traitBonuses?.[attributeKey] ?? 0);
+      const templateSocialBonus = group === "social"
+        ? Number(this.actor.system.social?.bonus ?? 0)
+        : 0;
+      const effectiveValue = baseValue + traitBonus + templateSocialBonus;
+
       await rollAttributeCheck(this.actor, attributeKey, {
-        attributeValue: baseValue,
+        attributeValue: effectiveValue,
         temporaryValue
       });
     } catch (error) {
