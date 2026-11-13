@@ -20,6 +20,14 @@ function getD6RollFlagKey(message) {
     : "attributeRoll";
 }
 
+function isSupportedD6Roll(message, state) {
+  if (!state || !Array.isArray(state.results)) return false;
+  const hasGenericFlag = Boolean(
+    message?.flags?.hkrpg?.d6Roll ?? message?.getFlag?.("hkrpg", "d6Roll")
+  );
+  return hasGenericFlag || state.kind === "attribute-check";
+}
+
 function canControlMessage(message) {
   const currentUser = game.user;
   if (currentUser?.isGM) return true;
@@ -99,7 +107,7 @@ async function updateRollMessage(message, state) {
 
 async function processRollAction(message, target) {
   const state = getD6RollState(message);
-  if (!state || !["attribute-check", "d6-check"].includes(state.kind) || state.rerollsUsed) return;
+  if (!isSupportedD6Roll(message, state) || state.rerollsUsed) return;
 
   const actionButton = target.closest?.("[data-hkrpg-roll-action]");
   const dieButton = target.closest?.("[data-hkrpg-reroll-index]");
@@ -181,7 +189,7 @@ async function processRollAction(message, target) {
  */
 export function activateD6RollControls(message, html) {
   const state = getD6RollState(message);
-  if (!state || !["attribute-check", "d6-check"].includes(state.kind)) return;
+  if (!isSupportedD6Roll(message, state)) return;
 
   const root = html?.[0] ?? html;
   if (!root?.querySelector) return;
