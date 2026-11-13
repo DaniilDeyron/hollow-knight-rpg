@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import {
+  buildRollSpeaker,
   renderAttributeRollCardContent,
   renderD6RollCardContent,
   resolveD6Rerolls
@@ -341,4 +342,15 @@ test("Кнопка переброса получает обработчик че
     if (previousGame === undefined) delete globalThis.game;
     else globalThis.game = previousGame;
   }
+});
+
+
+test("Заголовок броска использует имя персонажа, а не название типа жука", () => {
+  const actor = { id: "actor-1", name: "Зубастик" };
+  const speaker = buildRollSpeaker(actor, ({ actor: source, alias }) => ({
+    actor: source.id,
+    alias: "Маленький жук"
+  }));
+  assert.equal(speaker.actor, "actor-1");
+  assert.equal(speaker.alias, "Зубастик");
 });
