@@ -26,7 +26,7 @@ export function buildStatusItemData(definition) {
       bookVersion: "1.8"
     },
     flags: {
-      hkrpg: {
+      "hollow-knight-rpg": {
         statusReferenceId: String(definition.id),
         statusReferenceVersion: 1
       }
@@ -38,6 +38,6 @@ export function findStatusReferenceItem(items, statusId) {
   const collection = Array.isArray(items) ? items : items?.contents ?? [...(items ?? [])];
   return collection.find((item) =>
     item?.type === "status" &&
-    item?.getFlag?.("hkrpg", "statusReferenceId") === statusId
+    item?.getFlag?.("hollow-knight-rpg", "statusReferenceId") === statusId
   ) ?? null;
 }
