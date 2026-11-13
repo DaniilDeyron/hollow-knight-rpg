@@ -969,7 +969,7 @@ export class HKCharacterSheet extends ActorSheet {
         delete itemData._id;
         itemData.system = { ...itemData.system, preparedSlot: slot };
         itemData.flags = foundry.utils.mergeObject(itemData.flags ?? {}, {
-          hkrpg: { sourceUuid: sourceItem.uuid }
+          "hollow-knight-rpg": { sourceUuid: sourceItem.uuid }
         });
         await this.actor.createEmbeddedDocuments("Item", [itemData]);
       }
