@@ -6,7 +6,10 @@ import {
   renderD6RollCardContent,
   resolveD6Rerolls
 } from "../scripts/rolls/pool.js";
-import { replaceD6ResultsInRollData } from "../scripts/rolls/chat-reroll.js";
+import {
+  processD6RollAction,
+  replaceD6ResultsInRollData
+} from "../scripts/rolls/chat-reroll.js";
 
 test("Выбранные кости перебрасываются, но сохраняют лучший из двух результатов", () => {
   const result = resolveD6Rerolls(
@@ -156,14 +159,25 @@ test("Общая карточка навыка, атаки или сопроти
   assert.match(html, /Перебросить выбранные \(2\/2\)/);
 });
 
-test("Карточка без доступных перебросов явно сообщает об этом", () => {
+test("Любая непустая карточка показывает один переброс даже без дополнительных источников", () => {
   const html = renderD6RollCardContent({
     kind: "d6-check",
     label: "Обычная проверка",
     results: [1, 5],
     rerollsAvailable: 0
   });
-  assert.match(html, /Дополнительных перебросов нет/);
+  assert.match(html, /Доступно перебросов: <strong>1<\/strong>/);
+  assert.match(html, /data-hkrpg-roll-action="start"/);
+  assert.doesNotMatch(html, /Дополнительных перебросов нет/);
+});
+
+test("Пустой пул не предлагает перебрасывать несуществующие кубики", () => {
+  const html = renderD6RollCardContent({
+    kind: "d6-check",
+    label: "Пустая проверка",
+    results: [],
+    rerollsAvailable: 0
+  });
   assert.doesNotMatch(html, /data-hkrpg-roll-action="start"/);
 });
 
@@ -181,3 +195,104 @@ test("В системе есть общий вызов для будущих б�
   assert.match(source, /rerollsAvailable = 0/);
 });
 
+
+function createMockMessage(state, flagKey = "d6Roll") {
+  const message = {
+    flags: { hkrpg: { [flagKey]: structuredClone(state) } },
+    content: "",
+    async update(updates) {
+      for (const [key, value] of Object.entries(updates)) {
+        if (key.startsWith("flags.hkrpg.")) {
+          this.flags.hkrpg[key.slice("flags.hkrpg.".length)] = structuredClone(value);
+        } else {
+          this[key] = value;
+        }
+      }
+      return this;
+    },
+    getFlag(scope, key) {
+      return this.flags?.[scope]?.[key] ?? null;
+    }
+  };
+  return message;
+}
+
+function actionControl(action) {
+  return {
+    dataset: { hkrpgRollAction: action },
+    closest(selector) {
+      return selector === "[data-hkrpg-roll-action]" ? this : null;
+    }
+  };
+}
+
+function dieControl(index) {
+  return {
+    dataset: { hkrpgRerollIndex: String(index) },
+    closest(selector) {
+      return selector === "[data-hkrpg-reroll-index]" ? this : null;
+    }
+  };
+}
+
+test("Полный цикл карточки: начать, выбрать кубик и заменить его результат в том же сообщении", async () => {
+  const message = createMockMessage({
+    kind: "d6-check",
+    label: "Проверка ловкости",
+    formula: "3d6",
+    results: [1, 5, 2],
+    rerollsAvailable: 1,
+    rerollsUsed: false,
+    selecting: false,
+    selectedIndices: [],
+    rerollHistory: [],
+    rollData: null
+  });
+
+  assert.equal(await processD6RollAction(message, actionControl("start")), true);
+  assert.equal(message.flags.hkrpg.d6Roll.selecting, true);
+
+  assert.equal(await processD6RollAction(message, dieControl(0)), true);
+  assert.deepEqual(message.flags.hkrpg.d6Roll.selectedIndices, [0]);
+
+  let rolledCount = 0;
+  assert.equal(await processD6RollAction(message, actionControl("confirm"), {
+    rollDice: async (count) => {
+      rolledCount = count;
+      return { results: [6] };
+    }
+  }), true);
+
+  const finalState = message.flags.hkrpg.d6Roll;
+  assert.equal(rolledCount, 1);
+  assert.deepEqual(finalState.results, [6, 5, 2]);
+  assert.equal(finalState.rerollsUsed, true);
+  assert.equal(finalState.selecting, false);
+  assert.deepEqual(finalState.selectedIndices, []);
+  assert.deepEqual(finalState.rerollHistory, [
+    { index: 0, previous: 1, rolled: 6, kept: 6 }
+  ]);
+  assert.match(message.content, /Успехи[\\s\\S]*<strong>2<\\/strong>/);
+  assert.doesNotMatch(message.content, /data-hkrpg-roll-action="start"/);
+});
+
+test("После отмены выбранные кости снимаются, а переброс остаётся доступен", async () => {
+  const message = createMockMessage({
+    kind: "d6-check",
+    results: [1, 2],
+    rerollsAvailable: 1,
+    rerollsUsed: false,
+    selecting: false,
+    selectedIndices: [],
+    rerollHistory: []
+  });
+
+  await processD6RollAction(message, actionControl("start"));
+  await processD6RollAction(message, dieControl(1));
+  assert.deepEqual(message.flags.hkrpg.d6Roll.selectedIndices, [1]);
+
+  await processD6RollAction(message, actionControl("cancel"));
+  assert.equal(message.flags.hkrpg.d6Roll.selecting, false);
+  assert.deepEqual(message.flags.hkrpg.d6Roll.selectedIndices, []);
+  assert.match(message.content, /data-hkrpg-roll-action="start"/);
+});
