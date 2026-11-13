@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   renderAttributeRollCardContent,
+  renderD6RollCardContent,
   resolveD6Rerolls
 } from "../scripts/rolls/pool.js";
 import { replaceD6ResultsInRollData } from "../scripts/rolls/chat-reroll.js";
@@ -136,4 +137,38 @@ test("Данные Roll без подходящего пула d6 не изме�
     replaceD6ResultsInRollData({ formula: "2d8", terms: [{ faces: 8, results: [] }] }, [2, 3]),
     null
   );
+});
+
+test("Общая карточка навыка, атаки или сопротивления позволяет выбрать отдельные кости", () => {
+  const html = renderD6RollCardContent({
+    kind: "d6-check",
+    label: "Проверка захвата",
+    formula: "4d6",
+    results: [1, 2, 5, 6],
+    rerollsAvailable: 2,
+    selecting: true,
+    selectedIndices: [0, 1]
+  });
+  assert.match(html, /Проверка захвата/);
+  assert.equal((html.match(/data-hkrpg-reroll-index=/g) ?? []).length, 4);
+  assert.match(html, /Выберите не более <strong>2<\/strong>/);
+  assert.match(html, /Перебросить выбранные \(2\/2\)/);
+});
+
+test("Карточка без доступных перебросов явно сообщает об этом", () => {
+  const html = renderD6RollCardContent({
+    kind: "d6-check",
+    label: "Обычная проверка",
+    results: [1, 5],
+    rerollsAvailable: 0
+  });
+  assert.match(html, /Дополнительных перебросов нет/);
+  assert.doesNotMatch(html, /data-hkrpg-roll-action="start"/);
+});
+
+test("Универсальный обработчик не ограничен только проверками характеристик", () => {
+  const source = readFileSync(new URL("../scripts/rolls/chat-reroll.js", import.meta.url), "utf8");
+  assert.match(source, /function isSupportedD6Roll/);
+  assert.match(source, /hasGenericFlag/);
+  assert.match(source, /export function activateD6RollControls/);
 });
