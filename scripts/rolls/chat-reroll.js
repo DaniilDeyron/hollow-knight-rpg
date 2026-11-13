@@ -225,8 +225,17 @@ export function activateD6RollControls(message, html) {
   const root = html?.[0] ?? html;
   if (!root?.querySelectorAll) return;
 
+  const controls = root.querySelectorAll("[data-hkrpg-roll-action], [data-hkrpg-reroll-index]");
+  if (!canControlMessage(message)) {
+    controls.forEach((control) => {
+      control.disabled = true;
+      control.title = "Переброс доступен автору броска или Мастеру";
+    });
+    return;
+  }
+
   // Upgrade older persisted cards that were created before rerolls became
-  // universal. The update re-renders the card with its button already shown.
+  // universal. Only an authorized user attempts to persist this migration.
   const hasDice = state.results.length > 0;
   if (hasDice && !state.rerollsUsed && Number(state.rerollsAvailable) < 1) {
     const upgradedState = { ...state, rerollsAvailable: 1 };
@@ -236,15 +245,6 @@ export function activateD6RollControls(message, html) {
       [`flags.hkrpg.${flagKey}`]: upgradedState
     }).catch((error) => {
       console.error("Hollow Knight RPG | Could not upgrade an old roll card", error);
-    });
-    return;
-  }
-
-  const controls = root.querySelectorAll("[data-hkrpg-roll-action], [data-hkrpg-reroll-index]");
-  if (!canControlMessage(message)) {
-    controls.forEach((control) => {
-      control.disabled = true;
-      control.title = "Переброс доступен автору броска или Мастеру";
     });
     return;
   }
