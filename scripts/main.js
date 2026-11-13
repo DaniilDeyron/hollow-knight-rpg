@@ -83,6 +83,7 @@ async function ensureTraitLibrary() {
   if (!game.user?.isGM || !game.items) return;
 
   const layout = buildTraitLibraryLayout();
+  const observer = CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2;
   const folderByKey = new Map();
   const managedFolders = game.folders.filter((folder) =>
     folder.type === "Item" && folder.getFlag?.("hkrpg", "traitLibraryFolder")
@@ -144,7 +145,6 @@ async function ensureTraitLibrary() {
   }
   if (duplicateIds.length) await Item.implementation.deleteDocuments(duplicateIds);
 
-  const observer = CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2;
   const missing = [];
   for (const record of layout.items) {
     const data = buildTraitItemData(record.entry);
