@@ -109,7 +109,7 @@ export function getEffectStatuses(existingStatuses = []) {
       name,
       img: icon,
       description: [summary, rules, `Длительность: ${duration}`, source].join("\n\n"),
-      flags: { hkrpg: { catalogId: id } }
+      flags: { "hollow-knight-rpg": { catalogId: id } }
     }));
 }
 
