@@ -154,11 +154,17 @@ function renderDice(values, selection = {}) {
  * Render the editable dice-pool card stored as ChatMessage content.
  * Selection state is persisted in the message flag and survives chat redraws.
  */
+export const DEFAULT_D6_REROLLS = 1;
+
 export function renderD6RollCardContent(state = {}) {
   const results = Array.isArray(state.results) ? state.results : [];
   const summary = summarizeD6Results(results);
   const successesLabel = pluralizeRussian(summary.successes, ["успех", "успеха", "успехов"]);
-  const available = Math.max(0, Math.floor(Number(state.rerollsAvailable) || 0));
+  // Every non-empty d6 card receives one universal reroll. Specific rules may
+  // grant additional rerolls, but no card depends on a fractional attribute.
+  const available = results.length
+    ? Math.max(DEFAULT_D6_REROLLS, Math.floor(Number(state.rerollsAvailable) || 0))
+    : 0;
   const selected = Array.isArray(state.selectedIndices) ? state.selectedIndices : [];
   const selecting = Boolean(state.selecting && !state.rerollsUsed && available > 0);
   const label = escapeHtml(state.label ?? "Проверка");
@@ -244,7 +250,7 @@ async function createD6RollMessage(actor, state, roll, flagKey = "d6Roll") {
 export async function rollD6Check(actor, {
   label = "Проверка",
   diceCount,
-  rerollsAvailable = 0,
+  rerollsAvailable = DEFAULT_D6_REROLLS,
   formula,
   kind = "d6-check",
   metadata = {}
@@ -265,7 +271,7 @@ export async function rollD6Check(actor, {
     label: String(label),
     formula: formula ? String(formula) : `${count}d6`,
     results,
-    rerollsAvailable: Math.min(rerolls, results.length),
+    rerollsAvailable: results.length ? Math.min(Math.max(DEFAULT_D6_REROLLS, rerolls), results.length) : 0,
     rerollsUsed: false,
     selecting: false,
     selectedIndices: [],
@@ -315,7 +321,7 @@ export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
     label,
     formula,
     results,
-    rerollsAvailable: Math.min(rerollsAvailable, results.length),
+    rerollsAvailable: results.length ? Math.min(Math.max(DEFAULT_D6_REROLLS, rerollsAvailable), results.length) : 0,
     rerollsUsed: false,
     selecting: false,
     selectedIndices: [],
