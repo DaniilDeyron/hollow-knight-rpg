@@ -86,7 +86,7 @@ async function ensureTraitLibrary() {
   const observer = CONST.DOCUMENT_OWNERSHIP_LEVELS?.OBSERVER ?? 2;
   const folderByKey = new Map();
   const managedFolders = game.folders.filter((folder) =>
-    folder.type === "Item" && folder.getFlag?.("hkrpg", "traitLibraryFolder")
+    folder.type === "Item" && folder.getFlag?.("hollow-knight-rpg", "traitLibraryFolder")
   );
 
   for (const definition of layout.folders) {
@@ -97,7 +97,7 @@ async function ensureTraitLibrary() {
 
     let folder = game.folders.find((entry) =>
       entry.type === "Item" &&
-      entry.getFlag?.("hkrpg", "traitLibraryFolderKey") === definition.key
+      entry.getFlag?.("hollow-knight-rpg", "traitLibraryFolderKey") === definition.key
     );
 
     // Adopt category folders made by the earlier library seeder instead of
@@ -105,7 +105,7 @@ async function ensureTraitLibrary() {
     if (!folder && definition.kind === "category") {
       folder = managedFolders.find((entry) =>
         entry.name === definition.name &&
-        !entry.getFlag?.("hkrpg", "traitLibraryFolderKey")
+        !entry.getFlag?.("hollow-knight-rpg", "traitLibraryFolderKey")
       );
     }
 
@@ -113,8 +113,8 @@ async function ensureTraitLibrary() {
       name: definition.name,
       folder: parent?.id ?? null,
       ownership: { default: observer },
-      "flags.hkrpg.traitLibraryFolder": true,
-      "flags.hkrpg.traitLibraryFolderKey": definition.key
+      "flags.hollow-knight-rpg.traitLibraryFolder": true,
+      "flags.hollow-knight-rpg.traitLibraryFolderKey": definition.key
     };
     if (folder) {
       await folder.update(folderUpdate);
@@ -125,7 +125,7 @@ async function ensureTraitLibrary() {
         folder: parent?.id ?? null,
         ownership: { default: observer },
         flags: {
-          hkrpg: {
+          "hollow-knight-rpg": {
             traitLibraryFolder: true,
             traitLibraryFolderKey: definition.key
           }
@@ -138,7 +138,7 @@ async function ensureTraitLibrary() {
   const byLibraryId = new Map();
   const duplicateIds = [];
   for (const item of game.items.contents) {
-    const libraryId = item.getFlag?.("hkrpg", "traitLibraryId");
+    const libraryId = item.getFlag?.("hollow-knight-rpg", "traitLibraryId");
     if (item.type !== "trait" || !libraryId) continue;
     if (byLibraryId.has(libraryId)) duplicateIds.push(item.id);
     else byLibraryId.set(libraryId, item);
@@ -158,7 +158,7 @@ async function ensureTraitLibrary() {
         folder: folder.id,
         ownership: { default: observer },
         flags: {
-          hkrpg: {
+          "hollow-knight-rpg": {
             traitLibraryId: record.entry.id,
             traitLibraryVersion: 2
           }
@@ -173,8 +173,8 @@ async function ensureTraitLibrary() {
       folder: folder.id,
       ownership: { default: observer },
       system: data.system,
-      "flags.hkrpg.traitLibraryId": record.entry.id,
-      "flags.hkrpg.traitLibraryVersion": 2
+      "flags.hollow-knight-rpg.traitLibraryId": record.entry.id,
+      "flags.hollow-knight-rpg.traitLibraryVersion": 2
     });
   }
 
@@ -183,8 +183,8 @@ async function ensureTraitLibrary() {
   // Remove only empty, obsolete subfolders created by the previous seeder.
   // Preserve folders containing user-created Items or any remaining subfolders.
   const obsoleteFolders = managedFolders.filter((folder) =>
-    folder.getFlag?.("hkrpg", "traitLibraryFolder") &&
-    !folder.getFlag?.("hkrpg", "traitLibraryFolderKey")
+    folder.getFlag?.("hollow-knight-rpg", "traitLibraryFolder") &&
+    !folder.getFlag?.("hollow-knight-rpg", "traitLibraryFolderKey")
   );
   const folderDepth = (folder) => {
     let depth = 0;
@@ -219,13 +219,13 @@ async function ensureCombatEquipmentLibrary() {
 
     let folder = game.folders.find((entry) =>
       entry.type === "Item" &&
-      entry.getFlag?.("hkrpg", "combatEquipmentLibraryFolderKey") === definition.key
+      entry.getFlag?.("hollow-knight-rpg", "combatEquipmentLibraryFolderKey") === definition.key
     );
     const update = {
       name: definition.name,
       folder: parent?.id ?? null,
-      "flags.hkrpg.combatEquipmentLibraryFolder": true,
-      "flags.hkrpg.combatEquipmentLibraryFolderKey": definition.key
+      "flags.hollow-knight-rpg.combatEquipmentLibraryFolder": true,
+      "flags.hollow-knight-rpg.combatEquipmentLibraryFolderKey": definition.key
     };
 
     if (folder) {
@@ -236,7 +236,7 @@ async function ensureCombatEquipmentLibrary() {
         type: "Item",
         folder: parent?.id ?? null,
         flags: {
-          hkrpg: {
+          "hollow-knight-rpg": {
             combatEquipmentLibraryFolder: true,
             combatEquipmentLibraryFolderKey: definition.key
           }
@@ -249,7 +249,7 @@ async function ensureCombatEquipmentLibrary() {
   const byLibraryId = new Map();
   const duplicates = [];
   for (const item of game.items.contents) {
-    const libraryId = item.getFlag?.("hkrpg", "combatEquipmentLibraryId");
+    const libraryId = item.getFlag?.("hollow-knight-rpg", "combatEquipmentLibraryId");
     if (!libraryId || !["weapon", "shield", "armor"].includes(item.type)) continue;
     if (byLibraryId.has(libraryId)) duplicates.push(item.id);
     else byLibraryId.set(libraryId, item);
@@ -270,7 +270,7 @@ async function ensureCombatEquipmentLibrary() {
         folder: folder.id,
         ownership: { default: observer },
         flags: {
-          hkrpg: {
+          "hollow-knight-rpg": {
             combatEquipmentLibraryId: record.entry.id,
             combatEquipmentLibraryVersion: 1
           }
@@ -285,8 +285,8 @@ async function ensureCombatEquipmentLibrary() {
       folder: folder.id,
       ownership: { default: observer },
       system: data.system,
-      "flags.hkrpg.combatEquipmentLibraryId": record.entry.id,
-      "flags.hkrpg.combatEquipmentLibraryVersion": 1
+      "flags.hollow-knight-rpg.combatEquipmentLibraryId": record.entry.id,
+      "flags.hollow-knight-rpg.combatEquipmentLibraryVersion": 1
     });
   }
 
@@ -298,20 +298,20 @@ async function ensureStatusReferenceItems() {
   if (!game.user?.isGM || !game.items) return;
 
   let folder = game.folders.find((entry) =>
-    entry.type === "Item" && entry.getFlag?.("hkrpg", "statusReferenceFolder")
+    entry.type === "Item" && entry.getFlag?.("hollow-knight-rpg", "statusReferenceFolder")
   );
   if (!folder) {
     folder = await Folder.implementation.create({
       name: "Hollow Knight RPG — Статусы",
       type: "Item",
-      flags: { hkrpg: { statusReferenceFolder: true } }
+      flags: { "hollow-knight-rpg": { statusReferenceFolder: true } }
     });
   }
 
   const byStatusId = new Map();
   const duplicates = [];
   for (const item of game.items.contents) {
-    const statusId = item.getFlag?.("hkrpg", "statusReferenceId");
+    const statusId = item.getFlag?.("hollow-knight-rpg", "statusReferenceId");
     if (item.type !== "status" || !statusId) continue;
     if (byStatusId.has(statusId)) duplicates.push(item.id);
     else byStatusId.set(statusId, item);
@@ -344,8 +344,8 @@ async function ensureStatusReferenceItems() {
       "system.source": data.system.source,
       "system.page": data.system.page,
       "system.bookVersion": data.system.bookVersion,
-      "flags.hkrpg.statusReferenceId": definition.id,
-      "flags.hkrpg.statusReferenceVersion": 1
+      "flags.hollow-knight-rpg.statusReferenceId": definition.id,
+      "flags.hollow-knight-rpg.statusReferenceVersion": 1
     });
   }
 
@@ -386,7 +386,7 @@ Hooks.once("ready", async () => {
   }
   for (const actor of actors) {
     const stale = actor.effects.filter((effect) => {
-      const catalogId = effect.getFlag?.("hkrpg", "catalogId");
+      const catalogId = effect.getFlag?.("hollow-knight-rpg", "catalogId");
       return typeof catalogId === "string" && catalogId.startsWith("hkrpg-") && !currentIds.has(catalogId);
     });
     if (stale.length) {
