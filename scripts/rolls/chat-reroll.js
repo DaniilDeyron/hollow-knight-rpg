@@ -9,15 +9,15 @@ const pendingMessages = new WeakSet();
 function getD6RollState(message) {
   // Prefer the live document data: getFlag can be stale in a render callback
   // while Foundry is reconciling a document update.
-  return message?.flags?.hkrpg?.d6Roll
-    ?? message?.flags?.hkrpg?.attributeRoll
-    ?? message?.getFlag?.("hkrpg", "d6Roll")
-    ?? message?.getFlag?.("hkrpg", "attributeRoll")
+  return message?.flags?.["hollow-knight-rpg"]?.d6Roll
+    ?? message?.flags?.["hollow-knight-rpg"]?.attributeRoll
+    ?? message?.getFlag?.("hollow-knight-rpg", "d6Roll")
+    ?? message?.getFlag?.("hollow-knight-rpg", "attributeRoll")
     ?? null;
 }
 
 function getD6RollFlagKey(message) {
-  return message?.flags?.hkrpg?.d6Roll || message?.getFlag?.("hkrpg", "d6Roll")
+  return message?.flags?.["hollow-knight-rpg"]?.d6Roll || message?.getFlag?.("hollow-knight-rpg", "d6Roll")
     ? "d6Roll"
     : "attributeRoll";
 }
@@ -25,7 +25,7 @@ function getD6RollFlagKey(message) {
 function isSupportedD6Roll(message, state) {
   if (!state || !Array.isArray(state.results)) return false;
   const hasGenericFlag = Boolean(
-    message?.flags?.hkrpg?.d6Roll ?? message?.getFlag?.("hkrpg", "d6Roll")
+    message?.flags?.["hollow-knight-rpg"]?.d6Roll ?? message?.getFlag?.("hollow-knight-rpg", "d6Roll")
   );
   return hasGenericFlag || state.kind === "attribute-check";
 }
@@ -103,7 +103,7 @@ export function replaceD6ResultsInRollData(source, values) {
 
 async function updateRollMessage(message, state) {
   const flagKey = getD6RollFlagKey(message);
-  const flagPath = `flags.hkrpg.${flagKey}`;
+  const flagPath = `flags.hollow-knight-rpg.${flagKey}`;
   const updates = {
     content: renderD6RollCardContent(state),
     [flagPath]: state
