@@ -235,9 +235,17 @@ export function renderD6RollCardContent(state = {}) {
 /** Backwards-compatible alias retained for existing integrations. */
 export const renderAttributeRollCardContent = renderD6RollCardContent;
 
+export function buildRollSpeaker(actor, getSpeaker = ChatMessage.getSpeaker) {
+  const speaker = getSpeaker({ actor, alias: actor?.name });
+  // The actor's name is authoritative; token/prototype aliases can otherwise
+  // replace it with the actor type label (for example, "Маленький жук").
+  if (actor?.name) speaker.alias = actor.name;
+  return speaker;
+}
+
 async function createD6RollMessage(actor, state, roll, flagKey = "d6Roll") {
   const content = renderD6RollCardContent(state);
-  const speaker = ChatMessage.getSpeaker({ actor, alias: actor?.name });
+  const speaker = buildRollSpeaker(actor);
 
   if (roll) {
     const messageData = await roll.toMessage(
