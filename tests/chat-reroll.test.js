@@ -222,7 +222,7 @@ function actionControl(action) {
   return {
     dataset: { hkrpgRollAction: action },
     closest(selector) {
-      return selector === "[data-hkrpg-roll-action]" ? this : null;
+      return selector.includes("[data-hkrpg-roll-action]") ? this : null;
     }
   };
 }
@@ -231,7 +231,7 @@ function dieControl(index) {
   return {
     dataset: { hkrpgRerollIndex: String(index) },
     closest(selector) {
-      return selector === "[data-hkrpg-reroll-index]" ? this : null;
+      return selector.includes("[data-hkrpg-reroll-index]") ? this : null;
     }
   };
 }
