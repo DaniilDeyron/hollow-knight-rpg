@@ -4,7 +4,8 @@
       "Character": "Лист жука",
       "Charm": "Амулет",
       "FeatureItem": "Черта / Путь",
-      "Status": "Состояние"
+      "Status": "Состояние",
+      "InventoryItem": "Предмет боевого снаряжения"
     },
     "Profile": {
       "Name": "Имя",
