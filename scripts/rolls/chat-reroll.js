@@ -105,27 +105,17 @@ async function updateRollMessage(message, state) {
   await message.update(updates);
 }
 
-async function processRollAction(message, target) {
+async function processRollAction(message, action, dieIndex = null) {
   const state = getD6RollState(message);
   if (!isSupportedD6Roll(message, state) || state.rerollsUsed) return;
 
-  const actionButton = target.closest?.("[data-hkrpg-roll-action]");
-  const dieButton = target.closest?.("[data-hkrpg-reroll-index]");
-  if (!actionButton && !dieButton) return;
-
-  if (!state.selecting && dieButton) return;
-  if (!state.selecting && actionButton?.dataset.hkrpgRollAction !== "start") return;
-  if (state.selecting && actionButton?.dataset.hkrpgRollAction === "start") return;
-
-  const action = actionButton?.dataset.hkrpgRollAction;
-  const maximum = Math.max(0, Math.min(
-    Number(state.rerollsAvailable) || 0,
-    Array.isArray(state.results) ? state.results.length : 0
-  ));
+  const maximum = Array.isArray(state.results) ? state.results.length : 0;
+  if (maximum < 1) return;
 
   if (action === "start") {
     await updateRollMessage(message, {
       ...state,
+      rerollsAvailable: maximum,
       selecting: true,
       selectedIndices: []
     });
@@ -141,19 +131,12 @@ async function processRollAction(message, target) {
     return;
   }
 
-  if (dieButton) {
-    const index = Number(dieButton.dataset.hkrpgRerollIndex);
-    if (!Number.isInteger(index) || index < 0 || index >= state.results.length || maximum < 1) return;
+  if (Number.isInteger(dieIndex)) {
+    if (!state.selecting || dieIndex < 0 || dieIndex >= maximum) return;
     const selected = new Set(state.selectedIndices ?? []);
-    if (selected.has(index)) {
-      selected.delete(index);
-    } else {
-      if (selected.size >= maximum) {
-        ui.notifications.warn(`Можно выбрать не более ${maximum} ${maximum === 1 ? "кости" : "костей"} для переброса.`);
-        return;
-      }
-      selected.add(index);
-    }
+    if (selected.has(dieIndex)) selected.delete(dieIndex);
+    else selected.add(dieIndex);
+
     await updateRollMessage(message, {
       ...state,
       selecting: true,
@@ -165,6 +148,7 @@ async function processRollAction(message, target) {
   if (action === "confirm") {
     const selected = [...new Set(state.selectedIndices ?? [])];
     if (!selected.length || selected.length > maximum) return;
+
     const { results: newResults } = await rollD6Pool(selected.length);
     const resolved = resolveD6Rerolls(
       state.results,
@@ -175,6 +159,7 @@ async function processRollAction(message, target) {
     await updateRollMessage(message, {
       ...state,
       results: resolved.results,
+      rerollsAvailable: maximum,
       rerollsUsed: true,
       selecting: false,
       selectedIndices: [],
@@ -192,43 +177,50 @@ export function activateD6RollControls(message, html) {
   if (!isSupportedD6Roll(message, state)) return;
 
   const root = html?.[0] ?? html;
-  if (!root?.querySelector) return;
+  if (!root?.querySelectorAll) return;
 
   if (!canControlMessage(message)) {
     root.querySelectorAll("[data-hkrpg-roll-action], [data-hkrpg-reroll-index]")
       .forEach((control) => control.remove());
     return;
   }
-  if (root.dataset.hkrpgRollControls === "true") return;
-  root.dataset.hkrpgRollControls = "true";
 
-  root.addEventListener("click", async (event) => {
-    const actionButton = event.target?.closest?.("[data-hkrpg-roll-action]");
-    const dieButton = event.target?.closest?.("[data-hkrpg-reroll-index]");
-    const control = actionButton ?? dieButton;
-    if (!control || !root.contains(control)) return;
+  // Bind the actual buttons, rather than depending on delegated events on the
+  // message wrapper. Foundry can replace that wrapper when the message updates.
+  const controls = root.querySelectorAll("[data-hkrpg-roll-action], [data-hkrpg-reroll-index]");
+  for (const control of controls) {
+    if (control.dataset.hkrpgRerollBound === "true") continue;
+    control.dataset.hkrpgRerollBound = "true";
 
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
+    control.addEventListener("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
 
-    if (pendingMessages.has(message)) return;
-    pendingMessages.add(message);
-    if (control instanceof HTMLButtonElement) control.disabled = true;
+      if (pendingMessages.has(message)) return;
+      pendingMessages.add(message);
+      control.disabled = true;
 
-    try {
-      if (!canControlMessage(message)) {
-        ui.notifications.warn("Только автор броска или Мастер может выполнить переброс.");
-        return;
+      try {
+        if (!canControlMessage(message)) {
+          ui.notifications.warn("Только автор броска или Мастер может выполнить переброс.");
+          return;
+        }
+
+        const action = control.dataset.hkrpgRollAction ?? "";
+        const dieIndex = control.dataset.hkrpgRerollIndex === undefined
+          ? null
+          : Number(control.dataset.hkrpgRerollIndex);
+        await processRollAction(message, action, dieIndex);
+      } catch (error) {
+        console.error("Hollow Knight RPG | Dice reroll failed", error);
+        ui.notifications.error("Не удалось выполнить переброс. Подробности — в консоли (F12).");
+      } finally {
+        pendingMessages.delete(message);
+        if (control.isConnected !== false) control.disabled = false;
       }
-      await processRollAction(message, control);
-    } catch (error) {
-      console.error("Hollow Knight RPG | Dice reroll failed", error);
-      ui.notifications.error("Не удалось выполнить переброс. Подробности — в консоли (F12).");
-    } finally {
-      pendingMessages.delete(message);
-    }
-  }, true);
+    }, true);
+  }
 }
 
 /** Backwards-compatible export for existing initialization hooks. */
