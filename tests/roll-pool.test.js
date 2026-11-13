@@ -99,12 +99,12 @@ test("Временный бонус добавляет отдельные кос
   });
 });
 
-test("Временные кости не отменяют переброс от дробной основной характеристики", () => {
+test("Дробная характеристика не добавляет кубик и не создаёт отдельный переброс", () => {
   assert.deepEqual(getAttributePool(3.5, 2), {
     baseDiceCount: 3,
     bonusDiceCount: 2,
     diceCount: 5,
-    rerollsAvailable: 1
+    rerollsAvailable: 0
   });
 });
 
