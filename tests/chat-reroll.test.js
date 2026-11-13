@@ -199,12 +199,12 @@ test("В системе есть общий вызов для будущих б�
 
 function createMockMessage(state, flagKey = "d6Roll") {
   const message = {
-    flags: { hkrpg: { [flagKey]: structuredClone(state) } },
+    flags: { "hollow-knight-rpg": { [flagKey]: structuredClone(state) } },
     content: "",
     async update(updates) {
       for (const [key, value] of Object.entries(updates)) {
-        if (key.startsWith("flags.hkrpg.")) {
-          this.flags.hkrpg[key.slice("flags.hkrpg.".length)] = structuredClone(value);
+        if (key.startsWith("flags.hollow-knight-rpg.")) {
+          this.flags["hollow-knight-rpg"][key.slice("flags.hollow-knight-rpg.".length)] = structuredClone(value);
         } else {
           this[key] = value;
         }
@@ -251,10 +251,10 @@ test("Полный цикл карточки: начать, выбрать ку�
   });
 
   assert.equal(await processD6RollAction(message, actionControl("start")), true);
-  assert.equal(message.flags.hkrpg.d6Roll.selecting, true);
+  assert.equal(message.flags["hollow-knight-rpg"].d6Roll.selecting, true);
 
   assert.equal(await processD6RollAction(message, dieControl(0)), true);
-  assert.deepEqual(message.flags.hkrpg.d6Roll.selectedIndices, [0]);
+  assert.deepEqual(message.flags["hollow-knight-rpg"].d6Roll.selectedIndices, [0]);
 
   let rolledCount = 0;
   assert.equal(await processD6RollAction(message, actionControl("confirm"), {
@@ -264,7 +264,7 @@ test("Полный цикл карточки: начать, выбрать ку�
     }
   }), true);
 
-  const finalState = message.flags.hkrpg.d6Roll;
+  const finalState = message.flags["hollow-knight-rpg"].d6Roll;
   assert.equal(rolledCount, 1);
   assert.deepEqual(finalState.results, [6, 5, 2]);
   assert.equal(finalState.rerollsUsed, true);
@@ -290,11 +290,11 @@ test("После отмены выбранные кости снимаются, 
 
   await processD6RollAction(message, actionControl("start"));
   await processD6RollAction(message, dieControl(1));
-  assert.deepEqual(message.flags.hkrpg.d6Roll.selectedIndices, [1]);
+  assert.deepEqual(message.flags["hollow-knight-rpg"].d6Roll.selectedIndices, [1]);
 
   await processD6RollAction(message, actionControl("cancel"));
-  assert.equal(message.flags.hkrpg.d6Roll.selecting, false);
-  assert.deepEqual(message.flags.hkrpg.d6Roll.selectedIndices, []);
+  assert.equal(message.flags["hollow-knight-rpg"].d6Roll.selecting, false);
+  assert.deepEqual(message.flags["hollow-knight-rpg"].d6Roll.selectedIndices, []);
   assert.match(message.content, /data-hkrpg-roll-action="start"/);
 });
 
@@ -335,7 +335,7 @@ test("Кнопка переброса получает обработчик че
     });
 
     assert.equal(prevented, true);
-    assert.equal(message.flags.hkrpg.d6Roll.selecting, true);
+    assert.equal(message.flags["hollow-knight-rpg"].d6Roll.selecting, true);
     assert.match(message.content, /data-hkrpg-roll-action="confirm"/);
   } finally {
     if (previousGame === undefined) delete globalThis.game;
