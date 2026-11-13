@@ -2,7 +2,8 @@
  * Shared d6 dice-pool helpers.
  *
  * Core rule: a result of 5 or 6 is a success.
- * Attribute .5 values grant a reroll; they do not add a full die.
+ * Fractional attributes are rounded down for dice pools. Rerolls are a
+ * universal card action and are not tied to a .5 attribute value.
  */
 export function getAttributePool(attributeValue, temporaryValue = 0, rerollBonus = 0) {
   const value = Number(attributeValue);
@@ -12,17 +13,16 @@ export function getAttributePool(attributeValue, temporaryValue = 0, rerollBonus
   const safeTemporary = Number.isFinite(temporary) ? Math.max(0, temporary) : 0;
   const safeRerollBonus = Number.isFinite(bonus) ? Math.max(0, Math.floor(bonus)) : 0;
 
-  // A half-rank in the effective base attribute grants one reroll.
-  // Temporary whole-dice bonuses and explicit reroll sources are independent.
+  // A fractional rank never rounds up to another die.
+  // The default reroll is universal; only explicit rule bonuses add more.
   const baseDiceCount = Math.floor(safeValue);
   const bonusDiceCount = Math.floor(safeTemporary);
-  const fraction = safeValue - baseDiceCount;
 
   return {
     baseDiceCount,
     bonusDiceCount,
     diceCount: baseDiceCount + bonusDiceCount,
-    rerollsAvailable: (fraction >= 0.5 ? 1 : 0) + safeRerollBonus
+    rerollsAvailable: safeRerollBonus
   };
 }
 
@@ -321,7 +321,9 @@ export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
     label,
     formula,
     results,
-    rerollsAvailable: results.length ? Math.min(Math.max(DEFAULT_D6_REROLLS, rerollsAvailable), results.length) : 0,
+    rerollsAvailable: results.length
+      ? Math.min(DEFAULT_D6_REROLLS + rerollsAvailable, results.length)
+      : 0,
     rerollsUsed: false,
     selecting: false,
     selectedIndices: [],
