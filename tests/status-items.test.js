@@ -38,7 +38,7 @@ test("Каждому основному боевому состоянию соо
     assert.equal(item.system.bookVersion, "1.8");
     assert.match(item.system.source, /русский перевод v1\.8/);
     assert.ok(item.system.rules.length > 20);
-    assert.equal(item.flags.hollow-knight-rpg.statusReferenceId, definition.id);
+    assert.equal(item.flags["hollow-knight-rpg"].statusReferenceId, definition.id);
   }
 });
 
