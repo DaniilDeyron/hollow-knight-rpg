@@ -4,14 +4,16 @@
  * Core rule: a result of 5 or 6 is a success.
  * Attribute .5 values grant a reroll; they do not add a full die.
  */
-export function getAttributePool(attributeValue, temporaryValue = 0) {
+export function getAttributePool(attributeValue, temporaryValue = 0, rerollBonus = 0) {
   const value = Number(attributeValue);
   const temporary = Number(temporaryValue);
+  const bonus = Number(rerollBonus);
   const safeValue = Number.isFinite(value) ? Math.max(0, value) : 0;
   const safeTemporary = Number.isFinite(temporary) ? Math.max(0, temporary) : 0;
+  const safeRerollBonus = Number.isFinite(bonus) ? Math.max(0, Math.floor(bonus)) : 0;
 
-  // A half-rank in the base attribute grants its normal reroll.
-  // The temporary field is an independent whole-dice bonus.
+  // A half-rank in the effective base attribute grants one reroll.
+  // Temporary whole-dice bonuses and explicit reroll sources are independent.
   const baseDiceCount = Math.floor(safeValue);
   const bonusDiceCount = Math.floor(safeTemporary);
   const fraction = safeValue - baseDiceCount;
@@ -20,7 +22,7 @@ export function getAttributePool(attributeValue, temporaryValue = 0) {
     baseDiceCount,
     bonusDiceCount,
     diceCount: baseDiceCount + bonusDiceCount,
-    rerollsAvailable: fraction >= 0.5 ? 1 : 0
+    rerollsAvailable: (fraction >= 0.5 ? 1 : 0) + safeRerollBonus
   };
 }
 
@@ -152,7 +154,7 @@ function renderDice(values, selection = {}) {
  * Render the editable dice-pool card stored as ChatMessage content.
  * Selection state is persisted in the message flag and survives chat redraws.
  */
-export function renderAttributeRollCardContent(state = {}) {
+export function renderD6RollCardContent(state = {}) {
   const results = Array.isArray(state.results) ? state.results : [];
   const summary = summarizeD6Results(results);
   const successesLabel = pluralizeRussian(summary.successes, ["успех", "успеха", "успехов"]);
@@ -203,9 +205,74 @@ export function renderAttributeRollCardContent(state = {}) {
         <strong>${summary.successes}</strong>
         <span class="hkrpg-roll__plural">${successesLabel}</span>
       </footer>
-      ${controls}
+      ${controls || '<div class="hkrpg-roll__note hkrpg-roll__reroll-unavailable">Дополнительных перебросов нет.</div>'}
     </section>
   `;
+}
+
+/** Backwards-compatible alias retained for existing integrations. */
+export const renderAttributeRollCardContent = renderD6RollCardContent;
+
+async function createD6RollMessage(actor, state, roll, flagKey = "d6Roll") {
+  const content = renderD6RollCardContent(state);
+  const speaker = ChatMessage.getSpeaker({ actor });
+
+  if (roll) {
+    const messageData = await roll.toMessage(
+      { speaker, content: "" },
+      { create: false, rollMode: game.settings.get("core", "rollMode") }
+    );
+    messageData.content = content;
+    messageData.flags ??= {};
+    messageData.flags.hkrpg ??= {};
+    messageData.flags.hkrpg[flagKey] = state;
+    return ChatMessage.create(messageData);
+  }
+
+  return ChatMessage.create({
+    speaker,
+    content,
+    type: CONST.CHAT_MESSAGE_TYPES.OTHER,
+    flags: { hkrpg: { [flagKey]: state } }
+  });
+}
+
+/**
+ * General d6 roll entry point for skills, attacks, resistance checks and
+ * other roll types. Callers supply the number of rule-granted rerolls.
+ */
+export async function rollD6Check(actor, {
+  label = "Проверка",
+  diceCount,
+  rerollsAvailable = 0,
+  formula,
+  kind = "d6-check",
+  metadata = {}
+} = {}) {
+  const count = Number(diceCount);
+  const rerolls = Number(rerollsAvailable);
+  if (!Number.isInteger(count) || count < 0 || count > 100) {
+    throw new RangeError("Количество костей должно быть целым числом от 0 до 100.");
+  }
+  if (!Number.isInteger(rerolls) || rerolls < 0) {
+    throw new RangeError("Количество перебросов должно быть неотрицательным целым числом.");
+  }
+
+  const { roll, results } = await rollD6Pool(count);
+  const state = {
+    ...metadata,
+    kind,
+    label: String(label),
+    formula: formula ? String(formula) : `${count}d6`,
+    results,
+    rerollsAvailable: Math.min(rerolls, results.length),
+    rerollsUsed: false,
+    selecting: false,
+    selectedIndices: [],
+    rerollHistory: [],
+    rollData: roll?.toJSON?.() ?? null
+  };
+  return createD6RollMessage(actor, state, roll, "d6Roll");
 }
 
 export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
@@ -235,7 +302,7 @@ export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
     bonusDiceCount,
     diceCount,
     rerollsAvailable
-  } = getAttributePool(value, temporaryValue);
+  } = getAttributePool(value, temporaryValue, overrides.rerollsBonus ?? 0);
   const { roll, results } = await rollD6Pool(diceCount);
   const label = game.i18n.localize(characteristic.localizationKey);
   const formula = bonusDiceCount > 0
@@ -255,27 +322,5 @@ export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
     rerollHistory: [],
     rollData: roll?.toJSON?.() ?? null
   };
-  const content = renderAttributeRollCardContent(state);
-  const speaker = ChatMessage.getSpeaker({ actor });
-
-  if (roll) {
-    // Prepare the standard Foundry roll metadata and visibility mode, but keep
-    // the system's own compact card as the only visible message content.
-    const messageData = await roll.toMessage(
-      { speaker, content: "" },
-      { create: false, rollMode: game.settings.get("core", "rollMode") }
-    );
-    messageData.content = content;
-    messageData.flags ??= {};
-    messageData.flags.hkrpg ??= {};
-    messageData.flags.hkrpg.attributeRoll = state;
-    return ChatMessage.create(messageData);
-  }
-
-  return ChatMessage.create({
-    speaker,
-    content,
-    type: CONST.CHAT_MESSAGE_TYPES.OTHER,
-    flags: { hkrpg: { attributeRoll: state } }
-  });
+  return createD6RollMessage(actor, state, roll, "attributeRoll");
 }
