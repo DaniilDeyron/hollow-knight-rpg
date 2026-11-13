@@ -8,25 +8,25 @@ import {
 } from "../scripts/rolls/pool.js";
 import { replaceD6ResultsInRollData } from "../scripts/rolls/chat-reroll.js";
 
-test("Выбранные кости перебрасываются, но сохраняют лучший из двух результатов", () => {
+test("Выбранные кости заменяются новыми результатами", () => {
   const result = resolveD6Rerolls(
     [2, 5, 3, 6],
     [0, 2],
     [5, 1],
     2
   );
-  assert.deepEqual(result.results, [5, 5, 3, 6]);
+  assert.deepEqual(result.results, [5, 5, 1, 6]);
   assert.deepEqual(result.history, [
     { index: 0, previous: 2, rolled: 5, kept: 5 },
-    { index: 2, previous: 3, rolled: 1, kept: 3 }
+    { index: 2, previous: 3, rolled: 1, kept: 1 }
   ]);
 });
 
-test("Новый меньший результат не отнимает уже полученный успех", () => {
+test("Новый результат полностью заменяет прежний, даже если он ниже", () => {
   const result = resolveD6Rerolls([6], [0], [2], 1);
-  assert.deepEqual(result.results, [6]);
+  assert.deepEqual(result.results, [2]);
   assert.deepEqual(result.history[0], {
-    index: 0, previous: 6, rolled: 2, kept: 6
+    index: 0, previous: 6, rolled: 2, kept: 2
   });
 });
 
@@ -55,7 +55,7 @@ test("Повторный бросок требует один новый рез�
   );
 });
 
-test("Карточка выделяет успехи зелёным и предлагает переброс, если он доступен", () => {
+test("Карточка выделяет успехи зелёным и всегда предлагает переброс", () => {
   const html = renderAttributeRollCardContent({
     label: "Мощь",
     formula: "3d6",
@@ -96,7 +96,7 @@ test("После переброса кнопка исчезает и в карт
   });
   assert.doesNotMatch(html, /data-hkrpg-roll-action="start"/);
   assert.match(html, /Переброс потрачен/);
-  assert.match(html, /кость 2: 3 → 1, оставлено 3/);
+  assert.match(html, /кость 2: 3 → 1/);
 });
 
 test("Подпись характеристики экранируется перед вставкой в HTML карточку", () => {
@@ -156,15 +156,16 @@ test("Общая карточка навыка, атаки или сопроти
   assert.match(html, /Перебросить выбранные \(2\/2\)/);
 });
 
-test("Карточка без доступных перебросов явно сообщает об этом", () => {
+test("Карточка предлагает переброс даже когда значение характеристики целое", () => {
   const html = renderD6RollCardContent({
     kind: "d6-check",
     label: "Обычная проверка",
     results: [1, 5],
     rerollsAvailable: 0
   });
-  assert.match(html, /Дополнительных перебросов нет/);
-  assert.doesNotMatch(html, /data-hkrpg-roll-action="start"/);
+  assert.match(html, /data-hkrpg-roll-action="start"/);
+  assert.match(html, /Можно перебросить любые кости один раз/);
+  assert.doesNotMatch(html, /Дополнительных перебросов нет/);
 });
 
 test("Универсальный обработчик не ограничен только проверками характеристик", () => {
