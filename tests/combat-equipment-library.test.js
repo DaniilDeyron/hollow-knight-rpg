@@ -14,6 +14,17 @@ test("Каталог включает весь перечень базового
   assert.deepEqual(countCombatEquipmentByType(), { weapon: 34, shield: 4, armor: 3 });
   assert.equal(HK_COMBAT_EQUIPMENT.length, 41);
   assert.equal(new Set(HK_COMBAT_EQUIPMENT.map((entry) => entry.id)).size, 41);
+  const names = new Set(HK_COMBAT_EQUIPMENT.map((entry) => entry.name));
+  for (const expected of [
+    "Гвоздь", "Великий гвоздь", "Гвоздь-копьё", "Игла", "Штопальная игла",
+    "Шпилька", "Булавка", "Кнопка", "Кол", "Перо", "Крюк", "Великий крюк",
+    "Отпорный крюк", "Вилка", "Хлыст", "Бумеранг", "Винт", "Клык", "Длинный клык",
+    "Ультраклык", "Болт", "Метательный болт", "Колокольчик", "Великий колокол",
+    "Праща", "Рогатка", "Пращепульта", "Полуножницы", "Ножницы", "Посох",
+    "Парящий прутик", "Перчатка с когтями", "Жуколовка", "Сеть",
+    "Щит-кнопка", "Щит-монетка", "Щит-крыло", "Панцирный щит",
+    "Лёгкая броня", "Средняя броня", "Тяжёлая броня"
+  ]) assert.ok(names.has(expected), `Missing book entry: ${expected}`);
   for (const entry of HK_COMBAT_EQUIPMENT) {
     assert.ok(entry.name, `Missing name for ${entry.id}`);
     assert.ok(entry.description, `Missing description for ${entry.id}`);
