@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   classifyD6Result,
   getAttributePool,
+  getEffectiveAttributeValue,
   summarizeD6Results
 } from "../scripts/rolls/pool.js";
 
@@ -126,3 +127,25 @@ test("Отрицательный временный бонус не уменьш
   });
 });
 
+
+
+test("Дробная часть основной характеристики отбрасывается до социальных бонусов", () => {
+  // The bug-template bonus must not combine with the characteristic's .5.
+  assert.equal(getEffectiveAttributeValue(2.5, 0.5, 1), 3.5);
+  assert.equal(Math.floor(getEffectiveAttributeValue(2.5, 0.5, 1)), 3);
+});
+
+test("Жуть и Привлекательность не получают дополнительную кость из .5", () => {
+  for (const key of ["spook", "cute"]) {
+    const baseValue = 1.5;
+    const templateBonus = 1.5;
+    const traitBonus = 0;
+    const effective = getEffectiveAttributeValue(baseValue, traitBonus, templateBonus);
+    assert.equal(Math.floor(effective), 2, `${key} must roll two dice, not three`);
+  }
+});
+
+test("Целая характеристика сохраняет независимый бонус Черты", () => {
+  assert.equal(getEffectiveAttributeValue(2, 0.5, 1), 3.5);
+  assert.equal(Math.floor(getEffectiveAttributeValue(2, 0.5, 1)), 3);
+});
