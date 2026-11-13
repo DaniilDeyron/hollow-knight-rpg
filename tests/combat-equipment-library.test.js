@@ -31,7 +31,7 @@ test("Папка библиотеки имеет отдельные раздел
   assert.equal(library.folders.find((folder) => folder.key === "shields").parentKey, "root");
   assert.equal(library.folders.find((folder) => folder.key === "armor").parentKey, "root");
   assert.equal(library.items.length, 41);
-  assert.equal(library.items.filter((record) => record.folderKey === "weapons").length, 33);
+  assert.equal(library.items.filter((record) => record.folderKey === "weapons").length, 34);
   assert.equal(library.items.filter((record) => record.folderKey === "shields").length, 4);
   assert.equal(library.items.filter((record) => record.folderKey === "armor").length, 3);
 });
