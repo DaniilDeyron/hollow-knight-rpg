@@ -17,21 +17,30 @@ test("Результаты от 1 до 4 не дают успеха и имею�
   }
 });
 
-test("Пул характеристики 3.5 — три кости и один доступный переброс", () => {
+test("Пул характеристики 3.5 округляется вниз и не получает переброс из .5", () => {
   assert.deepEqual(getAttributePool(3.5), {
     baseDiceCount: 3,
     bonusDiceCount: 0,
     diceCount: 3,
-    rerollsAvailable: 1
+    rerollsAvailable: 0
   });
 });
 
-test("Дополнительные перебросы от оружия, черт или эффектов складываются с дробной характеристикой", () => {
+test("Характеристика 5.5 бросает ровно пять кубиков, а не шесть", () => {
+  assert.deepEqual(getAttributePool(5.5), {
+    baseDiceCount: 5,
+    bonusDiceCount: 0,
+    diceCount: 5,
+    rerollsAvailable: 0
+  });
+});
+
+test("Дополнительные перебросы от оружия, черт или эффектов независимы от .5", () => {
   assert.deepEqual(getAttributePool(3.5, 0, 2), {
     baseDiceCount: 3,
     bonusDiceCount: 0,
     diceCount: 3,
-    rerollsAvailable: 3
+    rerollsAvailable: 2
   });
   assert.deepEqual(getAttributePool(4, 1, 2), {
     baseDiceCount: 4,
@@ -90,12 +99,12 @@ test("Временный бонус добавляет отдельные кос
   });
 });
 
-test("Временные кости не отменяют переброс от дробной основной характеристики", () => {
+test("Дробная характеристика не добавляет кубик и не создаёт отдельный переброс", () => {
   assert.deepEqual(getAttributePool(3.5, 2), {
     baseDiceCount: 3,
     bonusDiceCount: 2,
     diceCount: 5,
-    rerollsAvailable: 1
+    rerollsAvailable: 0
   });
 });
 

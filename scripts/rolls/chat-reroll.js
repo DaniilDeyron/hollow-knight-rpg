@@ -7,10 +7,12 @@ import {
 const pendingMessages = new WeakSet();
 
 function getD6RollState(message) {
-  return message?.getFlag?.("hkrpg", "d6Roll")
-    ?? message?.flags?.hkrpg?.d6Roll
-    ?? message?.getFlag?.("hkrpg", "attributeRoll")
+  // Prefer the live document data: getFlag can be stale in a render callback
+  // while Foundry is reconciling a document update.
+  return message?.flags?.hkrpg?.d6Roll
     ?? message?.flags?.hkrpg?.attributeRoll
+    ?? message?.getFlag?.("hkrpg", "d6Roll")
+    ?? message?.getFlag?.("hkrpg", "attributeRoll")
     ?? null;
 }
 
@@ -29,12 +31,22 @@ function isSupportedD6Roll(message, state) {
 }
 
 function canControlMessage(message) {
-  const currentUser = game.user;
-  if (currentUser?.isGM) return true;
+  const user = game.user;
+  if (user?.isGM) return true;
+
   const authorId = message?.author?.id
     ?? (typeof message?.user === "string" ? message.user : message?.user?.id)
     ?? message?._source?.user;
-  return Boolean(authorId && authorId === currentUser?.id);
+  if (authorId && authorId === user?.id) return true;
+
+  // A player who owns the speaking actor may control that actor's roll even
+  // when a GM created/imported the message on their behalf.
+  const speaker = message?.speaker ?? {};
+  let actor = speaker.actor ? game.actors?.get(speaker.actor) : null;
+  if (!actor && speaker.scene && speaker.token) {
+    actor = game.scenes?.get(speaker.scene)?.tokens?.get(speaker.token)?.actor ?? null;
+  }
+  return Boolean(actor?.isOwner || actor?.testUserPermission?.(user, "OWNER"));
 }
 
 function cloneData(value) {
@@ -43,8 +55,8 @@ function cloneData(value) {
 }
 
 /**
- * Update the serialized Foundry Roll so the expanded roll tooltip and the
- * visible custom card agree after selected dice have been rerolled.
+ * Update the serialized Foundry Roll so its expanded tooltip agrees with the
+ * final values shown on the editable card.
  */
 export function replaceD6ResultsInRollData(source, values) {
   if (!source || !Array.isArray(values)) return null;
@@ -105,17 +117,25 @@ async function updateRollMessage(message, state) {
   await message.update(updates);
 }
 
-async function processRollAction(message, target) {
+/**
+ * Run the actual start/select/cancel/confirm flow. The dice roller is injectable
+ * so the full sequence can be covered by deterministic tests.
+ */
+export async function processD6RollAction(
+  message,
+  target,
+  { rollDice = rollD6Pool, warn = (text) => ui.notifications.warn(text) } = {}
+) {
   const state = getD6RollState(message);
-  if (!isSupportedD6Roll(message, state) || state.rerollsUsed) return;
+  if (!isSupportedD6Roll(message, state) || state.rerollsUsed) return false;
 
   const actionButton = target.closest?.("[data-hkrpg-roll-action]");
   const dieButton = target.closest?.("[data-hkrpg-reroll-index]");
-  if (!actionButton && !dieButton) return;
+  if (!actionButton && !dieButton) return false;
 
-  if (!state.selecting && dieButton) return;
-  if (!state.selecting && actionButton?.dataset.hkrpgRollAction !== "start") return;
-  if (state.selecting && actionButton?.dataset.hkrpgRollAction === "start") return;
+  if (!state.selecting && dieButton) return false;
+  if (!state.selecting && actionButton?.dataset.hkrpgRollAction !== "start") return false;
+  if (state.selecting && actionButton?.dataset.hkrpgRollAction === "start") return false;
 
   const action = actionButton?.dataset.hkrpgRollAction;
   const maximum = Math.max(0, Math.min(
@@ -129,7 +149,7 @@ async function processRollAction(message, target) {
       selecting: true,
       selectedIndices: []
     });
-    return;
+    return true;
   }
 
   if (action === "cancel") {
@@ -138,34 +158,41 @@ async function processRollAction(message, target) {
       selecting: false,
       selectedIndices: []
     });
-    return;
+    return true;
   }
 
   if (dieButton) {
     const index = Number(dieButton.dataset.hkrpgRerollIndex);
-    if (!Number.isInteger(index) || index < 0 || index >= state.results.length || maximum < 1) return;
+    if (!Number.isInteger(index) || index < 0 || index >= state.results.length || maximum < 1) return false;
+
     const selected = new Set(state.selectedIndices ?? []);
     if (selected.has(index)) {
       selected.delete(index);
     } else {
       if (selected.size >= maximum) {
-        ui.notifications.warn(`Можно выбрать не более ${maximum} ${maximum === 1 ? "кости" : "костей"} для переброса.`);
-        return;
+        warn(`Можно выбрать не более ${maximum} ${maximum === 1 ? "кости" : "костей"} для переброса.`);
+        return false;
       }
       selected.add(index);
     }
+
     await updateRollMessage(message, {
       ...state,
       selecting: true,
       selectedIndices: [...selected].sort((a, b) => a - b)
     });
-    return;
+    return true;
   }
 
   if (action === "confirm") {
     const selected = [...new Set(state.selectedIndices ?? [])];
-    if (!selected.length || selected.length > maximum) return;
-    const { results: newResults } = await rollD6Pool(selected.length);
+    if (!selected.length || selected.length > maximum) return false;
+
+    const { results: newResults } = await rollDice(selected.length);
+    if (!Array.isArray(newResults) || newResults.length !== selected.length) {
+      throw new Error("Новые результаты не совпадают с количеством выбранных костей.");
+    }
+
     const resolved = resolveD6Rerolls(
       state.results,
       selected,
@@ -180,55 +207,74 @@ async function processRollAction(message, target) {
       selectedIndices: [],
       rerollHistory: resolved.history
     });
+    return true;
   }
+
+  return false;
 }
 
 /**
- * Foundry v13 renderChatMessageHTML hook. The message author (or a GM) can
- * select up to the available number of dice; everyone else sees a read-only card.
+ * Foundry v13 renderChatMessageHTML hook. Bind directly to each control in
+ * capture phase. Binding per button (rather than marking the whole message
+ * root) also works when Foundry replaces only the card contents.
  */
 export function activateD6RollControls(message, html) {
   const state = getD6RollState(message);
   if (!isSupportedD6Roll(message, state)) return;
 
   const root = html?.[0] ?? html;
-  if (!root?.querySelector) return;
+  if (!root?.querySelectorAll) return;
 
+  const controls = root.querySelectorAll("[data-hkrpg-roll-action], [data-hkrpg-reroll-index]");
   if (!canControlMessage(message)) {
-    root.querySelectorAll("[data-hkrpg-roll-action], [data-hkrpg-reroll-index]")
-      .forEach((control) => control.remove());
+    controls.forEach((control) => {
+      control.disabled = true;
+      control.title = "Переброс доступен автору броска или Мастеру";
+    });
     return;
   }
-  if (root.dataset.hkrpgRollControls === "true") return;
-  root.dataset.hkrpgRollControls = "true";
 
-  root.addEventListener("click", async (event) => {
-    const actionButton = event.target?.closest?.("[data-hkrpg-roll-action]");
-    const dieButton = event.target?.closest?.("[data-hkrpg-reroll-index]");
-    const control = actionButton ?? dieButton;
-    if (!control || !root.contains(control)) return;
+  // Upgrade older persisted cards that were created before rerolls became
+  // universal. Only an authorized user attempts to persist this migration.
+  const hasDice = state.results.length > 0;
+  if (hasDice && !state.rerollsUsed && Number(state.rerollsAvailable) < 1) {
+    const upgradedState = { ...state, rerollsAvailable: 1 };
+    const flagKey = getD6RollFlagKey(message);
+    void message.update({
+      content: renderD6RollCardContent(upgradedState),
+      [`flags.hkrpg.${flagKey}`]: upgradedState
+    }).catch((error) => {
+      console.error("Hollow Knight RPG | Could not upgrade an old roll card", error);
+    });
+    return;
+  }
 
-    event.preventDefault();
-    event.stopPropagation();
-    event.stopImmediatePropagation();
+  controls.forEach((control) => {
+    if (control.dataset.hkrpgRerollBound === "true") return;
+    control.dataset.hkrpgRerollBound = "true";
+    control.addEventListener("click", async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
 
-    if (pendingMessages.has(message)) return;
-    pendingMessages.add(message);
-    if (control instanceof HTMLButtonElement) control.disabled = true;
+      if (pendingMessages.has(message)) return;
+      pendingMessages.add(message);
+      control.disabled = true;
 
-    try {
-      if (!canControlMessage(message)) {
-        ui.notifications.warn("Только автор броска или Мастер может выполнить переброс.");
-        return;
+      try {
+        if (!canControlMessage(message)) {
+          throw new Error("Переброс доступен только автору броска или владельцу персонажа.");
+        }
+        await processD6RollAction(message, control);
+      } catch (error) {
+        console.error("Hollow Knight RPG | Dice reroll failed", error);
+        control.disabled = false;
+        ui.notifications.error(`Не удалось выполнить переброс: ${error.message}`);
+      } finally {
+        pendingMessages.delete(message);
       }
-      await processRollAction(message, control);
-    } catch (error) {
-      console.error("Hollow Knight RPG | Dice reroll failed", error);
-      ui.notifications.error("Не удалось выполнить переброс. Подробности — в консоли (F12).");
-    } finally {
-      pendingMessages.delete(message);
-    }
-  }, true);
+    }, true);
+  });
 }
 
 /** Backwards-compatible export for existing initialization hooks. */

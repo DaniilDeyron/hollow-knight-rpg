@@ -159,3 +159,10 @@ test("Подготовка памятки не должна блокироват
   assert.match(sheet, /Could not prepare effect reference data/);
   assert.match(sheet, /buildEffectsSheetData\(\[\], HK_EFFECT_CATALOG\)/);
 });
+
+
+test("В чарлисте не отображаются автоматические подписи итоговых значений характеристик", () => {
+  const template = read("../templates/actor/character-sheet.hbs");
+  assert.doesNotMatch(template, /hkrpg-effective-value/);
+  assert.doesNotMatch(template, /Итого с чертами|Итого с шаблоном/);
+});

@@ -2,7 +2,8 @@
  * Shared d6 dice-pool helpers.
  *
  * Core rule: a result of 5 or 6 is a success.
- * Attribute .5 values grant a reroll; they do not add a full die.
+ * Fractional attributes are rounded down for dice pools. Rerolls are a
+ * universal card action and are not tied to a .5 attribute value.
  */
 export function getAttributePool(attributeValue, temporaryValue = 0, rerollBonus = 0) {
   const value = Number(attributeValue);
@@ -12,17 +13,16 @@ export function getAttributePool(attributeValue, temporaryValue = 0, rerollBonus
   const safeTemporary = Number.isFinite(temporary) ? Math.max(0, temporary) : 0;
   const safeRerollBonus = Number.isFinite(bonus) ? Math.max(0, Math.floor(bonus)) : 0;
 
-  // A half-rank in the effective base attribute grants one reroll.
-  // Temporary whole-dice bonuses and explicit reroll sources are independent.
+  // A fractional rank never rounds up to another die.
+  // The default reroll is universal; only explicit rule bonuses add more.
   const baseDiceCount = Math.floor(safeValue);
   const bonusDiceCount = Math.floor(safeTemporary);
-  const fraction = safeValue - baseDiceCount;
 
   return {
     baseDiceCount,
     bonusDiceCount,
     diceCount: baseDiceCount + bonusDiceCount,
-    rerollsAvailable: (fraction >= 0.5 ? 1 : 0) + safeRerollBonus
+    rerollsAvailable: safeRerollBonus
   };
 }
 
@@ -154,11 +154,17 @@ function renderDice(values, selection = {}) {
  * Render the editable dice-pool card stored as ChatMessage content.
  * Selection state is persisted in the message flag and survives chat redraws.
  */
+export const DEFAULT_D6_REROLLS = 1;
+
 export function renderD6RollCardContent(state = {}) {
   const results = Array.isArray(state.results) ? state.results : [];
   const summary = summarizeD6Results(results);
   const successesLabel = pluralizeRussian(summary.successes, ["успех", "успеха", "успехов"]);
-  const available = Math.max(0, Math.floor(Number(state.rerollsAvailable) || 0));
+  // Every non-empty d6 card receives one universal reroll. Specific rules may
+  // grant additional rerolls, but no card depends on a fractional attribute.
+  const available = results.length
+    ? Math.max(DEFAULT_D6_REROLLS, Math.floor(Number(state.rerollsAvailable) || 0))
+    : 0;
   const selected = Array.isArray(state.selectedIndices) ? state.selectedIndices : [];
   const selecting = Boolean(state.selecting && !state.rerollsUsed && available > 0);
   const label = escapeHtml(state.label ?? "Проверка");
@@ -244,7 +250,7 @@ async function createD6RollMessage(actor, state, roll, flagKey = "d6Roll") {
 export async function rollD6Check(actor, {
   label = "Проверка",
   diceCount,
-  rerollsAvailable = 0,
+  rerollsAvailable = DEFAULT_D6_REROLLS,
   formula,
   kind = "d6-check",
   metadata = {}
@@ -265,7 +271,7 @@ export async function rollD6Check(actor, {
     label: String(label),
     formula: formula ? String(formula) : `${count}d6`,
     results,
-    rerollsAvailable: Math.min(rerolls, results.length),
+    rerollsAvailable: results.length ? Math.min(Math.max(DEFAULT_D6_REROLLS, rerolls), results.length) : 0,
     rerollsUsed: false,
     selecting: false,
     selectedIndices: [],
@@ -315,7 +321,9 @@ export async function rollAttributeCheck(actor, attributeKey, overrides = {}) {
     label,
     formula,
     results,
-    rerollsAvailable: Math.min(rerollsAvailable, results.length),
+    rerollsAvailable: results.length
+      ? Math.min(DEFAULT_D6_REROLLS + rerollsAvailable, results.length)
+      : 0,
     rerollsUsed: false,
     selecting: false,
     selectedIndices: [],

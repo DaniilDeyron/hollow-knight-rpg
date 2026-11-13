@@ -119,7 +119,6 @@
       <label class="hkrpg-hunger-field">
         <span>{{localize "HKRPG.Resource.Hunger"}}</span>
         <input name="system.resources.hunger" type="number" step="0.5" value="{{system.resources.hunger}}" />
-        <small class="hkrpg-effective-value">Голод с выбранными чертами: {{system.derived.effectiveHunger}}</small>
       </label>
 
       <section class="hkrpg-movement-summary">
@@ -128,7 +127,6 @@
           <label>
             <span>{{localize "HKRPG.Secondary.Speed"}}</span>
             <input name="system.social.speed" type="number" min="0" value="{{system.social.speed}}" {{#unless isEditable}}disabled{{/unless}} />
-            <small class="hkrpg-effective-value">Итого с чертами: {{effectiveSocial.speed}}</small>
           </label>
           <label>
             <span>{{localize "HKRPG.Derived.Maneuverability"}}</span>
@@ -162,7 +160,6 @@
                 <label class="hkrpg-attribute-score">
                   <span>{{localize "HKRPG.Attribute.Might"}}</span>
                   <input name="system.attributes.might" type="number" min="0" max="7" step="0.5" value="{{system.attributes.might}}" />
-                  <small class="hkrpg-effective-value">Итого с чертами: {{effectiveAttributes.might}}</small>
                 </label>
                 <label class="hkrpg-attribute-temporary">
                   <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
@@ -175,7 +172,6 @@
                 <label class="hkrpg-attribute-score">
                   <span>{{localize "HKRPG.Attribute.Insight"}}</span>
                   <input name="system.attributes.insight" type="number" min="0" max="7" step="0.5" value="{{system.attributes.insight}}" />
-                  <small class="hkrpg-effective-value">Итого с чертами: {{effectiveAttributes.insight}}</small>
                 </label>
                 <label class="hkrpg-attribute-temporary">
                   <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
@@ -188,7 +184,6 @@
                 <label class="hkrpg-attribute-score">
                   <span>{{localize "HKRPG.Attribute.Shell"}}</span>
                   <input name="system.attributes.shell" type="number" min="0" max="7" step="0.5" value="{{system.attributes.shell}}" />
-                  <small class="hkrpg-effective-value">Итого с чертами: {{effectiveAttributes.shell}}</small>
                 </label>
                 <label class="hkrpg-attribute-temporary">
                   <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
@@ -201,7 +196,6 @@
                 <label class="hkrpg-attribute-score">
                   <span>{{localize "HKRPG.Attribute.Grace"}}</span>
                   <input name="system.attributes.grace" type="number" min="0" max="7" step="0.5" value="{{system.attributes.grace}}" />
-                  <small class="hkrpg-effective-value">Итого с чертами: {{effectiveAttributes.grace}}</small>
                 </label>
                 <label class="hkrpg-attribute-temporary">
                   <span>{{localize "HKRPG.Tracker.Temporary"}}</span>
@@ -219,7 +213,6 @@
                 <label>
                   <span>{{localize "HKRPG.Secondary.Spook"}}</span>
                   <input name="system.social.spook" type="number" min="0" step="0.5" value="{{system.social.spook}}" />
-                  <small class="hkrpg-effective-value">Итого с шаблоном и чертами: {{effectiveSocial.spook}}</small>
                 </label>
                 <button type="button" data-attribute-roll="spook" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
               </div>
@@ -227,7 +220,6 @@
                 <label>
                   <span>{{localize "HKRPG.Secondary.Cute"}}</span>
                   <input name="system.social.cute" type="number" min="0" step="0.5" value="{{system.social.cute}}" />
-                  <small class="hkrpg-effective-value">Итого с шаблоном и чертами: {{effectiveSocial.cute}}</small>
                 </label>
                 <button type="button" data-attribute-roll="cute" class="hkrpg-attribute-roll" title="{{localize "HKRPG.Roll.ClickToRoll"}}" aria-label="{{localize "HKRPG.Roll.ClickToRoll"}}">🎲</button>
               </div>
