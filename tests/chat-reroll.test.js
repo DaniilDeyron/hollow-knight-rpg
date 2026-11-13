@@ -157,7 +157,7 @@ test("Нажатия на кнопки и кости реально проход
   const message = {
     author: { id: "roller" },
     flags: { hkrpg: { attributeRoll: state } },
-    async getFlag(scope, key) { return this.flags?.[scope]?.[key]; },
+    getFlag(scope, key) { return this.flags?.[scope]?.[key]; },
     async update(update) {
       this.content = update.content;
       this.flags.hkrpg.attributeRoll = update["flags.hkrpg.attributeRoll"];
