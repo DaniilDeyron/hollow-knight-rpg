@@ -117,7 +117,7 @@ test("Системный дубль нативного статуса удаля
     id: "managed-invisible",
     disabled: false,
     statuses: new Set(["hkrpg-invisible"]),
-    getFlag: (scope, key) => scope === "hkrpg" && key === "catalogId" ? "hkrpg-invisible" : null
+    getFlag: (scope, key) => scope === "hollow-knight-rpg" && key === "catalogId" ? "hkrpg-invisible" : null
   };
   assert.deepEqual(
     planCatalogEffectDeduplication([managed, native]),
@@ -130,7 +130,7 @@ test("Повторные системные копии одного боевог
     id,
     disabled,
     statuses: new Set(["hkrpg-off-balance"]),
-    getFlag: (scope, key) => scope === "hkrpg" && key === "catalogId" ? "hkrpg-off-balance" : null
+    getFlag: (scope, key) => scope === "hollow-knight-rpg" && key === "catalogId" ? "hkrpg-off-balance" : null
   });
   assert.deepEqual(
     planCatalogEffectDeduplication([
