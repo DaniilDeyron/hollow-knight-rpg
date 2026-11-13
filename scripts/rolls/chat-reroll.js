@@ -1,15 +1,31 @@
 import {
-  renderAttributeRollCardContent,
+  renderD6RollCardContent,
   resolveD6Rerolls,
   rollD6Pool
 } from "./pool.js";
 
 const pendingMessages = new WeakSet();
 
-function getAttributeRollState(message) {
-  return message?.getFlag?.("hkrpg", "attributeRoll")
+function getD6RollState(message) {
+  return message?.getFlag?.("hkrpg", "d6Roll")
+    ?? message?.flags?.hkrpg?.d6Roll
+    ?? message?.getFlag?.("hkrpg", "attributeRoll")
     ?? message?.flags?.hkrpg?.attributeRoll
     ?? null;
+}
+
+function getD6RollFlagKey(message) {
+  return message?.flags?.hkrpg?.d6Roll || message?.getFlag?.("hkrpg", "d6Roll")
+    ? "d6Roll"
+    : "attributeRoll";
+}
+
+function isSupportedD6Roll(message, state) {
+  if (!state || !Array.isArray(state.results)) return false;
+  const hasGenericFlag = Boolean(
+    message?.flags?.hkrpg?.d6Roll ?? message?.getFlag?.("hkrpg", "d6Roll")
+  );
+  return hasGenericFlag || state.kind === "attribute-check";
 }
 
 function canControlMessage(message) {
@@ -74,22 +90,24 @@ export function replaceD6ResultsInRollData(source, values) {
 }
 
 async function updateRollMessage(message, state) {
+  const flagKey = getD6RollFlagKey(message);
+  const flagPath = `flags.hkrpg.${flagKey}`;
   const updates = {
-    content: renderAttributeRollCardContent(state),
-    "flags.hkrpg.attributeRoll": state
+    content: renderD6RollCardContent(state),
+    [flagPath]: state
   };
   const rollData = replaceD6ResultsInRollData(state.rollData, state.results);
   if (rollData) {
     state.rollData = rollData;
-    updates["flags.hkrpg.attributeRoll"] = state;
+    updates[flagPath] = state;
     updates.rolls = [JSON.stringify(rollData)];
   }
   await message.update(updates);
 }
 
 async function processRollAction(message, target) {
-  const state = getAttributeRollState(message);
-  if (!state || state.kind !== "attribute-check" || state.rerollsUsed) return;
+  const state = getD6RollState(message);
+  if (!isSupportedD6Roll(message, state) || state.rerollsUsed) return;
 
   const actionButton = target.closest?.("[data-hkrpg-roll-action]");
   const dieButton = target.closest?.("[data-hkrpg-reroll-index]");
@@ -169,9 +187,9 @@ async function processRollAction(message, target) {
  * Foundry v13 renderChatMessageHTML hook. The message author (or a GM) can
  * select up to the available number of dice; everyone else sees a read-only card.
  */
-export function activateAttributeRollControls(message, html) {
-  const state = getAttributeRollState(message);
-  if (!state || state.kind !== "attribute-check") return;
+export function activateD6RollControls(message, html) {
+  const state = getD6RollState(message);
+  if (!isSupportedD6Roll(message, state)) return;
 
   const root = html?.[0] ?? html;
   if (!root?.querySelector) return;
@@ -212,3 +230,6 @@ export function activateAttributeRollControls(message, html) {
     }
   }, true);
 }
+
+/** Backwards-compatible export for existing initialization hooks. */
+export const activateAttributeRollControls = activateD6RollControls;

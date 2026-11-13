@@ -26,6 +26,25 @@ test("Пул характеристики 3.5 — три кости и один 
   });
 });
 
+test("Дополнительные перебросы от оружия, черт или эффектов складываются с дробной характеристикой", () => {
+  assert.deepEqual(getAttributePool(3.5, 0, 2), {
+    baseDiceCount: 3,
+    bonusDiceCount: 0,
+    diceCount: 3,
+    rerollsAvailable: 3
+  });
+  assert.deepEqual(getAttributePool(4, 1, 2), {
+    baseDiceCount: 4,
+    bonusDiceCount: 1,
+    diceCount: 5,
+    rerollsAvailable: 2
+  });
+});
+
+test("Дробный дополнительный источник не создаёт целый переброс", () => {
+  assert.deepEqual(getAttributePool(4, 0, 0.5).rerollsAvailable, 0);
+});
+
 test("Целое значение характеристики даёт только целое число костей", () => {
   assert.deepEqual(getAttributePool(4), {
     baseDiceCount: 4,
