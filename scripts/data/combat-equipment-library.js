@@ -4,7 +4,7 @@ const weapon = (id, name, weaponTypes, damage, range, grip, weight, cost, rules,
   cost, costLabel: options.costLabel ?? `${cost} Гео`,
   quality: 0, durability: 0, protection: "", damageReduction: 0,
   soakBonus: 0, soakRerolls: 0, absorption: 0,
-  description: options.description ?? "",
+  description: options.description ?? `Боевое оружие: ${weaponTypes}.`,
   rules, sourcePage: options.sourcePage ?? 88,
   modificationNotes: "Для оружия доступна одна модификация, кроме специальных исключений. По книге: Изношенное, Нитяное, Удлинённое, Тяжёлое, Облегчённое, Изящное, Обманка, Универсальное, Пипетка, Чародейское, Лезвие, Сбалансированное, Выкованное в Грёзах, Убийца зверей, Жестокое и Мясницкое. Подробные цены и условия — в разделе «Модификации оружия», с. 92–94."
 });
@@ -17,7 +17,7 @@ const shield = (id, name, quality, weight, cost, rules, options = {}) => ({
   protection: options.protection ?? "",
   damageReduction: 0, soakBonus: 0, soakRerolls: 0,
   absorption: options.absorption ?? 0,
-  description: options.description ?? "",
+  description: options.description ?? "Щит для парирования и защиты.",
   rules: `${rules} Любой щит удерживается одной рукой. Удар щитом — парная атака качества 0 с базовым уроном 2; без модификации «Сбалансированный» успехи не добавляются к урону.`,
   sourcePage: 94,
   modificationNotes: "Для щитов разрешена одна модификация: Изношенный, Облегчённый, Укреплённый, Шипованный, Обманка, Практичный, Сбалансированный или Отражающий. Доступны улучшения «Закалённый» (+1 качество) и «Адамантовый» (+2 качества). Подробности — с. 94–95."
@@ -28,7 +28,7 @@ const armor = (id, name, durability, damageReduction, weight, cost, soakBonus, s
   weight, weightLabel: String(weight), cost, costLabel: `${cost} Гео`,
   quality: 0, durability, protection: String(damageReduction),
   damageReduction, soakBonus, soakRerolls, absorption: 0,
-  description: rules,
+  description: `${name} — базовый комплект защитной брони.`,
   rules: "Снятие или надевание во время боя стоит 1 Выносливость для лёгкой брони, 2 для средней и 3 для тяжёлой. Понижение урона не работает против природного и магического урона, если броня не указывает обратное. Если атака попала и в броске есть хотя бы одна 6, прочность брони уменьшается на 1. При прочности 0 броня сломана и не защищает, пока её не починят.",
   sourcePage: 96,
   modificationNotes: "Модификации брони: Разбитая, С седлом, Надёжная, Стёганая, Утяжелённая, Шипованная, Устойчивая к типу урона, Блестящая. В отличие от оружия и щитов, на броню можно установить несколько разных модификаций. Подробности — с. 97."
@@ -147,7 +147,7 @@ export const HK_COMBAT_EQUIPMENT = [
 
 export const HK_COMBAT_EQUIPMENT_FOLDERS = [
   { key: "root", name: "Оружие и доспехи", parentKey: null, kind: "root" },
-  { key: "weapons", name: "01 · Боевые оружия", parentKey: "root", kind: "category", category: "weapon" },
+  { key: "weapons", name: "01 · Боевое оружие", parentKey: "root", kind: "category", category: "weapon" },
   { key: "shields", name: "02 · Щиты", parentKey: "root", kind: "category", category: "shield" },
   { key: "armor", name: "03 · Доспехи", parentKey: "root", kind: "category", category: "armor" }
 ];
