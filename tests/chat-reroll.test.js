@@ -272,7 +272,7 @@ test("Полный цикл карточки: начать, выбрать ку�
   assert.deepEqual(finalState.rerollHistory, [
     { index: 0, previous: 1, rolled: 6, kept: 6 }
   ]);
-  assert.match(message.content, /Успехи[\\s\\S]*<strong>2<\\/strong>/);
+  assert.match(message.content, /Успехи[\s\S]*<strong>2<\/strong>/);
   assert.doesNotMatch(message.content, /data-hkrpg-roll-action="start"/);
 });
 
