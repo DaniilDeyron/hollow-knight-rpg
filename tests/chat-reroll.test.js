@@ -6,7 +6,7 @@ import {
   renderD6RollCardContent,
   resolveD6Rerolls
 } from "../scripts/rolls/pool.js";
-import { replaceD6ResultsInRollData } from "../scripts/rolls/chat-reroll.js";
+import { activateD6RollControls, replaceD6ResultsInRollData } from "../scripts/rolls/chat-reroll.js";
 
 test("Выбранные кости заменяются новыми результатами", () => {
   const result = resolveD6Rerolls(
@@ -92,11 +92,121 @@ test("После переброса кнопка исчезает и в карт
     results: [6, 3],
     rerollsAvailable: 1,
     rerollsUsed: true,
-    rerollHistory: [{ index: 1, previous: 3, rolled: 1, kept: 3 }]
+    rerollHistory: [{ index: 1, previous: 3, rolled: 1, kept: 1 }]
   });
   assert.doesNotMatch(html, /data-hkrpg-roll-action="start"/);
-  assert.match(html, /Переброс потрачен/);
+  assert.match(html, /Переброс выполнен/);
   assert.match(html, /кость 2: 3 → 1/);
+});
+
+test("Нажатия на кнопки и кости реально проходят путь start → select → reroll", async () => {
+  const oldGame = globalThis.game;
+  const oldUi = globalThis.ui;
+  const oldRoll = globalThis.Roll;
+  const messages = [];
+  globalThis.game = { user: { id: "roller", isGM: false } };
+  globalThis.ui = { notifications: { warn: (value) => messages.push(value), error: (value) => messages.push(value) } };
+
+  let generated = [4, 2];
+  globalThis.Roll = class {
+    constructor(formula) {
+      const count = Number(String(formula).match(/^(\\d+)d6$/)?.[1] ?? 0);
+      this.dice = [{ faces: 6, results: generated.slice(0, count).map((result) => ({ result, active: true })) }];
+      this.total = this.dice[0].results.reduce((sum, die) => sum + die.result, 0);
+      this.formula = formula;
+    }
+    async evaluate() { return this; }
+    toJSON() {
+      return {
+        class: "Roll", formula: this.formula, total: this.total,
+        result: this.dice[0].results.map((die) => die.result).join(" + "),
+        terms: [{ class: "Die", number: this.dice[0].results.length, faces: 6, results: this.dice[0].results }]
+      };
+    }
+  };
+
+  class FakeButton extends EventTarget {
+    constructor(dataset = {}) {
+      super();
+      this.dataset = dataset;
+      this.disabled = false;
+      this.isConnected = true;
+      this.removed = false;
+    }
+    remove() { this.removed = true; }
+    click() { this.dispatchEvent(new Event("click", { cancelable: true })); }
+  }
+
+  const state = {
+    kind: "attribute-check",
+    label: "Мощь",
+    formula: "3d6",
+    results: [1, 6, 3],
+    rerollsAvailable: 0,
+    rerollsUsed: false,
+    selecting: false,
+    selectedIndices: [],
+    rerollHistory: [],
+    rollData: {
+      class: "Roll", formula: "3d6", total: 10, result: "1 + 6 + 3",
+      terms: [{ class: "Die", number: 3, faces: 6, results: [
+        { result: 1, active: true }, { result: 6, active: true }, { result: 3, active: true }
+      ] }]
+    }
+  };
+  const message = {
+    author: { id: "roller" },
+    flags: { hkrpg: { attributeRoll: state } },
+    async getFlag(scope, key) { return this.flags?.[scope]?.[key]; },
+    async update(update) {
+      this.content = update.content;
+      this.flags.hkrpg.attributeRoll = update["flags.hkrpg.attributeRoll"];
+      if (update.rolls) this.rolls = update.rolls;
+    }
+  };
+  const waitForHandler = () => new Promise((resolve) => setTimeout(resolve, 0));
+  const attach = (controls) => {
+    const root = { querySelectorAll: () => controls };
+    activateD6RollControls(message, root);
+    return controls;
+  };
+
+  try {
+    let controls = attach([new FakeButton({ hkrpgRollAction: "start" })]);
+    controls[0].click();
+    await waitForHandler();
+    assert.equal(message.flags.hkrpg.attributeRoll.selecting, true);
+
+    controls = attach([
+      new FakeButton({ hkrpgRerollIndex: "0" }),
+      new FakeButton({ hkrpgRerollIndex: "1" }),
+      new FakeButton({ hkrpgRerollIndex: "2" })
+    ]);
+    controls[0].click();
+    await waitForHandler();
+    controls = attach([
+      new FakeButton({ hkrpgRerollIndex: "2" }),
+      new FakeButton({ hkrpgRollAction: "confirm" })
+    ]);
+    controls[0].click();
+    await waitForHandler();
+    assert.deepEqual(message.flags.hkrpg.attributeRoll.selectedIndices, [0, 2]);
+
+    controls[1].click();
+    await waitForHandler();
+    const finalState = message.flags.hkrpg.attributeRoll;
+    assert.deepEqual(finalState.results, [4, 6, 2]);
+    assert.equal(finalState.rerollsUsed, true);
+    assert.equal(finalState.selecting, false);
+    assert.deepEqual(finalState.rerollHistory.map((entry) => entry.kept), [4, 2]);
+    assert.ok(message.content.includes("кость 1: 1 → 4"));
+    assert.ok(message.content.includes("кость 3: 3 → 2"));
+    assert.ok(Array.isArray(message.rolls));
+  } finally {
+    if (oldGame === undefined) delete globalThis.game; else globalThis.game = oldGame;
+    if (oldUi === undefined) delete globalThis.ui; else globalThis.ui = oldUi;
+    if (oldRoll === undefined) delete globalThis.Roll; else globalThis.Roll = oldRoll;
+  }
 });
 
 test("Подпись характеристики экранируется перед вставкой в HTML карточку", () => {
