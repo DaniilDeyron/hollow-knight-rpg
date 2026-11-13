@@ -223,58 +223,53 @@ export function activateD6RollControls(message, html) {
   if (!isSupportedD6Roll(message, state)) return;
 
   const root = html?.[0] ?? html;
-  if (!root?.querySelectorAll) return;
+  if (!root?.querySelectorAll || !root?.addEventListener) return;
 
   const controls = root.querySelectorAll("[data-hkrpg-roll-action], [data-hkrpg-reroll-index]");
   if (!canControlMessage(message)) {
     controls.forEach((control) => {
       control.disabled = true;
-      control.title = "Переброс доступен автору броска или Мастеру";
+      control.title = "Переброс доступен автору броска или владельцу персонажа";
     });
     return;
   }
 
-  // Upgrade older persisted cards that were created before rerolls became
-  // universal. Only an authorized user attempts to persist this migration.
-  const hasDice = state.results.length > 0;
-  if (hasDice && !state.rerollsUsed && Number(state.rerollsAvailable) < 1) {
-    const upgradedState = { ...state, rerollsAvailable: 1 };
-    const flagKey = getD6RollFlagKey(message);
-    void message.update({
-      content: renderD6RollCardContent(upgradedState),
-      [`flags.hkrpg.${flagKey}`]: upgradedState
-    }).catch((error) => {
-      console.error("Hollow Knight RPG | Could not upgrade an old roll card", error);
-    });
-    return;
-  }
+  // Bind once to the chat-message root. Delegation survives replacement of
+  // the card's inner HTML when Foundry rerenders a ChatMessage.
+  if (root.dataset?.hkrpgRollControlsBound === "true") return;
+  if (root.dataset) root.dataset.hkrpgRollControlsBound = "true";
 
-  controls.forEach((control) => {
-    if (control.dataset.hkrpgRerollBound === "true") return;
-    control.dataset.hkrpgRerollBound = "true";
-    control.addEventListener("click", async (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      event.stopImmediatePropagation();
+  root.addEventListener("click", async (event) => {
+    const eventTarget = event.target?.nodeType === 3
+      ? event.target.parentElement
+      : event.target;
+    const control = eventTarget?.closest?.(
+      "[data-hkrpg-roll-action], [data-hkrpg-reroll-index]"
+    );
+    if (!control || (root.contains && !root.contains(control)) || control.disabled) return;
 
-      if (pendingMessages.has(message)) return;
-      pendingMessages.add(message);
-      control.disabled = true;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
 
-      try {
-        if (!canControlMessage(message)) {
-          throw new Error("Переброс доступен только автору броска или владельцу персонажа.");
-        }
-        await processD6RollAction(message, control);
-      } catch (error) {
-        console.error("Hollow Knight RPG | Dice reroll failed", error);
-        control.disabled = false;
-        ui.notifications.error(`Не удалось выполнить переброс: ${error.message}`);
-      } finally {
-        pendingMessages.delete(message);
+    if (pendingMessages.has(message)) return;
+    pendingMessages.add(message);
+    control.disabled = true;
+
+    try {
+      if (!canControlMessage(message)) {
+        throw new Error("Переброс доступен только автору броска или владельцу персонажа.");
       }
-    }, true);
-  });
+      const handled = await processD6RollAction(message, control);
+      if (!handled) control.disabled = false;
+    } catch (error) {
+      console.error("Hollow Knight RPG | Dice reroll failed", error);
+      control.disabled = false;
+      ui.notifications.error(`Не удалось выполнить переброс: ${error.message}`);
+    } finally {
+      pendingMessages.delete(message);
+    }
+  }, true);
 }
 
 /** Backwards-compatible export for existing initialization hooks. */
