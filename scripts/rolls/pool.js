@@ -237,7 +237,7 @@ export const renderAttributeRollCardContent = renderD6RollCardContent;
 
 async function createD6RollMessage(actor, state, roll, flagKey = "d6Roll") {
   const content = renderD6RollCardContent(state);
-  const speaker = ChatMessage.getSpeaker({ actor });
+  const speaker = ChatMessage.getSpeaker({ actor, alias: actor?.name });
 
   if (roll) {
     const messageData = await roll.toMessage(
@@ -246,8 +246,8 @@ async function createD6RollMessage(actor, state, roll, flagKey = "d6Roll") {
     );
     messageData.content = content;
     messageData.flags ??= {};
-    messageData.flags.hkrpg ??= {};
-    messageData.flags.hkrpg[flagKey] = state;
+    messageData.flags["hollow-knight-rpg"] ??= {};
+    messageData.flags["hollow-knight-rpg"][flagKey] = state;
     return ChatMessage.create(messageData);
   }
 
@@ -255,7 +255,7 @@ async function createD6RollMessage(actor, state, roll, flagKey = "d6Roll") {
     speaker,
     content,
     type: CONST.CHAT_MESSAGE_TYPES.OTHER,
-    flags: { hkrpg: { [flagKey]: state } }
+    flags: { "hollow-knight-rpg": { [flagKey]: state } }
   });
 }
 
